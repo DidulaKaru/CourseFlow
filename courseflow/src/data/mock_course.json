@@ -1,0 +1,52 @@
+{
+    "id": "CE4001",
+    "code": "CE4001",
+    "title": "Comprehensive Engineering Design Project",
+    "description": "Two-semester capstone research and hardware prototyping project solving industry-defined technical briefs.",
+    "totalCredits": 6,
+    "durationSemesters": 2,
+    "recommendedSemester": 7,
+    "creditDistribution": [
+        {
+            "semesterIndex": 7,
+            "creditsAllocated": 3
+        },
+        {
+            "semesterIndex": 8,
+            "creditsAllocated": 3
+        }
+    ],
+    "type": "CAPSTONE",
+    "prerequisiteRule": {
+        "type": "AND",
+        "children": [
+            {
+                "type": "COURSE",
+                "courseId": "CE3001"
+            },
+            {
+                "type": "OR",
+                "children": [
+                    {
+                        "type": "COURSE",
+                        "courseId": "MA2001"
+                    },
+                    {
+                        "type": "COURSE",
+                        "courseId": "MA2002"
+                    }
+                ]
+            },
+            {
+                "type": "CREDIT_THRESHOLD",
+                "minCredits": 90
+            }
+        ]
+    },
+    "corequisites": [
+        "CE4002"
+    ],
+    "offeredSemesters": [
+        "BOTH"
+    ]
+}
