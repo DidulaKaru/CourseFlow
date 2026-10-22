@@ -1,6 +1,4 @@
-# CourseFlow
-
-## CourseFlow: Master Architecture & Technical Specification
+# CourseFlow: Master Architecture & Technical Specification
 ### Curriculum Dependency Graph Visualizer, Degree Progress Advisor & Intelligent Career Roadmap Engine
 
 ---
@@ -95,7 +93,7 @@ Courses on the critical path have a slack of 0: dropping or failing a critical-p
 
 ### 3.5 Deterministic Banded Swimlane Layout
 Rather than relying on unconstrained force-directed algorithms:
-* **X-Axis (Deterministic Horizontal Positioning):** Fixed strictly by semester index ($X = \text{semesterIndex} \times 280\text{px}$).
+* **X-Axis (Deterministic Horizontal Positioning):** Fixed strictly by semester index ($X = (\text{semesterIndex} - 1) \times 280\text{px}$ for 1-indexed semesters).
 * **Y-Axis (Vertical Ordering):** Dynamic vertical ordering using Dagre / barycentric heuristics applied strictly within each individual semester column to minimize edge crossings.
 
 ---
@@ -259,7 +257,7 @@ export interface DegreeProgram {
 * **Backend API Development (FastAPI):**
   * Scaffold FastAPI with async routing, dependency injection, and middleware.
   * Implement endpoints for degree configurations, course queries, admin course editing modals, and student plan exports.
-  * Expose deterministic validation services consumed by Teammate 1's frontend and Teammate 2's test runners.
+  * Expose deterministic validation services consumed by Malsha's frontend and Ishani's test runners.
 
 #### Malsha: Frontend & Documentation
 *Starts with pure Tailwind UI components and mock datasets, gradually integrating stateful canvas hooks and markdown docs.*

@@ -9,7 +9,7 @@
 ## 1. Responsibilities & Domain Ownership
 Didula acts as the architectural anchor and backend lead for CourseFlow. In Sprint 1, responsibilities encompass:
 - Defining and maintaining the Single Source of Truth (SSOT) across TypeScript interfaces and backend Pydantic schemas.
-- Implementing the deterministic swimlane coordinate layout mathematics ($X = \text{semesterIndex} \times 280\text{px}$).
+- Implementing the deterministic swimlane coordinate layout mathematics ($X = (\text{semesterIndex} - 1) \times 280\text{px}$ for 1-indexed semesters).
 - Developing the recursive Abstract Syntax Tree (AST) prerequisite boolean evaluator.
 - Architecting the client-side Zustand store with `localStorage` guest-mode persistence.
 - Scaffolding the FastAPI backend application structure and initial API contracts.
@@ -85,7 +85,7 @@ Didula acts as the architectural anchor and backend lead for CourseFlow. In Spri
   - `src/core/CONTEXT.md`
 * **Algorithmic Rules:**
   - Horizontal $X$-coordinate is strictly fixed:
-    $$X = \text{semesterIndex} \times 280\text{px} + \text{COLUMN\_OFFSET}$$
+    $$X = (\text{semesterIndex} - 1) \times 280\text{px} + \text{COLUMN\_OFFSET}$$
   - Vertical $Y$-coordinate is computed dynamically based on the course's vertical order within its semester column:
     $$Y = \text{slotIndex} \times (\text{NODE\_HEIGHT} + \text{VERTICAL\_GAP}) + \text{TOP\_PADDING}$$
   - Multi-semester courses: Card spans across or anchors in the starting semester with explicit multi-semester visual indicators.

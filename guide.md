@@ -15,14 +15,14 @@ These architectural decisions are finalized. Do not refactor or deviate from the
 
 - **Single Database Instance:**
   - Do not create separate databases for courses and community data.
-  - When PostgreSQL is deployed in Sprint 2, all models reside in a single database with foreign key integrity (e.g., `alumni_ratings.course_id REFERENCES courses.id`).
+  - When PostgreSQL is deployed (database schema & container initialized in Sprint 1, full API service connected in Sprint 2), all models reside in a single database with foreign key integrity (e.g., `alumni_ratings.course_id REFERENCES courses.id`).
 
 - **Multi-Semester Spanning Modules:**
   - Never duplicate course codes or manually halve credits (e.g., no `EC4001_A` and `EC4001_B`).
   - Courses spanning multiple semesters use a single course entity with a `creditDistribution` array defining `semesterIndex` and `creditsAllocated` offsets.
 
 - **Deterministic Canvas Layout:**
-  - Horizontal coordinates are calculated mathematically: $X = \text{semesterIndex} \times 280\text{px}$.
+  - Horizontal coordinates are calculated mathematically: $X = (\text{semesterIndex} - 1) \times 280\text{px}$ (for 1-indexed semesters).
   - Nodes are never freely repositioned across semesters on the horizontal axis. Dagre or barycentric heuristics handle vertical ($Y$-axis) ordering only.
 
 - **Contract-First & Type Safety:**
@@ -123,7 +123,7 @@ Once pushed, open GitHub, create a Pull Request targeting `dev` (never `main`), 
 
 **Rule:** No developer may pause progress waiting for another team member's deliverables.
 
-- If Teammate 3 (CourseNode UI) or Teammate 4 (Details Drawer) needs module data while Teammate 2 is still assembling degree datasets, they must import `src/data/mock_course.json` directly into their local components.
+- If Malsha (CourseNode UI / Details Drawer) needs module data while Anuththara is still assembling degree datasets, she must import `src/data/mock_course.json` directly into local components.
 - When the core datasets or APIs are ready, switching from `mock_course.json` to the Zustand store requires updating only the import statement.
 
 ---

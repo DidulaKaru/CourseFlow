@@ -89,11 +89,11 @@ Malsha leads user-facing frontend component design and technical project governa
   - `src/features/canvas/components/SwimlaneHeader.tsx`
   - `src/features/canvas/components/DegreeSelector.tsx`
 * **Tasks:**
-  1. Render 8 vertical swimlane columns, spaced at $X = \text{semesterIndex} \times 280\text{px}$.
+  1. Render 8 vertical swimlane columns, spaced at $X = (\text{semesterIndex} - 1) \times 280\text{px}$ (for 1-indexed semesters).
   2. Implement `SwimlaneHeader`:
      - Displays `Semester 1` through `Semester 8`.
      - Displays real-time total credit load for that semester.
-     - Credit gauge pill: Green if $\ge 18$ and $\le 24$; Red/Amber with alert icon if $< 18$ credits.
+     - Credit gauge pill: Green if $\ge 18$ and $\le 24$; Red/Amber with alert icon if $< 18$ or $> 24$ credits.
   3. Implement `DegreeSelector`:
      - Dropdown switching between `Computer Engineering` and `Electrical Engineering`.
      - Switches `activeProgramId` in `usePlannerStore`.

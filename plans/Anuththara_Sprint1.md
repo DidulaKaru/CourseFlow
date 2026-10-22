@@ -75,8 +75,13 @@ Anuththara is responsible for data modeling, curriculum dataset integrity, and d
      - `prerequisite_rule` (JSONB - stores the AST tree natively)
      - `corequisites` (ARRAY of VARCHAR / JSONB)
      - `offered_semesters` (ARRAY of VARCHAR)
+  3. `ProgramCourse` (Many-to-Many Join Table for shared faculty courses):
+     - `id` (INTEGER PK AUTOINCREMENT)
      - `degree_program_id` (VARCHAR FK -> `degree_programs.id`)
-  3. `CreditDistribution`:
+     - `course_id` (VARCHAR FK -> `courses.id`)
+     - `recommended_semester` (INTEGER, 1 to 8)
+     - `course_type` (VARCHAR: `'CORE'`, `'ELECTIVE'`, `'LAB'`, `'CAPSTONE'`)
+  4. `CreditDistribution`:
      - `id` (INTEGER PK AUTOINCREMENT)
      - `course_id` (VARCHAR FK -> `courses.id`)
      - `semester_index` (INTEGER, 1 to 8)
@@ -155,7 +160,7 @@ Anuththara is responsible for data modeling, curriculum dataset integrity, and d
   1. Add SQL extension command in initial migration: `CREATE EXTENSION IF NOT EXISTS vector;`.
   2. Implement an automated data integrity script checking:
      - No dangling prerequisite pointers.
-     - Sum of per-semester minimum credits $\ge 18$.
+     - Per-semester minimum credits $\ge 18$.
      - Total mandatory credits + available electives $\ge 150$.
   3. Prepare documentation on syllabus ingestion formats for Sprint 2 MIS document extraction.
 * **Verification:** All data integrity sanity checks pass with 0 errors.
@@ -163,7 +168,7 @@ Anuththara is responsible for data modeling, curriculum dataset integrity, and d
 ---
 
 ## 3. Definition of Done (DoD) for Sprint 1
-- [ ] SQLAlchemy models created for `DegreeProgram`, `Course`, and `CreditDistribution`.
+- [ ] SQLAlchemy models created for `DegreeProgram`, `Course`, `ProgramCourse`, and `CreditDistribution`.
 - [ ] Alembic migration applies cleanly to PostgreSQL with `pgvector` enabled.
 - [ ] `computer_engineering.json` and `electrical_engineering.json` fully transcribed with valid AST prerequisite trees.
 - [ ] Multi-semester courses correctly modeled with discrete `creditDistribution` arrays.

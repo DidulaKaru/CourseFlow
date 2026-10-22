@@ -39,7 +39,7 @@ CourseFlow formalizes curriculum planning by treating an academic degree program
 
 ### 🎓 Zero-Login Student Degree Planner (Local-First)
 - **Zero Friction:** Immediate access to interactive degree roadmaps without registration, passwords, or login barriers.
-- **8-Semester Banded Swimlanes:** Courses snap into deterministic semester columns ($X = \text{semesterIndex} \times 280\text{px}$) with optimized vertical ordering ($Y$) to minimize edge crossings.
+- **8-Semester Banded Swimlanes:** Courses snap into deterministic semester columns ($X = (\text{semesterIndex} - 1) \times 280\text{px}$ for 1-indexed semesters) with optimized vertical ordering ($Y$) to minimize edge crossings.
 - **Interactive Dependency Tracing:** Clicking or hovering a module isolates its entire upstream prerequisite chain and downstream unlocked electives while dimming unrelated graph elements.
 - **Client-Side Persistence:** Planned electives, completed courses, and semester allocations persist automatically in the browser via `localStorage`. Plans can be exported and imported as portable JSON files.
 - **Official PDF Export:** Exports the validated 8-semester schedule into a formatted academic planning sheet via `@react-pdf/renderer`.
