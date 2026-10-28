@@ -1,169 +1,185 @@
-# Sprint 1 Implementation Plan: Ishani (QA & DevOps)
+# Sprint 1 Implementation Plan: Ishani (QA & DevOps Engineer)
 
-**Role:** QA Lead & DevOps Engineer  
-**Sprint Focus:** Containerization, CI/CD Pipeline, Vitest & Pytest Automated Test Harness, Quality Gates  
-**Target Milestone:** Sprint 1 Delivery (Zero-Login Student Web App for 2 Degree Programs)
-
----
-
-## 1. Responsibilities & Domain Ownership
-Ishani ensures software reliability, repeatable development environments, and automated quality verification. In Sprint 1, responsibilities encompass:
-- Creating and maintaining `docker-compose.yml` for unified local development (FastAPI backend, PostgreSQL with `pgvector`, and Ollama runtime).
-- Implementing `.env.example` and environment configuration templates.
-- Upgrading GitHub Actions (`.github/workflows/ci.yml`) to enforce automated type checks, linters, and test execution for both frontend and backend.
-- Managing pre-commit hooks (Husky + lint-staged) and Git protection rules.
-- Establishing the frontend testing harness with Vitest (testing store state, credit calculators, layout logic).
-- Developing the backend test suite with Pytest (testing FastAPI endpoints, AST evaluations, schema validations).
-- Monitoring test coverage and setting quality benchmarks.
+**Official Project Role:** QA & DevOps Engineer  
+**Sprint Window:** October 12, 2026 – November 01, 2026 (3 Weeks)  
+**Sprint Goal:** Ship a working, zero-login Student Web App for 2 engineering degree programs (Computer Engineering & Electrical Engineering) rendering an 8-semester swimlane DAG canvas, interactive elective selection, >= 18 semester credit checks, 150 total credit validation, multi-semester split credits, and client-side PDF plan export. Complete Docker setup, database schema foundation, and CI/CD quality gates.  
+**Primary Tech Stack:** Docker, GitHub Actions, Pytest, Vitest, Ruff, Husky  
+**Total Allocated Story Points:** 23 SP  
 
 ---
 
-## 2. Phase-by-Phase Execution Roadmap
+## 1. Core Ownership Domains & Responsibilities
+
+Ishani leads quality assurance, continuous integration, test automation, and local developer environment orchestration. In Sprint 1, core responsibilities encompass:
+- **Docker Containerization & Local Dev Stack:** Building and maintaining `docker-compose.yml` orchestrating the FastAPI backend, PostgreSQL database with `pgvector`, and Vite frontend with hot-reload.
+- **CI/CD Automation & Branch Airlocks:** Creating `.github/workflows/ci.yml` running TypeScript compilation (`tsc --noEmit`), Python linting (`ruff`), and build verification across all Pull Requests targeting `main` and `dev`.
+- **Pre-Commit Quality Hooks:** Configuring Husky and lint-staged to intercept syntax, formatting, and typing errors locally prior to `git commit`.
+- **Automated Backend Testing Suite (Pytest):** Writing comprehensive unit and integration tests for layout mathematics, AST boolean evaluation logic, and credit calculation edge cases.
+- **Automated Frontend Testing Suite (Vitest):** Implementing unit tests asserting elective add/drop toggles, credit summation boundary rules, and `localStorage` persistence.
+- **Code Coverage & Quality Benchmarks:** Enforcing $\ge 85\%$ test coverage across core algorithmic and validation modules.
+
+---
+
+## 2. Epics & User Stories Mapping
+
+### Target Epics
+- **CF-EPIC-4: Infrastructure, DevOps & Automated Quality Gates** (Epic Lead | Core Infrastructure | Target: Sprint 1 & 2)
+
+### User Stories Supported
+Ishani's testing suites and DevOps infrastructure form the underlying reliability foundation verifying and gating all Sprint 1 deliverables:
+| User Story ID | Narrative | Priority | Story Points | Target Epic | Verification Mechanism |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **US001 - US006** | Student Canvas & DAG Exploration | Must Have | 27 | CF-EPIC-1 | Vitest canvas mounting, node rendering, and responsive drawer tests |
+| **US007 - US011** | Interactive Degree Planner & Constraints | Must Have | 23 | CF-EPIC-2 | Vitest & Pytest credit counters ($\ge 18\text{ cr}$), capstone splits, AST logic |
+| **US012 - US014** | Study Plan Export & Persistence | Must / Should Have | 11 | CF-EPIC-3 | Vitest `localStorage` serialization & mock PDF generation triggers |
+
+---
+
+## 3. Granular Jira Tasks & Engineering Roadmap
+
+| Ticket Key | Task Summary | Story Points | Target Epic | Assigned |
+| :--- | :--- | :--- | :--- | :--- |
+| **CF-121** | Docker Compose Local Environment Stack | 5 SP | CF-EPIC-4 | Ishani |
+| **CF-122** | GitHub Actions CI/CD Pipeline & Branch Airlocks | 5 SP | CF-EPIC-4 | Ishani |
+| **CF-123** | Pre-Commit Quality Hooks (Husky & Lint-Staged) | 3 SP | CF-EPIC-4 | Ishani |
+| **CF-124** | Automated Backend Test Suite (Pytest) | 5 SP | CF-EPIC-4 | Ishani |
+| **CF-125** | Automated Frontend Test Suite (Vitest) | 5 SP | CF-EPIC-4 | Ishani |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│ Phase 1: Docker Containerization & Local Dev Environment Setup         │
+│ CF-121: Docker Compose Local Environment Stack (5 SP)                  │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 2: Environment Variables & Pre-commit Quality Gates (Husky)      │
+│ CF-122: GitHub Actions CI/CD Pipeline & Branch Airlocks (5 SP)         │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 3: Frontend Automated Testing Suite (Vitest)                     │
+│ CF-123: Pre-Commit Quality Hooks (Husky & Lint-Staged) (3 SP)          │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 4: Backend Automated Testing Suite (Pytest)                      │
+│ CF-124: Automated Backend Test Suite (Pytest) (5 SP)                   │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 5: CI/CD Pipeline Automation (GitHub Actions)                    │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 6: Test Coverage Benchmarks & Sprint 1 QA Sign-off               │
+│ CF-125: Automated Frontend Test Suite (Vitest) (5 SP)                  │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### Phase 1: Docker Containerization & Local Dev Environment Setup
-* **Goal:** Standardize the local development stack across the team with one-command startup.
+### CF-121: Docker Compose Local Environment Stack (5 SP)
+* **Description:** Build `docker-compose.yml` orchestrating FastAPI backend, PostgreSQL database, and Vite frontend with hot-reload.
 * **Target Files:**
   - `docker-compose.yml`
   - `backend/Dockerfile`
-* **Services to Configure:**
-  1. `db`:
-     - Image: `pgvector/pgvector:pg16`
-     - Environment: `POSTGRES_USER=courseflow`, `POSTGRES_PASSWORD=courseflow_secret`, `POSTGRES_DB=courseflow_db`
-     - Ports: `5432:5432`
-     - Health check: `pg_isready -U courseflow -d courseflow_db`
-     - Volume: `pgdata:/var/lib/postgresql/data`
-  2. `backend`:
-     - Dockerfile build in `./backend` (Python 3.11/3.12 slim, Uvicorn server).
-     - Ports: `8000:8000`
-     - Depends on: `db` (healthy)
-     - Volume bind mount for live code reload.
-  3. `ollama` (Placeholder for Sprint 2/4):
-     - Image: `ollama/ollama:latest`
-     - Ports: `11434:11434`
-     - Volume: `ollama_data:/root/.ollama`
-* **Verification:** `docker compose up -d` boots all containers with green health status.
+  - `.env.example`
+* **Implementation Details:**
+  1. Service `db`: `pgvector/pgvector:pg16` on port 5432 with health check probe.
+  2. Service `backend`: Python 3.11/3.12 slim container with mounted live code volume, running Uvicorn server on port 8000.
+  3. Service `frontend`: Node 20 container running Vite dev server on port 5173 with HMR.
+  4. Service `ollama`: Placeholder container for local SLM runtime in Sprint 2.
+  5. Provide `.env.example` detailing all required database, server, and CORS flags.
+* **Acceptance Criteria:** `docker compose up` starts all services with zero manual configuration.
 
 ---
 
-### Phase 2: Environment Variables & Pre-commit Quality Gates (Husky)
-* **Goal:** Prevent accidental credential leaks and enforce local pre-commit verification.
+### CF-122: GitHub Actions CI/CD Pipeline & Branch Airlocks (5 SP)
+* **Description:** Create `.github/workflows/ci.yml` running TypeScript typecheck (`tsc --noEmit`), Python linter (`ruff`), and frontend build verification.
 * **Target Files:**
-  - `.env.example`
+  - `.github/workflows/ci.yml`
+* **Implementation Details:**
+  1. Trigger on all Pull Requests and pushes to `main` and `dev`.
+  2. Frontend Job:
+     - Node.js 20 environment with npm caching.
+     - `npm ci`
+     - Static typecheck: `npx tsc --noEmit`
+     - Linter: `npm run lint`
+     - Automated test run: `npm test`
+     - Production build test: `npm run build`
+  3. Backend Job:
+     - Python 3.11 environment with pip caching.
+     - Dependency install: `pip install -r backend/requirements.txt`
+     - Linter: `ruff check backend/`
+     - Pytest test execution: `pytest backend/tests`
+  4. Block merge if any workflow step fails.
+* **Acceptance Criteria:** Pull requests are blocked on GitHub if any check fails.
+
+---
+
+### CF-123: Pre-Commit Quality Hooks (Husky & Lint-Staged) (3 SP)
+* **Description:** Configure Husky to run linters and static typecheck locally prior to any git commit.
+* **Target Files:**
   - `.husky/pre-commit`
   - `package.json` (`lint-staged`)
-* **Tasks:**
-  1. Provide `.env.example` documenting all necessary environment flags:
-     - `DATABASE_URL=postgresql://courseflow:courseflow_secret@localhost:5432/courseflow_db`
-     - `BACKEND_PORT=8000`
-     - `FRONTEND_URL=http://localhost:5173`
-  2. Configure Husky pre-commit hook:
-     - Run `lint-staged` (formatting and linting staged files).
-     - Run `npx tsc --noEmit` to intercept TypeScript compilation errors prior to commit.
-* **Verification:** Intentionally introducing a type error or bad syntax halts `git commit`.
+* **Implementation Details:**
+  1. Install Husky and configure git hooks.
+  2. Setup `lint-staged` config in `package.json`:
+     - Format and lint staged `.ts`, `.tsx`, `.js`, `.json` files.
+     - Enforce `npx tsc --noEmit` before commit execution.
+     - Run `ruff check` on staged Python files.
+* **Acceptance Criteria:** Commits containing TypeScript errors or formatting defects are rejected locally.
 
 ---
 
-### Phase 3: Frontend Automated Testing Suite (Vitest)
-* **Goal:** Build robust unit tests for client-side state, layout mathematics, and credit calculation.
-* **Target Files:**
-  - `vite.config.ts` (or `vitest.config.ts`)
-  - `src/core/__tests__/store.test.ts`
-  - `src/core/__tests__/layout.test.ts`
-  - `src/core/__tests__/ast_evaluator.test.ts`
-* **Test Cases:**
-  1. **Zustand Store Tests:**
-     - Toggling an elective adds/removes its ID from `selectedElectiveIds`.
-     - Toggling completed course updates `completedCourseIds`.
-     - `resetPlanner()` purges student selections while keeping active program.
-  2. **Layout Mathematics Tests:**
-     - Verifies $X$-coordinate adheres to $\text{semesterIndex} \times 280\text{px}$.
-     - Confirms zero overlapping nodes within the same semester slot.
-  3. **AST Evaluator Tests:**
-     - Evaluates single course completion, nested `AND` branches, `OR` branches, and `CREDIT_THRESHOLD`.
-* **Verification:** `npm test` runs with 100% passing assertions.
-
----
-
-### Phase 4: Backend Automated Testing Suite (Pytest)
-* **Goal:** Verify FastAPI endpoint reliability, CORS headers, and error response contracts.
+### CF-124: Automated Backend Test Suite (Pytest) (5 SP)
+* **Description:** Write unit and integration tests for layout mathematics, AST evaluation logic, and credit calculation edge cases.
 * **Target Files:**
   - `backend/tests/conftest.py`
   - `backend/tests/test_main.py`
-  - `backend/tests/test_degrees.py`
-* **Test Cases:**
-  1. **Health Check:** `GET /health` returns status `healthy` and timestamp.
-  2. **Degrees Endpoint:** `GET /api/v1/degrees` returns JSON array with valid status code 200.
-  3. **CORS Validation:** Verifies pre-flight `OPTIONS` requests from `http://localhost:5173` receive permitted CORS headers.
-  4. **Pydantic Validation:** Passing invalid body schemas to `/api/v1/validate-plan` returns HTTP 422 Unprocessable Entity.
-* **Verification:** `pytest backend/tests` executes with 0 failures.
+  - `backend/tests/test_ast.py`
+  - `backend/tests/test_layout.py`
+* **Implementation Details:**
+  1. AST evaluator tests: Compound `AND`/`OR` trees, credit threshold hurdles, missing prerequisite edge cases.
+  2. Degree program validation: Total credit checks ($\ge 150$), semester credit boundaries ($18 \le \text{credits} \le 24$).
+  3. FastAPI endpoint tests: `GET /api/programs`, `GET /api/programs/{id}`, `POST /api/plans/validate`.
+  4. Integrate `pytest-cov` to track code coverage.
+* **Acceptance Criteria:** Test suite achieves >= 85% code coverage across core algorithmic modules.
 
 ---
 
-### Phase 5: CI/CD Pipeline Automation (GitHub Actions)
-* **Goal:** Automate end-to-end quality checks on every pull request targeting `main` and `dev`.
+### CF-125: Automated Frontend Test Suite (Vitest) (5 SP)
+* **Description:** Implement Vitest unit tests verifying elective selection toggles, credit summation rules, and `localStorage` persistence.
 * **Target Files:**
-  - `.github/workflows/ci.yml`
-* **Pipeline Jobs:**
-  1. **Frontend Gate:**
-     - Checkout repository.
-     - Setup Node.js 20 with npm cache.
-     - `npm ci`
-     - `npx tsc --noEmit`
-     - `npm run lint`
-     - `npm test`
-     - `npm run build`
-  2. **Backend Gate:**
-     - Setup Python 3.11/3.12 with pip cache.
-     - Install requirements (`backend/requirements.txt`).
-     - Run linter/type check (`ruff check backend/`).
-     - Run `pytest backend/tests`.
-* **Verification:** GitHub Actions runs successfully and blocks PR merges if any job fails.
+  - `vite.config.ts` (Vitest config)
+  - `src/core/__tests__/store.test.ts`
+  - `src/core/__tests__/layout.test.ts`
+  - `src/core/__tests__/ast_evaluator.test.ts`
+* **Implementation Details:**
+  1. Zustand Store Tests:
+     - Selecting and deselecting electives updates `selectedElectiveIds`.
+     - Toggling completed courses updates `completedCourseIds`.
+     - Browser `localStorage` serialization & rehydration.
+  2. Layout Math Tests:
+     - Deterministic $X$-coordinates strictly match $X = (\text{semesterIndex} - 1) \times 280\text{px}$.
+     - Zero column collisions across semesters.
+  3. Credit Summation Tests:
+     - Correctly sums mandatory core + selected electives.
+     - Correctly splits multi-semester capstone course credits across terms.
+* **Acceptance Criteria:** All frontend tests pass in under 5 seconds in CI pipeline.
 
 ---
 
-### Phase 6: Test Coverage Benchmarks & Sprint 1 QA Sign-off
-* **Goal:** Establish test coverage reporting and certify release readiness for Sprint 1.
-* **Tasks:**
-  1. Configure coverage reporting for Vitest (`v8` provider) and Pytest (`pytest-cov`).
-  2. Establish a minimum code coverage threshold of $\ge 80\%$ for core mathematical and validation modules.
-  3. Deliver a Sprint 1 QA Test Summary Report verifying that the two degree programs compile and render without errors.
-* **Verification:** QA sign-off document published to repository with green build metrics.
+## 4. Agile Ceremonies & Team Protocols
+
+1. **Sprint Planning:** First Monday of the sprint (1 hour). Review backlog items, confirm story points, and commit to sprint scope.
+2. **Daily Standup (Asynchronous on Discord/Slack):** Every morning by 09:30 AM:
+   - What did you accomplish yesterday?
+   - What are you working on today?
+   - Are there any technical blockers?
+3. **Sprint Review & Live Demo:** Final Friday of the sprint (1 hour). Demonstrate working software on the `dev` branch.
+4. **Sprint Retrospective:** Immediately following review (30 minutes). Discuss: What went well? What slowed us down? Action items for Sprint 2.
 
 ---
 
-## 3. Definition of Done (DoD) for Sprint 1
-- [ ] `docker-compose.yml` launches PostgreSQL (with pgvector) and backend services reliably.
-- [ ] `.env.example` provides clear documentation for all local developer flags.
-- [ ] Pre-commit hooks via Husky block commits with linting or TypeScript type errors.
-- [ ] Vitest test suite covers Zustand store, layout calculations, and AST evaluation with 100% pass rate.
-- [ ] Pytest test suite validates FastAPI health, degree query endpoints, and schema errors.
-- [ ] GitHub Actions workflow passes green on both frontend and backend validation jobs.
-- [ ] Test coverage exceeds $80\%$ across all algorithmic and state modules.
+## 5. Definition of Done (DoD) & Quality Gates
+
+A story or engineering task is marked **Done** in Jira only when:
+- [ ] Code is implemented on an isolated `feature/<ticket>-<description>` branch.
+- [ ] Unit & integration tests pass with zero regressions (`npm test` and `pytest`).
+- [ ] Static typecheck passes (`npx tsc --noEmit` and Python `ruff` / typecheck).
+- [ ] PR is opened targeting `dev`, passing GitHub Actions CI checks (CourseFlow Quality Gate).
+- [ ] PR is reviewed and approved by Didula (Lead Architect).
+- [ ] PR is Squash Merged into `dev` and local branches are synchronized.
+- [ ] Feature is validated against acceptance criteria on the live development build.

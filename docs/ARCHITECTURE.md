@@ -203,9 +203,28 @@ export interface DegreeProgram {
 
 ---
 
-## 6. Phased Agile Roadmap (6 Sprints)
+## 6. Phased Agile Roadmap & Epics Framework
+
+### 6.1 Epics Framework (Sprint 1 & Sprint 2)
+
+| Epic Key | Epic Name | Target System Application | Target Sprint | Epic Lead |
+| :--- | :--- | :--- | :--- | :--- |
+| **CF-EPIC-1** | Curriculum DAG Canvas & Dependency Visualizer | Student Web App | Sprint 1 | Malsha & Didula |
+| **CF-EPIC-2** | Interactive Degree Planner & Constraint Engine | Student Web App | Sprint 1 | Didula & Malsha |
+| **CF-EPIC-3** | Study Plan Export & Local Persistence | Student Web App | Sprint 1 | Malsha |
+| **CF-EPIC-4** | Infrastructure, DevOps & Automated Quality Gates | Core Infrastructure | Sprint 1 & 2 | Ishani |
+| **CF-EPIC-5** | Database Architecture & Curriculum Data Modeling | Core Data Layer | Sprint 1 | Anuththara |
+| **CF-EPIC-6** | Faculty Admin Authentication & In-App Course Editor | Faculty Admin Portal | Sprint 2 | Didula & Malsha |
+| **CF-EPIC-7** | MIS Document Ingestion & Text Parsing Pipeline | MIS Extraction Engine | Sprint 2 | Anuththara & Ishani |
+| **CF-EPIC-8** | Automated Course Feature & Prerequisite AST Extraction | MIS Extraction Engine | Sprint 2 | Anuththara & Didula |
+| **CF-EPIC-9** | Extraction Review Dashboard & Database Ingestion | MIS Extraction Engine | Sprint 2 | Malsha, Didula & Anuththara |
+
+### 6.2 Phased Sprint Execution
 
 * **Sprint 1 (Active): Zero-Login Student Web App for 2 Degree Programs**
+  * **Window:** October 12, 2026 – November 01, 2026 (3 Weeks)
+  * **Goal:** Ship a working, zero-login Student Web App for 2 engineering degree programs (Computer Engineering & Electrical Engineering) rendering an 8-semester swimlane DAG canvas, interactive elective selection, >= 18 semester credit checks, 150 total credit validation, multi-semester split credits, and client-side PDF plan export. Complete Docker setup, database schema foundation, and CI/CD quality gates.
+  * **Backlog:** 14 User Stories (58 SP) mapped to 22 granular engineering tasks (98 SP).
   * 8-semester swimlane DAG canvas (`@xyflow/react`).
   * Degree switcher between Computer Engineering and Electrical Engineering.
   * Interactive elective selection with `localStorage` persistence.
@@ -213,8 +232,10 @@ export interface DegreeProgram {
   * Multi-semester split credit calculations and client-side PDF export (`@react-pdf/renderer`).
 
 * **Sprint 2: MIS Document Extraction Engine & Admin In-App Course Editor**
+  * **Window:** November 02, 2026 – November 22, 2026 (3 Weeks)
+  * **Goal:** Deliver an automated Module Information Sheet (MIS) Ingestion & Feature Extraction Engine capable of parsing syllabus PDFs/DOCXs, extracting metadata and prerequisite ASTs using a local Small Language Model (Qwen 2.5 7B via Ollama + Instructor), surfaced via a side-by-side human review screen with 1-click database commit. Deploy authenticated admin in-app module content editor.
   * Drag-and-drop syllabus PDF/DOCX uploader.
-  * Text parsing & Qwen 2.5 7B structured extraction via Instructor.
+  * Text parsing (`pdfplumber` / OCR fallback) & Qwen 2.5 7B structured extraction via Instructor.
   * Automated natural-language prerequisite to boolean AST synthesis.
   * Side-by-side human review screen with confidence scores.
   * Authenticated admin in-app module editing modal.
@@ -245,78 +266,82 @@ export interface DegreeProgram {
 
 ## 7. Team Task Allocation & Engineering Protocols
 
-### 7.1 Team Roles
+### 7.1 Team Roles & Sprint 1 Jira Allocations
 
-#### Didula: Lead, Architect & Backend Developer
-* **System Architecture & Contract Governance:** Maintain the Single Source of Truth (SSOT) across Pydantic DTOs and auto-generated TypeScript definitions (`openapi-typescript`), enforce project invariants, and review all Pull Requests.
-* **Core Graph Engine & Algorithmic Mechanics:**
-  * Implement Depth-First Search (DFS) 3-coloring cycle detection ($O(V + E)$) to intercept invalid administrative updates.
-  * Implement Kahn's algorithm for topological sorting and term validation.
-  * Build the dynamic programming critical path analyzer $L(u) = \text{duration}(u) + \max_{(u,v)\in E} L(v)$ to isolate zero-slack graduation bottlenecks.
-  * Construct the NetworkX topological filter for Graph-Constrained RAG in Sprint 4.
-* **Backend API Development (FastAPI):**
-  * Scaffold FastAPI with async routing, dependency injection, and middleware.
-  * Implement endpoints for degree configurations, course queries, admin course editing modals, and student plan exports.
-  * Expose deterministic validation services consumed by Malsha's frontend and Ishani's test runners.
+#### Didula: Lead Architect & Backend Developer (23 SP)
+* **Official Ownership Domains:** System architecture, FastAPI REST API, graph algorithms (DFS cycle detection, Kahn's sort, Critical Path), AST evaluation engine, contract sync, PR code review & merge governance.
+* **Tech Stack:** Python (FastAPI), NetworkX, Pydantic, TypeScript, Git.
+* **Sprint 1 Jira Tickets:**
+  * `CF-101`: System Architecture Invariants & Contract Setup (5 SP)
+  * `CF-102`: Deterministic Swimlane Layout Mathematical Engine (5 SP)
+  * `CF-103`: Recursive Boolean AST Prerequisite Evaluator (5 SP)
+  * `CF-104`: Local-First Zustand State Engine with Persistence (3 SP)
+  * `CF-105`: FastAPI Core Server & Degree Metadata Endpoints (5 SP)
 
-#### Malsha: Frontend & Documentation
-*Starts with pure Tailwind UI components and mock datasets, gradually integrating stateful canvas hooks and markdown docs.*
-* **Canvas & Component Engineering:**
-  * Build the interactive `@xyflow/react` (React Flow v12) canvas and layout wrappers.
-  * Style custom `CourseNode` Tailwind cards with status badges (Core, Elective, Multi-Semester, Warning).
-  * Construct the 8-semester swimlane headers, degree selector dropdown, and real-time credit meter ($\ge 18$ semester load, $\ge 150$ total credits).
-  * Implement the slide-over `ModuleDetails` Drawer and the client-side `@react-pdf/renderer` study plan exporter.
-  * Connect the client state using Zustand's persist middleware for guest-mode `localStorage` caching.
-* **Technical Documentation & Project Governance:**
-  * Maintain Jira backlogs, sprint boards, and user stories.
-  * Document operational guides and architecture diagrams in Confluence.
-  * Maintain `guide.md`, `README.md`, and subfolder `CONTEXT.md` files as features evolve.
-  * Write end-user guides and prepare sprint demonstration slide decks for academic reviews.
+#### Malsha: Frontend & Documentation Specialist (31 SP)
+* **Official Ownership Domains:** React Flow canvas visualizer, custom Tailwind CourseNode cards, 8-semester swimlane headers, module details drawer, client-side PDF export, Jira board management, Confluence/Markdown documentation.
+* **Tech Stack:** React 18, TypeScript, Tailwind CSS v4, @xyflow/react, Zustand, @react-pdf/renderer.
+* **Sprint 1 Jira Tickets:**
+  * `CF-111`: Interactive React Flow Canvas Setup (5 SP)
+  * `CF-112`: Custom CourseNode Component with Tailwind CSS v4 (5 SP)
+  * `CF-113`: Semester Swimlane Column Headers & Credit Meters (5 SP)
+  * `CF-114`: Slide-Over Module Details Drawer (5 SP)
+  * `CF-115`: Degree Switcher Navigation Bar (3 SP)
+  * `CF-116`: Client-Side PDF Study Plan Exporter (5 SP)
+  * `CF-117`: Project Documentation & Jira Board Initialization (3 SP)
 
-#### Ishani: QA & DevOps
-*Writing automated test assertions teaches system mechanics faster than building features; containerization provides structured, repeatable tasks.*
-* **Infrastructure & Containerization:**
-  * Build and maintain `docker-compose.yml` for local development (FastAPI backend, PostgreSQL with pgvector, and Ollama SLM runtime).
-  * Manage local environment scripts, dependency lockfiles, and `.env.example` templates.
-* **CI/CD Pipeline & Quality Gates:**
-  * Maintain `.github/workflows/ci.yml` to automate type checks (`tsc --noEmit`), Python linters (`ruff` / `flake8`), and build verification on all PRs targeting `main` and `dev`.
-  * Maintain Husky pre-commit hooks and Git branch protection rules.
-* **Automated Testing Suite (Backend & Frontend):**
-  * **Pytest (Backend):** Write unit and regression tests for FastAPI endpoints, cycle detection edge cases, AST boolean evaluations, and credit split calculators.
-  * **Vitest / Playwright (Frontend):** Test elective add/drop interactions, credit sum calculations, and localStorage persistence.
-  * Generate test coverage reports and establish testing benchmarks for each sprint deliverable.
+#### Ishani: QA & DevOps Engineer (23 SP)
+* **Official Ownership Domains:** Docker containerization, local development stack orchestration, GitHub Actions CI/CD workflows, automated testing suites (Pytest, Vitest/Playwright), pre-commit gates, code coverage reports.
+* **Tech Stack:** Docker, GitHub Actions, Pytest, Vitest, Ruff, Husky.
+* **Sprint 1 Jira Tickets:**
+  * `CF-121`: Docker Compose Local Environment Stack (5 SP)
+  * `CF-122`: GitHub Actions CI/CD Pipeline & Branch Airlocks (5 SP)
+  * `CF-123`: Pre-Commit Quality Hooks (Husky & Lint-Staged) (3 SP)
+  * `CF-124`: Automated Backend Test Suite (Pytest) (5 SP)
+  * `CF-125`: Automated Frontend Test Suite (Vitest) (5 SP)
 
-#### Anuththara: Database & AI Engineering
-*Starts with structured data modeling and seed JSON scripts, advancing into document parsing, local SLM pipelines, and vector embeddings.*
-* **Database Architecture & Migrations (PostgreSQL):**
-  * Implement SQLAlchemy / SQLModel models matching canonical schemas (`courses`, `degree_programs`, `prerequisite_rules`, `credit_distributions`).
-  * Manage schema migrations using Alembic.
-  * Setup and optimize pgvector extension tables and HNSW/IVFFlat indexes for syllabus embeddings.
-* **MIS Ingestion & Parser Pipeline (Sprint 2):**
-  * Build the document parser using `pdfplumber` to extract tables, course codes, and contact hour matrices deterministically.
-  * Integrate OCR (`pytesseract` / `DocTR`) for scanned syllabus sheets.
-* **Local SLM & Structured Extraction:**
-  * Configure local Ollama / vLLM runtime serving Qwen 2.5 7B (or Phi-3.5).
-  * Implement Instructor (Python) to force SLM outputs into strict Pydantic models for natural-language prerequisite-to-AST translation.
-* **RAG Pipeline & Embeddings (Sprint 4):**
-  * Build embedding ingestion pipelines converting course syllabi and alumni career reviews into vector representations.
-  * Expose semantic vector similarity queries used by the Lead's graph-constrained recommendation engine.
+#### Anuththara: Database & AI Engineer (21 SP)
+* **Official Ownership Domains:** PostgreSQL schema design, Alembic migrations, initial 2-degree program seed data, pdfplumber syllabus parsing, local Ollama runtime (Qwen 2.5 7B), Instructor grammar-guided AST extraction.
+* **Tech Stack:** PostgreSQL, pgvector, SQLAlchemy, Alembic, pdfplumber, Ollama, Instructor.
+* **Sprint 1 Jira Tickets:**
+  * `CF-131`: PostgreSQL Database Initialization & SQLAlchemy Models (5 SP)
+  * `CF-132`: Database Migration Framework (Alembic) (3 SP)
+  * `CF-133`: Curriculum Dataset Collection & Validation: Computer Engineering (5 SP)
+  * `CF-134`: Curriculum Dataset Collection & Validation: Electrical Engineering (5 SP)
+  * `CF-135`: Automated Database Seeder Script (3 SP)
 
-### 7.2 Strict Developer Protocols
-1. **Mock-First Development:** Visual component developers import `src/data/mock_course.json` and work in complete isolation without waiting for backend APIs or full datasets.
-2. **Context Slicing in Antigravity IDE:** Every major directory contains a `CONTEXT.md` file defining inputs, outputs, and invariants. Autonomous AI agents only read local directory context, preventing hallucination.
-3. **Git Airlock & Branch Protection:**
-   * `main` and `dev` are strictly protected branches. Direct pushes are blocked.
-   * All work occurs in `feature/<ticket>-<description>` branches created from `dev`.
-   * Merges into `dev` require 1 PR approval, a passing CI status check (Typecheck, Lint & Build), and Squash Merging.
-   * Pre-commit hooks (Husky) enforce `lint-staged` and `npx tsc --noEmit` locally.
+### 7.2 Jira Hierarchy & Agile Ceremonies
 
-### 7.3 Sprint Execution Matrix
+1. **Jira Issue Hierarchy:**
+   * **Epic:** High-level capability domain (e.g., `CF-EPIC-1: Canvas Visualizer`).
+   * **Story:** User-centric deliverable providing tangible value (e.g., `US003: 8-Semester Swimlanes`).
+   * **Subtask / Engineering Task:** Technical unit of execution assigned to an individual (e.g., `CF-102: Layout Math Engine`).
+2. **Sprint Cadence & Ceremonies:**
+   * **Sprint Planning:** First Monday of the sprint (1 hour). Review backlog items, confirm story points, and commit to sprint scope.
+   * **Daily Standup (Asynchronous on Discord/Slack):** Every morning by 09:30 AM:
+     - What did you accomplish yesterday?
+     - What are you working on today?
+     - Are there any technical blockers?
+   * **Sprint Review & Live Demo:** Final Friday of the sprint (1 hour). Demonstrate working software on the `dev` branch.
+   * **Sprint Retrospective:** Immediately following review (30 minutes). Discuss: What went well? What slowed us down? Action items for the next sprint.
 
-| Sprint | Didula | Malsha | Ishani | Anuththara |
+### 7.3 Quality Gates & Definition of Done (DoD)
+
+A story or engineering task is only marked **Done** in Jira when:
+* Code is implemented on an isolated `feature/<ticket>-<description>` branch.
+* Unit & integration tests pass with zero regressions.
+* Static typecheck passes (`npx tsc --noEmit` and Python `ruff` / typecheck).
+* PR is opened targeting `dev`, passing GitHub Actions CI checks (CourseFlow Quality Gate).
+* PR is reviewed and approved by Didula (Lead Architect).
+* PR is Squash Merged into `dev` and local branches are synchronized.
+* Feature is validated against acceptance criteria on the live development build.
+
+### 7.4 Sprint Execution Matrix
+
+| Sprint | Didula (23 SP) | Malsha (31 SP) | Ishani (23 SP) | Anuththara (21 SP) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Sprint 1** | Layout math, Zustand store setup, AST validator, core API skeleton | Custom CourseNode, swimlane headers, degree switcher, PDF export, Jira & Confluence setup | Docker Compose for dev environment, CI pipeline testing, initial Pytest suites | PostgreSQL models, Alembic setup, transcribing initial 2 degree programs into seed data |
-| **Sprint 2** | In-app course editor API, review screen endpoints, AST persistence logic | Extraction review split-screen UI, inline correction forms, admin editor modal | End-to-end integration tests for document upload API; test fixtures for malformed PDFs | `pdfplumber` text pipeline, Ollama/Qwen setup, Instructor Pydantic extraction scripts |
+| **Sprint 1** | Layout math, Zustand store setup, AST validator, core API skeleton (CF-101 - CF-105) | Custom CourseNode, swimlane headers, degree switcher, PDF export, Jira & Confluence setup (CF-111 - CF-117) | Docker Compose for dev environment, CI pipeline testing, initial Pytest & Vitest suites (CF-121 - CF-125) | PostgreSQL models, Alembic setup, transcribing initial 2 degree programs into seed data (CF-131 - CF-135) |
+| **Sprint 2** | In-app course editor API, review screen endpoints, AST persistence logic (CF-201 - CF-204) | Extraction review split-screen UI, inline correction forms, admin editor modal (CF-211 - CF-216) | End-to-end integration tests for document upload API; Ollama container integration (CF-221 - CF-224) | `pdfplumber` text pipeline, Ollama/Qwen setup, Instructor Pydantic extraction scripts (CF-231 - CF-235) |
 | **Sprint 3** | DFS cycle detection API, Kahn's topological sort validator, edge mutations | Admin drag-and-drop edge connector on canvas, cycle warning alerts, Sprint 3 docs | Load testing, cycle detection test matrices (cyclic, disconnected, acyclic graphs) | Ingestion pipeline scaling across remaining 3 degree programs; alumni feedback schema |
 | **Sprint 4** | NetworkX topological reachability pruning, credit feasibility filter | Alumni public submission form, Industry Heatmap canvas toggle, resource upvoting UI | Automated RAG regression tests (verifying pruned courses never violate prerequisites) | `pgvector` indexing, syllabus chunk embeddings, alumni outcome vector stores |
 | **Sprint 5** | Cohort bottleneck analytics aggregation queries, CSV export endpoints | Advisor analytics dashboard UI, major/minor bucket selector components | Security audits, API rate-limiting tests (`slowapi`), CI performance optimization | Hierarchical Requirement Bucket schema migration, vector search fine-tuning |

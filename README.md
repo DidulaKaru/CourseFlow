@@ -135,12 +135,15 @@ courseflow/
 
 ## 5. Team Task Allocation & Roles
 
-| Member | Primary Role | Core Sprint 1 Responsibilities |
-| :--- | :--- | :--- |
-| **Didula** | Lead, Architect & Backend Developer | Layout math ($X/Y$), Zustand store setup, AST boolean evaluator, FastAPI core API skeleton. |
-| **Malsha** | Frontend & Documentation | Custom `CourseNode` card, swimlane headers, degree switcher, PDF export, Jira/Confluence. |
-| **Ishani** | QA & DevOps | Docker Compose dev stack, CI/CD pipeline automation, Vitest & Pytest test suites. |
-| **Anuththara** | Database & AI Engineering | PostgreSQL models, Alembic migrations, curriculum transcription for 2 degrees, seed script. |
+| Member | Official Role | Core Ownership Domains | Tech Stack | Sprint 1 Jira Tasks (Story Points) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Didula** | Lead Architect & Backend Developer | System architecture, FastAPI REST API, graph algorithms (DFS cycle detection, Kahn's sort, Critical Path), AST evaluation engine, contract sync, PR code review & merge governance. | Python (FastAPI), NetworkX, Pydantic, TypeScript, Git | **CF-101 – CF-105** (23 SP) |
+| **Malsha** | Frontend & Documentation Specialist | React Flow canvas visualizer, custom Tailwind CourseNode cards, 8-semester swimlane headers, module details drawer, client-side PDF export, Jira board management, Confluence/Markdown documentation. | React 18, TypeScript, Tailwind CSS v4, @xyflow/react, Zustand, @react-pdf/renderer | **CF-111 – CF-117** (31 SP) |
+| **Ishani** | QA & DevOps Engineer | Docker containerization, local development stack orchestration, GitHub Actions CI/CD workflows, automated testing suites (Pytest, Vitest/Playwright), pre-commit gates, code coverage reports. | Docker, GitHub Actions, Pytest, Vitest, Ruff, Husky | **CF-121 – CF-125** (23 SP) |
+| **Anuththara** | Database & AI Engineer | PostgreSQL schema design, Alembic migrations, initial 2-degree program seed data, pdfplumber syllabus parsing, local Ollama runtime (Qwen 2.5 7B), Instructor grammar-guided AST extraction. | PostgreSQL, pgvector, SQLAlchemy, Alembic, pdfplumber, Ollama, Instructor | **CF-131 – CF-135** (21 SP) |
+
+> Detailed individual sprint plans, ticket specs, and acceptance criteria are documented in [plans/Didula_Sprint1.md](file:///plans/Didula_Sprint1.md), [plans/Malsha_Sprint1.md](file:///plans/Malsha_Sprint1.md), [plans/Ishani_Sprint1.md](file:///plans/Ishani_Sprint1.md), and [plans/Anuththara_Sprint1.md](file:///plans/Anuththara_Sprint1.md).
+
 
 ---
 
@@ -199,16 +202,19 @@ pytest backend/tests
 ## 7. Phased Agile Roadmap (6 Sprints)
 
 - **Sprint 1 (Active): Zero-Login Student Web App for 2 Degree Programs**
-  - 8-semester swimlane DAG canvas (`@xyflow/react`).
-  - Degree switcher between Computer Engineering and Electrical Engineering.
-  - Interactive elective selection with `localStorage` persistence.
-  - Real-time credit constraint validation ($\ge 18\text{ credits/sem}$, $150\text{ total credits}$).
-  - Multi-semester split credit calculations and client-side PDF export (`@react-pdf/renderer`).
+  - **Sprint Window:** October 12, 2026 – November 01, 2026 (3 Weeks)
+  - **Sprint Goal:** Ship a working, zero-login Student Web App for 2 engineering degree programs (Computer Engineering & Electrical Engineering) rendering an 8-semester swimlane DAG canvas, interactive elective selection, >= 18 semester credit checks, 150 total credit validation, multi-semester split credits, and client-side PDF plan export. Complete Docker setup, database schema foundation, and CI/CD quality gates.
+  - **Backlog & Engineering Scope:** 14 User Stories (58 SP, US001–US014) | 22 Granular Jira Tasks (98 SP, CF-101–CF-135)
+  - **Target Epics:**
+    - `CF-EPIC-1`: Curriculum DAG Canvas & Dependency Visualizer (Lead: Malsha & Didula)
+    - `CF-EPIC-2`: Interactive Degree Planner & Constraint Engine (Lead: Didula & Malsha)
+    - `CF-EPIC-3`: Study Plan Export & Local Persistence (Lead: Malsha)
+    - `CF-EPIC-4`: Infrastructure, DevOps & Automated Quality Gates (Lead: Ishani)
+    - `CF-EPIC-5`: Database Architecture & Curriculum Data Modeling (Lead: Anuththara)
 - **Sprint 2: MIS Document Extraction Engine & Admin In-App Course Editor**
-  - Text parsing (`pdfplumber` / OCR) & local Qwen 2.5 7B structured extraction via Instructor.
-  - Automated natural-language prerequisite to boolean AST synthesis.
-  - Side-by-side human review screen with confidence scores.
-  - Authenticated admin in-app module editing modal.
+  - **Sprint Window:** November 02, 2026 – November 22, 2026 (3 Weeks)
+  - **Sprint Goal:** Deliver an automated Module Information Sheet (MIS) Ingestion & Feature Extraction Engine capable of parsing syllabus PDFs/DOCXs, extracting metadata and prerequisite ASTs using a local Small Language Model (Qwen 2.5 7B via Ollama + Instructor), surfaced via a side-by-side human review screen with 1-click database commit. Deploy authenticated admin in-app module content editor.
+  - **Target Epics:** `CF-EPIC-6`, `CF-EPIC-7`, `CF-EPIC-8`, `CF-EPIC-9`
 - **Sprint 3: Frictionless Alumni Portal & Graph Integrity**
   - Zero-login public alumni feedback submission portal.
   - Bayesian weighted rating aggregator and Industry Heatmap canvas toggle.

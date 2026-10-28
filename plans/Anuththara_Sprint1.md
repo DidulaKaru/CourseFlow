@@ -1,176 +1,166 @@
-# Sprint 1 Implementation Plan: Anuththara (Database & AI Engineering)
+# Sprint 1 Implementation Plan: Anuththara (Database & AI Engineer)
 
-**Role:** Database & AI Engineer  
-**Sprint Focus:** PostgreSQL Relational Modeling, Alembic Migrations, Curriculum JSON Data Transcription for 2 Degrees, and Database Seeding  
-**Target Milestone:** Sprint 1 Delivery (Zero-Login Student Web App for 2 Degree Programs)
+**Official Project Role:** Database & AI Engineer  
+**Sprint Window:** October 12, 2026 – November 01, 2026 (3 Weeks)  
+**Sprint Goal:** Ship a working, zero-login Student Web App for 2 engineering degree programs (Computer Engineering & Electrical Engineering) rendering an 8-semester swimlane DAG canvas, interactive elective selection, >= 18 semester credit checks, 150 total credit validation, multi-semester split credits, and client-side PDF plan export. Complete Docker setup, database schema foundation, and CI/CD quality gates.  
+**Primary Tech Stack:** PostgreSQL, pgvector, SQLAlchemy, Alembic, pdfplumber, Ollama, Instructor  
+**Total Allocated Story Points:** 21 SP  
 
 ---
 
-## 1. Responsibilities & Domain Ownership
-Anuththara is responsible for data modeling, curriculum dataset integrity, and database infrastructure. In Sprint 1, responsibilities encompass:
-- Designing and implementing PostgreSQL database tables using SQLAlchemy / SQLModel matching canonical schemas.
-- Configuring Alembic for reproducible schema versioning and database migrations.
-- Researching and transcribing complete curriculum datasets for the initial 2 degree programs:
+## 1. Core Ownership Domains & Responsibilities
+
+Anuththara leads database architecture, schema migrations, authoritative curriculum dataset transcription, and AI data engineering. In Sprint 1, core responsibilities encompass:
+- **PostgreSQL Database Relational Modeling:** Designing and implementing database tables using SQLAlchemy matching the canonical schema specification (`degree_programs`, `courses`, `prerequisite_rules`, and `credit_distributions`).
+- **Alembic Database Migration Pipeline:** Configuring Alembic for automated, reproducible schema evolution across development and CI container instances.
+- **Curriculum Dataset Transcription & Validation:** Transcribing complete, authoritative 8-semester curriculum datasets for the initial 2 engineering programs:
   1. **Computer Engineering** (`computer_engineering.json`)
   2. **Electrical Engineering** (`electrical_engineering.json`)
-- Ensuring every prerequisite rule represents a valid AST boolean structure and referencing existing course IDs.
-- Creating the automated database seed script (`seed_db.py`) to ingest JSON datasets into PostgreSQL.
-- Laying the foundation for pgvector extension enablement and Sprint 2 MIS document ingestion.
+- **AST Prerequisite Validation:** Encoding complex natural-language prerequisites into structured recursive boolean AST JSON structures with zero broken course pointers.
+- **Automated Database Seeder Script:** Implementing `scripts/seed_db.py` to idempotently populate the PostgreSQL database directly from validated JSON curriculum files.
+- **AI Infrastructure Groundwork:** Enabling the `pgvector` extension in PostgreSQL and preparing for Sprint 2 local Ollama runtime and Instructor grammar-guided AST extraction.
 
 ---
 
-## 2. Phase-by-Phase Execution Roadmap
+## 2. Epics & User Stories Mapping
+
+### Target Epics
+- **CF-EPIC-5: Database Architecture & Curriculum Data Modeling** (Epic Lead | Core Data Layer | Target: Sprint 1)
+
+### User Stories Supported
+| User Story ID | Narrative | Priority | Story Points | Target Epic | Contribution |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **US002** | Switch seamlessly between 2 initial engineering degree programs | Must Have | 3 | CF-EPIC-1 | Provides validated datasets for Computer and Electrical Engineering |
+| **US003** | View curriculum as interactive DAG across 8 semester swimlanes | Must Have | 8 | CF-EPIC-1 | Models 8-semester column mappings, prerequisite trees, and offerings |
+| **US007** | Select and deselect elective modules | Must Have | 5 | CF-EPIC-2 | Classifies courses into CORE vs. ELECTIVE types across all 8 terms |
+| **US008** | Immediate visual warnings if prerequisites are unmet | Must Have | 5 | CF-EPIC-2 | Transcribes recursive boolean AST trees (`AND`/`OR`/`CREDIT_THRESHOLD`) |
+| **US009** | Semester credit counter ($\ge 18$ credits minimum) | Must Have | 5 | CF-EPIC-2 | Provides accurate credit totals and per-semester distributions |
+| **US010** | Cumulative planned credits against 150-credit graduation rule | Must Have | 3 | CF-EPIC-2 | Structures 150-credit degree requirements with complete catalogs |
+| **US011** | Multi-semester spanning modules split credits across semesters | Must Have | 5 | CF-EPIC-2 | Formulates discrete `creditDistribution` arrays for capstone courses |
+
+---
+
+## 3. Granular Jira Tasks & Engineering Roadmap
+
+| Ticket Key | Task Summary | Story Points | Target Epic | Assigned |
+| :--- | :--- | :--- | :--- | :--- |
+| **CF-131** | PostgreSQL Database Initialization & SQLAlchemy Models | 5 SP | CF-EPIC-5 | Anuththara |
+| **CF-132** | Database Migration Framework (Alembic) | 3 SP | CF-EPIC-5 | Anuththara |
+| **CF-133** | Curriculum Dataset Collection & Validation: Computer Engineering | 5 SP | CF-EPIC-5 | Anuththara |
+| **CF-134** | Curriculum Dataset Collection & Validation: Electrical Engineering | 5 SP | CF-EPIC-5 | Anuththara |
+| **CF-135** | Automated Database Seeder Script | 3 SP | CF-EPIC-5 | Anuththara |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│ Phase 1: Database Modeling & SQLAlchemy Schemas                        │
+│ CF-131: PostgreSQL Database Initialization & SQLAlchemy Models (5 SP)   │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 2: Alembic Migrations Configuration                              │
+│ CF-132: Database Migration Framework (Alembic) (3 SP)                  │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 3: Computer Engineering Curriculum Transcription                 │
+│ CF-133: Curriculum Dataset: Computer Engineering (5 SP)                │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 4: Electrical Engineering Curriculum Transcription               │
+│ CF-134: Curriculum Dataset: Electrical Engineering (5 SP)              │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 5: Automated Database Seed Script (`seed_db.py`)                 │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 6: Data Integrity Verification & pgvector Initialization         │
+│ CF-135: Automated Database Seeder Script (3 SP)                        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### Phase 1: Database Modeling & SQLAlchemy Schemas
-* **Goal:** Create persistent relational tables that accurately reflect the curriculum data structures.
+### CF-131: PostgreSQL Database Initialization & SQLAlchemy Models (5 SP)
+* **Description:** Design relational schema: `degree_programs`, `courses`, `prerequisite_rules`, and `credit_distributions`.
 * **Target Files:**
   - `backend/app/models/curriculum.py`
   - `backend/app/models/__init__.py`
-* **Tables to Define:**
-  1. `DegreeProgram`:
-     - `id` (VARCHAR PK, e.g., `'computer-eng'`)
-     - `name` (VARCHAR, e.g., `'Computer Engineering'`)
-     - `department` (VARCHAR)
-     - `total_credits_required` (INTEGER, default 150)
-     - `min_credits_per_semester` (INTEGER, default 18)
-     - `max_credits_per_semester` (INTEGER, default 24)
-     - `semesters_count` (INTEGER, default 8)
-  2. `Course`:
-     - `id` (VARCHAR PK, e.g., `'CO544'`)
-     - `code` (VARCHAR)
-     - `title` (VARCHAR)
-     - `description` (TEXT)
-     - `total_credits` (INTEGER)
-     - `duration_semesters` (INTEGER, 1 or 2)
-     - `recommended_semester` (INTEGER, 1 to 8)
-     - `type` (VARCHAR: `'CORE'`, `'ELECTIVE'`, `'LAB'`, `'CAPSTONE'`)
-     - `prerequisite_rule` (JSONB - stores the AST tree natively)
-     - `corequisites` (ARRAY of VARCHAR / JSONB)
-     - `offered_semesters` (ARRAY of VARCHAR)
-  3. `ProgramCourse` (Many-to-Many Join Table for shared faculty courses):
-     - `id` (INTEGER PK AUTOINCREMENT)
-     - `degree_program_id` (VARCHAR FK -> `degree_programs.id`)
-     - `course_id` (VARCHAR FK -> `courses.id`)
-     - `recommended_semester` (INTEGER, 1 to 8)
-     - `course_type` (VARCHAR: `'CORE'`, `'ELECTIVE'`, `'LAB'`, `'CAPSTONE'`)
-  4. `CreditDistribution`:
-     - `id` (INTEGER PK AUTOINCREMENT)
-     - `course_id` (VARCHAR FK -> `courses.id`)
-     - `semester_index` (INTEGER, 1 to 8)
-     - `credits_allocated` (INTEGER)
-* **Verification:** Python syntax passes; SQLAlchemy metadata compiles without circular foreign key errors.
+* **Implementation Details:**
+  1. `DegreeProgram`: `id` (VARCHAR PK), `name`, `department`, `total_credits_required` (default 150), `min_credits_per_semester` (18), `max_credits_per_semester` (24), `semesters_count` (8).
+  2. `Course`: `id` (VARCHAR PK), `code` (VARCHAR UNIQUE), `title`, `description`, `total_credits`, `duration_semesters`, `recommended_semester`, `type` (`CORE`, `ELECTIVE`, `LAB`, `CAPSTONE`), `prerequisite_rule` (native `JSONB` for AST tree), `corequisites` (JSONB array), `offered_semesters` (JSONB array).
+  3. `CreditDistribution`: `id` (SERIAL PK), `course_id` (FK -> `courses.id`), `semester_index`, `credits_allocated`.
+  4. Enable `CREATE EXTENSION IF NOT EXISTS vector;` for pgvector readiness.
+* **Acceptance Criteria:** Tables created with foreign keys, unique course code constraints, and JSONB columns for AST trees.
 
 ---
 
-### Phase 2: Alembic Migrations Configuration
-* **Goal:** Establish version-controlled schema migrations for local development and CI environments.
+### CF-132: Database Migration Framework (Alembic) (3 SP)
+* **Description:** Configure Alembic migration pipeline for automated, reproducible schema evolution.
 * **Target Files:**
   - `backend/alembic.ini`
   - `backend/alembic/env.py`
   - `backend/alembic/versions/`
-* **Tasks:**
-  1. Initialize Alembic environment in `backend/alembic`.
-  2. Connect `target_metadata = Base.metadata` in `backend/alembic/env.py`.
-  3. Generate initial migration script:
-     ```powershell
-     alembic revision --autogenerate -m "create_initial_curriculum_tables"
-     ```
-  4. Test upgrade and downgrade commands:
-     ```powershell
-     alembic upgrade head
-     alembic downgrade -1
-     ```
-* **Verification:** Tables are created in PostgreSQL with matching column data types.
+* **Implementation Details:**
+  1. Initialize Alembic configuration pointing to `DATABASE_URL`.
+  2. Import SQLAlchemy `Base.metadata` in `env.py` for automated migration generation.
+  3. Generate initial migration revision: `0001_initial_curriculum_tables.py`.
+  4. Validate rollback with `alembic downgrade -1` and re-apply with `alembic upgrade head`.
+* **Acceptance Criteria:** `alembic upgrade head` runs cleanly from a fresh database container.
 
 ---
 
-### Phase 3: Computer Engineering Curriculum Transcription
-* **Goal:** Assemble the authoritative, complete 8-semester curriculum for Computer Engineering.
+### CF-133: Curriculum Dataset Collection & Validation: Computer Engineering (5 SP)
+* **Description:** Transcribe all 8 semesters of Computer Engineering into a validated JSON seed file and database seed script.
 * **Target Files:**
   - `src/data/programs/computer_engineering.json`
-* **Data Requirements:**
-  - Cover Semesters 1 through 8 (Foundation, Core, Technical Electives, General Electives).
-  - Include multi-semester capstone project (e.g., Final Year Project with 3 credits in Sem 7 and 3 credits in Sem 8).
-  - Convert prerequisite sentences from handbook into exact recursive AST JSON:
-    - Single prerequisite: `{"type": "COURSE", "courseId": "CO221"}`
-    - Conjunction: `{"type": "AND", "children": [...]}`
-    - Disjunction: `{"type": "OR", "children": [...]}`
-    - Credit hurdle: `{"type": "CREDIT_THRESHOLD", "minCredits": 60}`
-* **Verification:** JSON conforms strictly to `DegreeProgram` schema; zero broken course references in prerequisite trees.
+* **Implementation Details:**
+  1. Transcribe complete courses for Semesters 1 through 8 (Foundation, Software, Hardware, Networks, AI/ML, Electives, and Capstone).
+  2. Multi-semester course modeling: Model 6-credit Final Year Project spanning Semester 7 (3 credits) and Semester 8 (3 credits) via `creditDistribution`.
+  3. Prerequisite AST modeling: Convert all faculty handbook prerequisites into valid recursive boolean AST structures (`COURSE`, `AND`, `OR`, `CREDIT_THRESHOLD`).
+  4. Ensure all referenced `courseId` values exist within the dataset.
+* **Acceptance Criteria:** All core and elective modules, prerequisites, and credit distributions validated with zero syntax errors.
 
 ---
 
-### Phase 4: Electrical Engineering Curriculum Transcription
-* **Goal:** Assemble the authoritative 8-semester curriculum for Electrical Engineering.
+### CF-134: Curriculum Dataset Collection & Validation: Electrical Engineering (5 SP)
+* **Description:** Transcribe all 8 semesters of Electrical Engineering into a validated JSON seed file and database seed script.
 * **Target Files:**
   - `src/data/programs/electrical_engineering.json`
-* **Data Requirements:**
-  - Cover Semesters 1 through 8 (Math foundation, Circuits, Signals, Electromagnetics, Power/Telecom electives, Capstone).
-  - Verify prerequisite dependencies (e.g., Circuits I -> Circuits II, Signals -> DSP).
-  - Ensure total credits satisfy $\ge 150$ graduation minimum with semester allocations within 18–24 credit limits.
-* **Verification:** Valid JSON schema; validated by runtime schema checker.
+* **Implementation Details:**
+  1. Transcribe full 8-semester sequence: Mathematics foundations, Circuit Theory, Signals & Systems, Power Systems, Telecommunications, Electives, and Capstone.
+  2. Model 2-semester spanning modules with discrete credit distribution arrays.
+  3. Resolve all cross-departmental prerequisites (e.g., shared mathematics, basic computing, and electronics courses).
+  4. Verify total required credits $\ge 150$ with semester credit loads within 18–24 boundaries.
+* **Acceptance Criteria:** Complete curriculum accurately represented; all cross-departmental prerequisites resolve.
 
 ---
 
-### Phase 5: Automated Database Seed Script (`seed_db.py`)
-* **Goal:** Create a script to populate PostgreSQL from the transcribed JSON datasets.
+### CF-135: Automated Database Seeder Script (3 SP)
+* **Description:** Write `scripts/seed_db.py` populating PostgreSQL directly from validated JSON curriculum files.
 * **Target Files:**
   - `backend/scripts/seed_db.py`
-* **Script Workflow:**
-  1. Connect to PostgreSQL database using `DATABASE_URL`.
-  2. Read `computer_engineering.json` and `electrical_engineering.json`.
-  3. Upsert `degree_programs` records.
-  4. Upsert `courses` and associated `credit_distributions`.
-  5. Run a validation loop to verify that all referenced `courseId`s exist in the catalog.
-* **Verification:** Running `python backend/scripts/seed_db.py` outputs "Seeding completed successfully: 2 programs, N courses inserted."
+* **Implementation Details:**
+  1. Read JSON datasets (`computer_engineering.json` and `electrical_engineering.json`).
+  2. Upsert `degree_programs` records.
+  3. Upsert `courses` and associated `credit_distributions`.
+  4. Validate data integrity: Check for dangling prerequisite course codes and ensure idempotent execution (re-running does not duplicate rows or violate constraints).
+* **Acceptance Criteria:** Script runs idempotently (safe to re-run without creating duplicate records).
 
 ---
 
-### Phase 6: Data Integrity Verification & pgvector Initialization
-* **Goal:** Prepare the database foundation for Sprint 2/4 AI vector features.
-* **Tasks:**
-  1. Add SQL extension command in initial migration: `CREATE EXTENSION IF NOT EXISTS vector;`.
-  2. Implement an automated data integrity script checking:
-     - No dangling prerequisite pointers.
-     - Per-semester minimum credits $\ge 18$.
-     - Total mandatory credits + available electives $\ge 150$.
-  3. Prepare documentation on syllabus ingestion formats for Sprint 2 MIS document extraction.
-* **Verification:** All data integrity sanity checks pass with 0 errors.
+## 4. Agile Ceremonies & Team Protocols
+
+1. **Sprint Planning:** First Monday of the sprint (1 hour). Review backlog items, confirm story points, and commit to sprint scope.
+2. **Daily Standup (Asynchronous on Discord/Slack):** Every morning by 09:30 AM:
+   - What did you accomplish yesterday?
+   - What are you working on today?
+   - Are there any technical blockers?
+3. **Sprint Review & Live Demo:** Final Friday of the sprint (1 hour). Demonstrate working software on the `dev` branch.
+4. **Sprint Retrospective:** Immediately following review (30 minutes). Discuss: What went well? What slowed us down? Action items for Sprint 2.
 
 ---
 
-## 3. Definition of Done (DoD) for Sprint 1
-- [ ] SQLAlchemy models created for `DegreeProgram`, `Course`, `ProgramCourse`, and `CreditDistribution`.
-- [ ] Alembic migration applies cleanly to PostgreSQL with `pgvector` enabled.
-- [ ] `computer_engineering.json` and `electrical_engineering.json` fully transcribed with valid AST prerequisite trees.
-- [ ] Multi-semester courses correctly modeled with discrete `creditDistribution` arrays.
-- [ ] `seed_db.py` populates PostgreSQL from JSON files without foreign key or constraint errors.
-- [ ] Zero dangling course codes in prerequisite rules.
+## 5. Definition of Done (DoD) & Quality Gates
+
+A story or engineering task is marked **Done** in Jira only when:
+- [ ] Code is implemented on an isolated `feature/<ticket>-<description>` branch.
+- [ ] Unit & integration tests pass with zero regressions (`npm test` and `pytest`).
+- [ ] Static typecheck passes (`npx tsc --noEmit` and Python `ruff` / typecheck).
+- [ ] PR is opened targeting `dev`, passing GitHub Actions CI checks (CourseFlow Quality Gate).
+- [ ] PR is reviewed and approved by Didula (Lead Architect).
+- [ ] PR is Squash Merged into `dev` and local branches are synchronized.
+- [ ] Feature is validated against acceptance criteria on the live development build.
