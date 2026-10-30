@@ -51,7 +51,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 | [x] **CF-101** | System Architecture Invariants & Contract Setup | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
 | [x] **CF-102** | Deterministic Swimlane Layout Mathematical Engine | 5 SP | CF-EPIC-1 | Didula |
 | [x] **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 SP | CF-EPIC-2 | Didula |
-| [ ] **CF-104** | Local-First Zustand State Engine with Persistence | 3 SP | CF-EPIC-2 / CF-EPIC-3 | Didula |
+| [x] **CF-104** | Local-First Zustand State Engine with Persistence | 3 SP | CF-EPIC-2 / CF-EPIC-3 | Didula |
 | [ ] **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
 
 ```
@@ -68,7 +68,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-104: Local-First Zustand State Engine with Persistence (3 SP)       │
+│ [x] CF-104: Local-First Zustand State Engine with Persistence (3 SP)   │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -138,7 +138,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 
 ---
 
-### CF-104: Local-First Zustand State Engine with Persistence (3 SP)
+### [x] CF-104: Local-First Zustand State Engine with Persistence (3 SP)
 * **Description:** Implement Zustand store with `persist` middleware caching `activeProgramId`, `selectedElectiveIds`, and `completedCourseIds` in `localStorage`.
 * **Target Files:**
   - `src/core/store.ts`
@@ -158,7 +158,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
      - `closeCourseDrawer()`
      - `resetPlanner()`
   3. Caching via `createJSONStorage(() => localStorage)` targeting only persistent selection keys.
-* **Acceptance Criteria:** Browser refresh preserves active plan without data loss.
+* **Acceptance Criteria:** [x] Browser refresh preserves active plan without data loss.
 
 ---
 

@@ -22,10 +22,14 @@
   - Formatting: `formatPrerequisiteRule` converts recursive AST into mathematical boolean logic strings (e.g. `(EC101 AND EC102) OR (EC105 AND ≥ 30 Credits)`).
   - Progression helpers: `isCourseUnlocked` and `calculateEarnedCredits`.
 
-- **State Store (`store.ts`):**
-  - Manages global Zustand store with `persist` middleware for guest-mode `localStorage` caching (`courseflow-local-planner`).
-  - Stores `activeProgramId`, `selectedElectiveIds`, `completedCourseIds`, and drawer state.
-  - Implements ADR-001 export/import of study plans as portable JSON.
+- **Local-First State Store (`store.ts`):**
+  - Manages global Zustand store with `persist` middleware caching in browser `localStorage` under key `courseflow-local-planner`.
+  - Partitioned Persistence: Only `activeProgramId`, `selectedElectiveIds`, and `completedCourseIds` persist; UI drawer state remains transient.
+  - Credit Constraints Engine:
+    - `calculateSemesterCredits`: Computes per-semester credit totals accounting for core, selected electives, and multi-semester capstone credit splits across terms.
+    - `calculateTotalPlannedCredits`: Evaluates cumulative planned credits across the full curriculum.
+    - `getGraduationProgress`: Compares cumulative planned credits against the 150-credit degree threshold.
+  - Study Plan Portability (ADR-001): `exportPlan` generates formatted JSON with schema version and timestamps; `importPlan` safely rehydrates state with structural validation.
 
 - **Algorithms Roadmap (`algorithms/`):**
   - `ast_evaluator.ts`: Recursive boolean prerequisite AST engine (CF-103).
