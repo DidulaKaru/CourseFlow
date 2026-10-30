@@ -50,7 +50,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 | :--- | :--- | :--- | :--- | :--- |
 | [x] **CF-101** | System Architecture Invariants & Contract Setup | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
 | [x] **CF-102** | Deterministic Swimlane Layout Mathematical Engine | 5 SP | CF-EPIC-1 | Didula |
-| [ ] **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 SP | CF-EPIC-2 | Didula |
+| [x] **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 SP | CF-EPIC-2 | Didula |
 | [ ] **CF-104** | Local-First Zustand State Engine with Persistence | 3 SP | CF-EPIC-2 / CF-EPIC-3 | Didula |
 | [ ] **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
 
@@ -64,7 +64,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-103: Recursive Boolean AST Prerequisite Evaluator (5 SP)             │
+│ [x] CF-103: Recursive Boolean AST Prerequisite Evaluator (5 SP)         │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -116,7 +116,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 
 ---
 
-### CF-103: Recursive Boolean AST Prerequisite Evaluator (5 SP)
+### [x] CF-103: Recursive Boolean AST Prerequisite Evaluator (5 SP)
 * **Description:** Write AST engine evaluating recursive `AND`, `OR`, `COURSE`, and `CREDIT_THRESHOLD` rules against completed course sets.
 * **Target Files:**
   - `src/core/algorithms/ast_evaluator.ts`
@@ -134,7 +134,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
   - `CREDIT_THRESHOLD`: returns `earnedCredits >= rule.minCredits`.
   - `AND`: returns `rule.children.every(child => evaluatePrerequisite(child, completedCourses, earnedCredits))`.
   - `OR`: returns `rule.children.some(child => evaluatePrerequisite(child, completedCourses, earnedCredits))`.
-* **Acceptance Criteria:** Unit tests pass for compound prerequisite expressions with 100% logic accuracy, including deeply nested and mixed operator trees.
+* **Acceptance Criteria:** [x] Unit tests pass for compound prerequisite expressions with 100% logic accuracy, including deeply nested and mixed operator trees.
 
 ---
 
