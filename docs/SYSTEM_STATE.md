@@ -63,7 +63,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | [x] **CF-101** | System Architecture Invariants & Contract Setup | 5 | CF-EPIC-1 / CF-EPIC-2 | `npm run generate-types` generates identical TypeScript interfaces matching FastAPI models. |
 | [x] **CF-102** | Deterministic Swimlane Layout Mathematical Engine | 5 | CF-EPIC-1 | Nodes render in strict columns ($X = (\text{semesterIndex}-1)\times 280\text{px}$) with zero horizontal overlap across terms. |
-| [ ] **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 | CF-EPIC-2 | Unit tests pass for compound prerequisite expressions with 100% logic accuracy. |
+| [x] **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 | CF-EPIC-2 | Unit tests pass for compound prerequisite expressions with 100% logic accuracy. |
 | [ ] **CF-104** | Local-First Zustand State Engine with Persistence | 3 | CF-EPIC-2 / CF-EPIC-3 | Browser refresh preserves active plan without data loss. |
 | [ ] **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 | CF-EPIC-1 / CF-EPIC-2 | Endpoints return validated JSON adhering to OpenAPI schema. |
 
@@ -124,6 +124,7 @@ A story is only marked **Done** in Jira when:
 ## 7. Current Execution Status
 - [x] **CF-101:** System Architecture Invariants & Contract Setup completed.
 - [x] **CF-102:** Deterministic Swimlane Layout Mathematical Engine completed (barycentric ordering, deterministic X/Y coordinates, multi-semester spanning modules).
+- [x] **CF-103:** Recursive Boolean AST Prerequisite Evaluator completed (recursive AND/OR/COURSE/CREDIT_THRESHOLD engine with granular diagnostics, human-readable formatting, and 100% logic coverage).
 - Frontend canvas foundation mounted with custom nodes and mock dataset.
 - Layout coordinate calculator and AST evaluator implemented in TypeScript.
 - PostgreSQL schema models, seed datasets, and Docker Compose configurations under active integration.

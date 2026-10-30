@@ -274,7 +274,7 @@ export interface DegreeProgram {
 * **Sprint 1 Jira Tickets:**
   * [x] `CF-101`: System Architecture Invariants & Contract Setup (5 SP)
   * [x] `CF-102`: Deterministic Swimlane Layout Mathematical Engine (5 SP)
-  * [ ] `CF-103`: Recursive Boolean AST Prerequisite Evaluator (5 SP)
+  * [x] `CF-103`: Recursive Boolean AST Prerequisite Evaluator (5 SP)
   * [ ] `CF-104`: Local-First Zustand State Engine with Persistence (3 SP)
   * [ ] `CF-105`: FastAPI Core Server & Degree Metadata Endpoints (5 SP)
 
