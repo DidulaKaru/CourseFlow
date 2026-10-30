@@ -276,7 +276,7 @@ export interface DegreeProgram {
   * [x] `CF-102`: Deterministic Swimlane Layout Mathematical Engine (5 SP)
   * [x] `CF-103`: Recursive Boolean AST Prerequisite Evaluator (5 SP)
   * [x] `CF-104`: Local-First Zustand State Engine with Persistence (3 SP)
-  * [ ] `CF-105`: FastAPI Core Server & Degree Metadata Endpoints (5 SP)
+  * [x] `CF-105`: FastAPI Core Server & Degree Metadata Endpoints (5 SP)
 
 #### Malsha: Frontend & Documentation Specialist (31 SP)
 * **Official Ownership Domains:** React Flow canvas visualizer, custom Tailwind CourseNode cards, 8-semester swimlane headers, module details drawer, client-side PDF export, Jira board management, Confluence/Markdown documentation.

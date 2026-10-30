@@ -1,15 +1,15 @@
 """CourseFlow FastAPI Application Entrypoint."""
 
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.schemas.curriculum import DegreeProgram
+from app.api.v1.api import api_router
+from app.core.config import settings
 
 app = FastAPI(
-    title="CourseFlow API",
+    title=settings.PROJECT_NAME,
     description="Interactive Curriculum Dependency Graph Visualizer & Degree Progress Advisor API",
-    version="1.0.0",
+    version=settings.VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
@@ -17,7 +17,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,31 +27,9 @@ app.add_middleware(
 @app.get("/api/health", tags=["System"])
 def health_check():
     """Health check endpoint to verify backend operational readiness."""
-    return {"status": "healthy", "service": "CourseFlow API"}
+    return {"status": "healthy", "service": settings.PROJECT_NAME, "version": settings.VERSION}
 
 
-@app.get(
-    "/api/programs",
-    response_model=list[DegreeProgram],
-    tags=["Degree Programs"],
-    summary="List Degree Programs",
-)
-def list_programs() -> list[DegreeProgram]:
-    """Retrieve summaries for all available engineering degree programs."""
-    return []
-
-
-@app.get(
-    "/api/programs/{id}",
-    response_model=DegreeProgram,
-    tags=["Degree Programs"],
-    summary="Get Degree Program by ID",
-)
-def get_program(id: str) -> DegreeProgram:
-    """Retrieve full curriculum graph for a specific degree program."""
-    return DegreeProgram(
-        id=id,
-        name="",
-        department="",
-        courses=[],
-    )
+# Mount API routers: both /api and /api/v1 for convenience and versioning
+app.include_router(api_router, prefix="/api")
+app.include_router(api_router, prefix=settings.API_V1_STR)

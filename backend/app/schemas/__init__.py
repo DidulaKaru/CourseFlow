@@ -7,10 +7,17 @@ from app.schemas.curriculum import (
     CreditDistribution,
     CreditThresholdRuleNode,
     DegreeProgram,
+    DegreeProgramSummary,
     LogicalRuleNode,
     PrerequisiteRule,
     RuleType,
     SemesterTerm,
+)
+from app.schemas.plans import (
+    PlanValidationRequest,
+    PlanValidationResponse,
+    PrerequisiteValidationDetail,
+    SemesterValidationDetail,
 )
 
 __all__ = [
@@ -20,8 +27,13 @@ __all__ = [
     "CreditDistribution",
     "CreditThresholdRuleNode",
     "DegreeProgram",
+    "DegreeProgramSummary",
     "LogicalRuleNode",
+    "PlanValidationRequest",
+    "PlanValidationResponse",
     "PrerequisiteRule",
+    "PrerequisiteValidationDetail",
     "RuleType",
     "SemesterTerm",
+    "SemesterValidationDetail",
 ]

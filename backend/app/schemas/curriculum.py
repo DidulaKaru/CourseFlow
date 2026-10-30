@@ -131,7 +131,7 @@ class Course(CamelModel):
 
 
 # ==========================================
-# 3. Degree Program Container
+# 3. Degree Program Container & Summaries
 # ==========================================
 
 
@@ -160,4 +160,28 @@ class DegreeProgram(CamelModel):
     courses: list[Course] = Field(
         default_factory=list,
         description="Complete course catalog for this degree program",
+    )
+
+
+class DegreeProgramSummary(CamelModel):
+    """High-level summary for degree program listings."""
+
+    id: str = Field(..., description="Unique program identifier (e.g., 'computer-eng')")
+    name: str = Field(..., description="Degree program name (e.g., 'Computer Engineering')")
+    department: str = Field(..., description="Department offering the program")
+    total_credits_required: int = Field(
+        default=150,
+        description="Total credits required for graduation",
+    )
+    min_credits_per_semester: int = Field(
+        default=18,
+        description="Minimum workload credits per semester",
+    )
+    max_credits_per_semester: int = Field(
+        default=24,
+        description="Maximum credit cap per semester",
+    )
+    semesters_count: int = Field(
+        default=8,
+        description="Total duration in semesters",
     )
