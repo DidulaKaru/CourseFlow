@@ -12,10 +12,10 @@
 - **Deterministic Layout:** Semesters strictly mapped to X-coordinates ($X = \text{semester} \times 280\text{px}$). Dagre handles Y-axis ordering only.
 
 ## 3. Sprint 1 Task Allocation
-- **Lead:** React Flow canvas setup, AST validation engine, layout math.
-- **Teammate 2:** Structured JSON generation for Computer Engineering & Electrical Engineering.
-- **Teammate 3:** `CourseNode` Tailwind component & Swimlane column headers.
-- **Teammate 4:** Slide-over `ModuleDetailsDrawer` & `@react-pdf/renderer` export.
+- **Didula (Lead, Architect & Backend):** Deterministic layout math ($X = \text{semester} \times 280\text{px}$), Zustand store setup, AST boolean rule evaluation engine, FastAPI backend skeleton.
+- **Malsha (Frontend & Docs):** React Flow `@xyflow/react` canvas, custom `CourseNode` Tailwind card, 8-semester swimlane headers, degree switcher, slide-over `ModuleDetailsDrawer`, `@react-pdf/renderer` export, Jira/docs.
+- **Ishani (QA & DevOps):** Docker Compose local environment (PostgreSQL + pgvector, FastAPI, Ollama), Vitest and Pytest test runners, GitHub Actions CI pipeline, Husky pre-commit gates.
+- **Anuththara (Database & AI):** PostgreSQL models with SQLAlchemy/Alembic, `computer_engineering.json` and `electrical_engineering.json` curriculum datasets, database seeding script (`seed_db.py`).
 
 ## 4. Current Blockers / Next Step
-- Complete initial React Flow canvas mount and verify custom node rendering with mock data.
+- Complete component integration in frontend, launch local database via Docker Compose, and run initial test suites.

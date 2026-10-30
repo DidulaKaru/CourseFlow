@@ -36,25 +36,25 @@ These architectural decisions are finalized. Do not refactor or deviate from the
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        Lead Architect (You)                            │
+│                        Didula (Lead & Architect)                       │
 │   • Graph Engine & Deterministic Layout Mathematics                    │
 │   • Global Zustand Store & LocalStorage Persistence                    │
-│   • Algorithmic Validation (DFS Cycle Detection & AST Rule Evaluator)  │
-│   • Code Reviews, CI/CD, and Protected Branch Merges                   │
+│   • Algorithmic Validation (AST Rule Evaluator & Cycle Detection)      │
+│   • FastAPI Core Architecture, Code Reviews & Branch Merges            │
 └──────────────┬───────────────────────────┬─────────────────────────────┘
                │                           │
        ┌───────▼────────┐         ┌────────▼───────┐         ┌────────▼───────┐
-       │   Teammate 2   │         │   Teammate 3   │         │   Teammate 4   │
-       │ Data & Backend │         │ Canvas & UI    │         │ Drawer & PDF   │
+       │     Malsha     │         │     Ishani     │         │   Anuththara   │
+       │ Frontend & Docs│         │  QA & DevOps   │         │ Database & AI  │
        └────────────────┘         └────────────────┘         └────────────────┘
 ```
 
 | Member | Primary Ownership Domain | Sprint 1 Deliverables | Sprint 2 Deliverables |
 | :--- | :--- | :--- | :--- |
-| **Lead Architect** | Engine, Layout & Systems | Core setup, layout math ($X/Y$), AST boolean rule evaluator, Zustand store. | Gemini LLM extraction pipeline, PostgreSQL setup, AST parser engine. |
-| **Teammate 2** | Curriculum Data & Ingestion | JSON files for Computer Eng & Electrical Eng; Zod runtime validation. | PDF upload endpoint, text extractor (`pdf-parse`), regex parsers. |
-| **Teammate 3** | Canvas UI & Headers | Custom CourseNode Tailwind card, swimlane column headers, navigation bar. | Admin login screen, in-app module content editing modal. |
-| **Teammate 4** | Drawer, Alerts & Export | Slide-over module details drawer, credit limit alerts, PDF export. | Extraction review split-screen, inline correction editor, database commit action. |
+| **Didula** (Lead) | Architecture, Math & Backend | Layout math ($X/Y$), Zustand store, AST boolean rule evaluator, FastAPI backend skeleton. | In-app course editor API, review screen endpoints, AST persistence logic. |
+| **Malsha** | Frontend & Documentation | Custom `CourseNode` card, 8-semester swimlane headers, degree switcher, PDF export, Jira/docs. | Extraction review split-screen UI, inline correction forms, admin editor modal. |
+| **Ishani** | QA & DevOps | Docker Compose dev stack, CI pipeline automation, Vitest & Pytest test suites. | End-to-end integration tests for document upload API; test fixtures for malformed PDFs. |
+| **Anuththara** | Database & AI Engineering | PostgreSQL models, Alembic migrations, curriculum transcription for 2 degrees, seed script. | `pdfplumber` text pipeline, Ollama/Qwen setup, Instructor Pydantic extraction scripts. |
 
 ---
 
@@ -155,8 +155,9 @@ A task is only marked as Done on Jira and eligible for merging into `dev` when a
 
 - [ ] **Type Safety:** `npx tsc --noEmit` runs with 0 errors.
 - [ ] **Lint & Build:** `npm run lint` and `npm run build` succeed locally.
+- [ ] **Automated Tests:** `npm test` and `pytest backend/tests` pass with 0 failures.
 - [ ] **No Direct Mutation:** Canvas layout math and global states run through established utilities (`layout.ts`, `store.ts`), not ad-hoc component hacks.
 - [ ] **No Broken Imports:** All imports use `@/...` path aliases and type imports use `import type { ... }`.
-- [ ] **CI Pipeline Passes:** The GitHub Actions Typecheck, Lint & Build status check is green.
-- [ ] **Lead Approval:** The PR has been reviewed and approved by the Lead Architect.
+- [ ] **CI Pipeline Passes:** The GitHub Actions Typecheck, Lint, Test & Build status checks are green.
+- [ ] **Lead Approval:** The PR has been reviewed and approved by Didula (Lead Architect).
 - [ ] **Squash Merged:** The PR is squash-merged into `dev` and the feature branch is deleted.

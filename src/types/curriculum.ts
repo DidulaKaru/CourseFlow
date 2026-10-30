@@ -47,7 +47,7 @@ export interface Course {
     type: CourseType;
     prerequisiteRule: PrerequisiteRule | null;
     corequisites: string[]; // Course IDs required concurrently
-    offeredSemesters: ('SEMESTER_1' | 'SEMESTER_2' | 'BOTH')[];
+    offeredSemesters: ('FALL' | 'SPRING' | 'BOTH')[];
 }
 
 // ==========================================
