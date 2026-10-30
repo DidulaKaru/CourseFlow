@@ -33,7 +33,7 @@ export interface paths {
         };
         /**
          * List Degree Programs
-         * @description Retrieve summaries for all available engineering degree programs.
+         * @description Retrieve high-level summaries for all available engineering degree programs.
          */
         get: operations["list_programs_api_programs_get"];
         put?: never;
@@ -44,7 +44,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/programs/{id}": {
+    "/api/programs/{program_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -53,11 +53,91 @@ export interface paths {
         };
         /**
          * Get Degree Program by ID
-         * @description Retrieve full curriculum graph for a specific degree program.
+         * @description Retrieve the complete 8-semester curriculum dependency graph for a specific program.
          */
-        get: operations["get_program_api_programs__id__get"];
+        get: operations["get_program_api_programs__program_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/plans/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate Study Plan Constraints
+         * @description Validates per-semester credit minimums (>= 18 credits), term caps, and prerequisite AST satisfiability.
+         */
+        post: operations["validate_plan_api_plans_validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/programs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Degree Programs
+         * @description Retrieve high-level summaries for all available engineering degree programs.
+         */
+        get: operations["list_programs_api_v1_programs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/programs/{program_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Degree Program by ID
+         * @description Retrieve the complete 8-semester curriculum dependency graph for a specific program.
+         */
+        get: operations["get_program_api_v1_programs__program_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/plans/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate Study Plan Constraints
+         * @description Validates per-semester credit minimums (>= 18 credits), term caps, and prerequisite AST satisfiability.
+         */
+        post: operations["validate_plan_api_v1_plans_validate_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -237,6 +317,51 @@ export interface components {
              */
             courses?: components["schemas"]["Course"][];
         };
+        /**
+         * DegreeProgramSummary
+         * @description High-level summary for degree program listings.
+         */
+        DegreeProgramSummary: {
+            /**
+             * Id
+             * @description Unique program identifier (e.g., 'computer-eng')
+             */
+            id: string;
+            /**
+             * Name
+             * @description Degree program name (e.g., 'Computer Engineering')
+             */
+            name: string;
+            /**
+             * Department
+             * @description Department offering the program
+             */
+            department: string;
+            /**
+             * Totalcreditsrequired
+             * @description Total credits required for graduation
+             * @default 150
+             */
+            totalCreditsRequired: number;
+            /**
+             * Mincreditspersemester
+             * @description Minimum workload credits per semester
+             * @default 18
+             */
+            minCreditsPerSemester: number;
+            /**
+             * Maxcreditspersemester
+             * @description Maximum credit cap per semester
+             * @default 24
+             */
+            maxCreditsPerSemester: number;
+            /**
+             * Semesterscount
+             * @description Total duration in semesters
+             * @default 8
+             */
+            semestersCount: number;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -259,11 +384,136 @@ export interface components {
             children: (components["schemas"]["CourseRuleNode"] | components["schemas"]["CreditThresholdRuleNode"] | components["schemas"]["LogicalRuleNode"])[];
         };
         /**
+         * PlanValidationRequest
+         * @description Payload to validate a student's study plan against curriculum rules.
+         */
+        PlanValidationRequest: {
+            /**
+             * Programid
+             * @description Target degree program identifier (e.g., 'computer-eng')
+             */
+            programId: string;
+            /**
+             * Selectedelectiveids
+             * @description Course IDs of electives chosen by the student
+             */
+            selectedElectiveIds?: string[];
+            /**
+             * Completedcourseids
+             * @description Course IDs completed/passed by the student
+             */
+            completedCourseIds?: string[];
+        };
+        /**
+         * PlanValidationResponse
+         * @description Comprehensive plan validation report.
+         */
+        PlanValidationResponse: {
+            /**
+             * Isvalid
+             * @description True if all prerequisites are met and credit boundaries satisfied
+             */
+            isValid: boolean;
+            /**
+             * Totalplannedcredits
+             * @description Cumulative credits across all planned courses in curriculum
+             */
+            totalPlannedCredits: number;
+            /**
+             * Totalearnedcredits
+             * @description Cumulative credits earned from completed courses
+             */
+            totalEarnedCredits: number;
+            /**
+             * Totalcreditsrequired
+             * @description Minimum total degree credits required for graduation
+             * @default 150
+             */
+            totalCreditsRequired: number;
+            /**
+             * Isgraduationeligible
+             * @description True if total planned credits reach graduation requirement
+             */
+            isGraduationEligible: boolean;
+            /**
+             * Semesters
+             * @description Detailed breakdown for semesters 1 through 8
+             */
+            semesters?: components["schemas"]["SemesterValidationDetail"][];
+            /**
+             * Prerequisitevalidations
+             * @description Prerequisite satisfaction states for planned courses
+             */
+            prerequisiteValidations?: components["schemas"]["PrerequisiteValidationDetail"][];
+            /**
+             * Errors
+             * @description Blocking errors (e.g. unmet prerequisites)
+             */
+            errors?: string[];
+            /**
+             * Warnings
+             * @description Non-blocking warnings (e.g. semester load < 18 credits)
+             */
+            warnings?: string[];
+        };
+        /**
+         * PrerequisiteValidationDetail
+         * @description Diagnostic outcome for an individual module's prerequisite rule.
+         */
+        PrerequisiteValidationDetail: {
+            /** Courseid */
+            courseId: string;
+            /** Coursetitle */
+            courseTitle: string;
+            /** Issatisfied */
+            isSatisfied: boolean;
+            /** Missingprerequisiteids */
+            missingPrerequisiteIds?: string[];
+            /**
+             * Creditdeficit
+             * @default 0
+             */
+            creditDeficit: number;
+            /** Summary */
+            summary: string;
+        };
+        /**
          * SemesterTerm
          * @description Semester offering terms.
          * @enum {string}
          */
         SemesterTerm: "FALL" | "SPRING" | "BOTH";
+        /**
+         * SemesterValidationDetail
+         * @description Validation outcome for a single semester execution window.
+         */
+        SemesterValidationDetail: {
+            /**
+             * Semesterindex
+             * @description Semester term (1 to 8)
+             */
+            semesterIndex: number;
+            /**
+             * Totalcredits
+             * @description Sum of planned credits in this term
+             */
+            totalCredits: number;
+            /**
+             * Isvalid
+             * @description True if term load meets minimum bounds (>= 18 credits) and cap (<= 24)
+             */
+            isValid: boolean;
+            /**
+             * Warning
+             * @description Warning explanation if credit thresholds are breached
+             */
+            warning?: string | null;
+            /**
+             * Courseids
+             * @description Course codes allocated to this semester
+             */
+            courseIds?: string[];
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -321,17 +571,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["DegreeProgram"][];
+                    "application/json": components["schemas"]["DegreeProgramSummary"][];
                 };
             };
         };
     };
-    get_program_api_programs__id__get: {
+    get_program_api_programs__program_id__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                program_id: string;
             };
             cookie?: never;
         };
@@ -344,6 +594,123 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DegreeProgram"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    validate_plan_api_plans_validate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanValidationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanValidationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_programs_api_v1_programs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DegreeProgramSummary"][];
+                };
+            };
+        };
+    };
+    get_program_api_v1_programs__program_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                program_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DegreeProgram"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    validate_plan_api_v1_plans_validate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanValidationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlanValidationResponse"];
                 };
             };
             /** @description Validation Error */

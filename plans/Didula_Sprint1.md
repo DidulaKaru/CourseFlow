@@ -52,7 +52,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 | [x] **CF-102** | Deterministic Swimlane Layout Mathematical Engine | 5 SP | CF-EPIC-1 | Didula |
 | [x] **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 SP | CF-EPIC-2 | Didula |
 | [x] **CF-104** | Local-First Zustand State Engine with Persistence | 3 SP | CF-EPIC-2 / CF-EPIC-3 | Didula |
-| [ ] **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
+| [x] **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -72,7 +72,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-105: FastAPI Core Server & Degree Metadata Endpoints (5 SP)         │
+│ [x] CF-105: FastAPI Core Server & Degree Metadata Endpoints (5 SP)     │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -162,7 +162,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 
 ---
 
-### CF-105: FastAPI Core Server & Degree Metadata Endpoints (5 SP)
+### [x] CF-105: FastAPI Core Server & Degree Metadata Endpoints (5 SP)
 * **Description:** Scaffold FastAPI project with endpoints: `GET /api/programs`, `GET /api/programs/{id}`, and `POST /api/plans/validate`.
 * **Target Files:**
   - `backend/app/main.py`
@@ -174,7 +174,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
   - `GET /api/programs`: List all degree program summaries (`id`, `name`, `department`).
   - `GET /api/programs/{id}`: Return complete 8-semester curriculum graph JSON.
   - `POST /api/plans/validate`: Backend validation service for semester credit totals ($\ge 18$) and prerequisite AST satisfiability.
-* **Acceptance Criteria:** Endpoints return validated JSON adhering to OpenAPI schema with status 200 OK; invalid bodies return 422 Unprocessable Entity.
+* **Acceptance Criteria:** [x] Endpoints return validated JSON adhering to OpenAPI schema with status 200 OK; invalid bodies return 422 Unprocessable Entity.
 
 ---
 
