@@ -272,11 +272,11 @@ export interface DegreeProgram {
 * **Official Ownership Domains:** System architecture, FastAPI REST API, graph algorithms (DFS cycle detection, Kahn's sort, Critical Path), AST evaluation engine, contract sync, PR code review & merge governance.
 * **Tech Stack:** Python (FastAPI), NetworkX, Pydantic, TypeScript, Git.
 * **Sprint 1 Jira Tickets:**
-  * `CF-101`: System Architecture Invariants & Contract Setup (5 SP)
-  * `CF-102`: Deterministic Swimlane Layout Mathematical Engine (5 SP)
-  * `CF-103`: Recursive Boolean AST Prerequisite Evaluator (5 SP)
-  * `CF-104`: Local-First Zustand State Engine with Persistence (3 SP)
-  * `CF-105`: FastAPI Core Server & Degree Metadata Endpoints (5 SP)
+  * [x] `CF-101`: System Architecture Invariants & Contract Setup (5 SP)
+  * [x] `CF-102`: Deterministic Swimlane Layout Mathematical Engine (5 SP)
+  * [ ] `CF-103`: Recursive Boolean AST Prerequisite Evaluator (5 SP)
+  * [ ] `CF-104`: Local-First Zustand State Engine with Persistence (3 SP)
+  * [ ] `CF-105`: FastAPI Core Server & Degree Metadata Endpoints (5 SP)
 
 #### Malsha: Frontend & Documentation Specialist (31 SP)
 * **Official Ownership Domains:** React Flow canvas visualizer, custom Tailwind CourseNode cards, 8-semester swimlane headers, module details drawer, client-side PDF export, Jira board management, Confluence/Markdown documentation.

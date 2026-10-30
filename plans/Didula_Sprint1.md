@@ -48,19 +48,19 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 
 | Ticket Key | Task Summary | Story Points | Target Epic | Assigned |
 | :--- | :--- | :--- | :--- | :--- |
-| **CF-101** | System Architecture Invariants & Contract Setup | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
-| **CF-102** | Deterministic Swimlane Layout Mathematical Engine | 5 SP | CF-EPIC-1 | Didula |
-| **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 SP | CF-EPIC-2 | Didula |
-| **CF-104** | Local-First Zustand State Engine with Persistence | 3 SP | CF-EPIC-2 / CF-EPIC-3 | Didula |
-| **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
+| [x] **CF-101** | System Architecture Invariants & Contract Setup | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
+| [x] **CF-102** | Deterministic Swimlane Layout Mathematical Engine | 5 SP | CF-EPIC-1 | Didula |
+| [ ] **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 SP | CF-EPIC-2 | Didula |
+| [ ] **CF-104** | Local-First Zustand State Engine with Persistence | 3 SP | CF-EPIC-2 / CF-EPIC-3 | Didula |
+| [ ] **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│ CF-101: System Architecture Invariants & Contract Setup (5 SP)         │
+│ [x] CF-101: System Architecture Invariants & Contract Setup (5 SP)     │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-102: Deterministic Swimlane Layout Mathematical Engine (5 SP)       │
+│ [x] CF-102: Deterministic Swimlane Layout Mathematical Engine (5 SP)   │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -82,7 +82,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 
 ---
 
-### CF-101: System Architecture Invariants & Contract Setup (5 SP)
+### [x] CF-101: System Architecture Invariants & Contract Setup (5 SP)
 * **Description:** Define shared DTOs in Pydantic and configure `openapi-typescript` to generate client contracts automatically.
 * **Target Files:**
   - `src/types/curriculum.ts`
@@ -95,11 +95,11 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
   3. Formulate `Course` model: `id`, `code`, `title`, `description`, `totalCredits`, `durationSemesters`, `recommendedSemester`, `creditDistribution`, `type` (`'CORE' | 'ELECTIVE' | 'LAB' | 'CAPSTONE'`), `prerequisiteRule`, `corequisites`, `offeredSemesters`.
   4. Formulate `DegreeProgram` container: `id`, `name`, `department`, `totalCreditsRequired: 150`, `minCreditsPerSemester: 18`, `maxCreditsPerSemester: 24`, `semestersCount: 8`, `courses: Course[]`.
   5. Setup script: `"generate-types": "openapi-typescript http://localhost:8000/openapi.json -o src/types/api.ts"`.
-* **Acceptance Criteria:** `npm run generate-types` generates identical TypeScript interfaces matching FastAPI models without manual adjustments.
+* **Acceptance Criteria:** [x] `npm run generate-types` generates identical TypeScript interfaces matching FastAPI models without manual adjustments.
 
 ---
 
-### CF-102: Deterministic Swimlane Layout Mathematical Engine (5 SP)
+### [x] CF-102: Deterministic Swimlane Layout Mathematical Engine (5 SP)
 * **Description:** Implement mathematical coordinate calculator in `src/core/layout.ts` fixing X coordinates by semester ($X = (\text{semesterIndex} - 1) \times 280\text{px}$) and vertical Y spacing via Dagre.
 * **Target Files:**
   - `src/core/layout.ts`
@@ -112,7 +112,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
     $$Y = \text{slotIndex} \times (\text{NODE\_HEIGHT} + \text{VERTICAL\_GAP}) + \text{TOP\_PADDING}$$
   - Dagre barycentric ordering applied strictly within column subsets to minimize edge cross-overs.
   - Multi-semester courses: Anchored to their start term with explicit multi-semester visual flags and horizontal span offsets.
-* **Acceptance Criteria:** Nodes render in strict columns with zero horizontal overlap across terms. Unit tests pass verifying linear coordinate assertions.
+* **Acceptance Criteria:** [x] Nodes render in strict columns with zero horizontal overlap across terms. Unit tests pass verifying linear coordinate assertions.
 
 ---
 
