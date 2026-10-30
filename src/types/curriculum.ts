@@ -29,6 +29,7 @@ export type PrerequisiteRule =
 // ==========================================
 
 export type CourseType = 'CORE' | 'ELECTIVE' | 'LAB' | 'CAPSTONE';
+export type SemesterTerm = 'FALL' | 'SPRING' | 'BOTH';
 
 export interface CreditDistribution {
     semesterIndex: number; // Discrete term: 1 to 8
@@ -47,7 +48,7 @@ export interface Course {
     type: CourseType;
     prerequisiteRule: PrerequisiteRule | null;
     corequisites: string[]; // Course IDs required concurrently
-    offeredSemesters: ('FALL' | 'SPRING' | 'BOTH')[];
+    offeredSemesters: SemesterTerm[];
 }
 
 // ==========================================

@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "test": "vitest run",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate-types": "openapi-typescript http://localhost:8000/openapi.json -o src/types/api.ts"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",
@@ -30,12 +31,18 @@
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "lint-staged": "^17.6.0",
+    "openapi-typescript": "^7.13.0",
     "oxlint": "^1.81.0",
     "postcss": "^8.5.29",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    }
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
