@@ -61,11 +61,11 @@
 ### Didula (Lead Architect & Backend Developer) — 23 SP
 | Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
 | :--- | :--- | :--- | :--- | :--- |
-| **CF-101** | System Architecture Invariants & Contract Setup | 5 | CF-EPIC-1 / CF-EPIC-2 | `npm run generate-types` generates identical TypeScript interfaces matching FastAPI models. |
-| **CF-102** | Deterministic Swimlane Layout Mathematical Engine | 5 | CF-EPIC-1 | Nodes render in strict columns ($X = (\text{semesterIndex}-1)\times 280\text{px}$) with zero horizontal overlap across terms. |
-| **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 | CF-EPIC-2 | Unit tests pass for compound prerequisite expressions with 100% logic accuracy. |
-| **CF-104** | Local-First Zustand State Engine with Persistence | 3 | CF-EPIC-2 / CF-EPIC-3 | Browser refresh preserves active plan without data loss. |
-| **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 | CF-EPIC-1 / CF-EPIC-2 | Endpoints return validated JSON adhering to OpenAPI schema. |
+| [x] **CF-101** | System Architecture Invariants & Contract Setup | 5 | CF-EPIC-1 / CF-EPIC-2 | `npm run generate-types` generates identical TypeScript interfaces matching FastAPI models. |
+| [x] **CF-102** | Deterministic Swimlane Layout Mathematical Engine | 5 | CF-EPIC-1 | Nodes render in strict columns ($X = (\text{semesterIndex}-1)\times 280\text{px}$) with zero horizontal overlap across terms. |
+| [ ] **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 | CF-EPIC-2 | Unit tests pass for compound prerequisite expressions with 100% logic accuracy. |
+| [ ] **CF-104** | Local-First Zustand State Engine with Persistence | 3 | CF-EPIC-2 / CF-EPIC-3 | Browser refresh preserves active plan without data loss. |
+| [ ] **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 | CF-EPIC-1 / CF-EPIC-2 | Endpoints return validated JSON adhering to OpenAPI schema. |
 
 ### Malsha (Frontend & Documentation Specialist) — 31 SP
 | Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
@@ -122,6 +122,8 @@ A story is only marked **Done** in Jira when:
 ---
 
 ## 7. Current Execution Status
+- [x] **CF-101:** System Architecture Invariants & Contract Setup completed.
+- [x] **CF-102:** Deterministic Swimlane Layout Mathematical Engine completed (barycentric ordering, deterministic X/Y coordinates, multi-semester spanning modules).
 - Frontend canvas foundation mounted with custom nodes and mock dataset.
 - Layout coordinate calculator and AST evaluator implemented in TypeScript.
 - PostgreSQL schema models, seed datasets, and Docker Compose configurations under active integration.
