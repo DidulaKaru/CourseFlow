@@ -1,132 +1,150 @@
-# Sprint 1 Implementation Plan: Didula (Lead, Architect & Backend Developer)
+# Sprint 1 Implementation Plan: Didula (Lead Architect & Backend Developer)
 
-**Role:** Lead Architect & Backend Developer  
-**Sprint Focus:** Core Graph & Layout Math, AST Rule Engine, Zustand Store, and FastAPI Backend Architecture  
-**Target Milestone:** Sprint 1 Delivery (Zero-Login Student Web App for 2 Degree Programs)
-
----
-
-## 1. Responsibilities & Domain Ownership
-Didula acts as the architectural anchor and backend lead for CourseFlow. In Sprint 1, responsibilities encompass:
-- Defining and maintaining the Single Source of Truth (SSOT) across TypeScript interfaces and backend Pydantic schemas.
-- Implementing the deterministic swimlane coordinate layout mathematics ($X = \text{semesterIndex} \times 280\text{px}$).
-- Developing the recursive Abstract Syntax Tree (AST) prerequisite boolean evaluator.
-- Architecting the client-side Zustand store with `localStorage` guest-mode persistence.
-- Scaffolding the FastAPI backend application structure and initial API contracts.
-- Code review, CI/CD oversight, and repository quality gate enforcement.
+**Official Project Role:** Lead Architect & Backend Developer  
+**Sprint Window:** October 12, 2026 – November 01, 2026 (3 Weeks)  
+**Sprint Goal:** Ship a working, zero-login Student Web App for 2 engineering degree programs (Computer Engineering & Electrical Engineering) rendering an 8-semester swimlane DAG canvas, interactive elective selection, >= 18 semester credit checks, 150 total credit validation, multi-semester split credits, and client-side PDF plan export. Complete Docker setup, database schema foundation, and CI/CD quality gates.  
+**Primary Tech Stack:** Python (FastAPI), NetworkX, Pydantic, TypeScript, Git  
+**Total Allocated Story Points:** 23 SP  
 
 ---
 
-## 2. Phase-by-Phase Execution Roadmap
+## 1. Core Ownership Domains & Responsibilities
+
+Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 1, core responsibilities encompass:
+- **System Architecture & Contract Sync:** Defining and maintaining the Single Source of Truth (SSOT) across Pydantic DTOs and auto-generated TypeScript definitions (`openapi-typescript`).
+- **Graph Algorithms & Mathematics Engine:**
+  - Deterministic 8-semester swimlane coordinate mathematics ($X = (\text{semesterIndex} - 1) \times 280\text{px}$ for 1-indexed semesters).
+  - Dagre vertical ordering ($Y$) within semester columns to eliminate edge crossings.
+- **Recursive AST Rule Engine:** Recursive evaluation of Abstract Syntax Tree rules (`AND`, `OR`, `COURSE`, `CREDIT_THRESHOLD`) against completed courses and earned credits.
+- **Local-First State Architecture:** Client-side Zustand store with `localStorage` guest-mode persistence.
+- **FastAPI Core Server & Endpoints:** Scaffolding the backend service, CORS policies, degree metadata endpoints, and plan validation.
+- **PR Code Review & Merge Governance:** Reviewing all team pull requests, enforcing type safety, and maintaining the dev branch airlock.
+
+---
+
+## 2. Epics & User Stories Mapping
+
+### Target Epics
+- **CF-EPIC-1: Curriculum DAG Canvas & Dependency Visualizer** (Epic Co-Lead with Malsha | Student Web App)
+- **CF-EPIC-2: Interactive Degree Planner & Constraint Engine** (Epic Lead with Malsha | Student Web App)
+
+### User Stories Addressed
+| User Story ID | Narrative | Priority | Story Points | Target Epic |
+| :--- | :--- | :--- | :--- | :--- |
+| **US001** | As a student, I want instant, zero-friction access to the curriculum graph visualizer without needing to create an account or log in. | Must Have | 3 | CF-EPIC-1 |
+| **US002** | As a student, I want to switch seamlessly between the 2 initial engineering degree programs via a top navigation selector. | Must Have | 3 | CF-EPIC-1 |
+| **US003** | As a student, I want to view my degree curriculum as an interactive DAG rendered across 8 semester swimlanes. | Must Have | 8 | CF-EPIC-1 |
+| **US004** | As a student, I want to zoom, pan, and navigate smoothly across the 8-semester curriculum canvas. | Must Have | 3 | CF-EPIC-1 |
+| **US005** | As a student, I want to click any course node to highlight its upstream prerequisites and downstream unlocked courses while dimming unrelated nodes. | Must Have | 5 | CF-EPIC-1 |
+| **US007** | As a student, I want to select and deselect elective modules to customize my personalized study path. | Must Have | 5 | CF-EPIC-2 |
+| **US008** | As a student, I want to receive immediate visual warnings (red/amber badges) if I choose an elective whose prerequisites are unmet. | Must Have | 5 | CF-EPIC-2 |
+| **US009** | As a student, I want to view a real-time semester credit counter that warns me if my planned semester falls below the 18-credit minimum. | Must Have | 5 | CF-EPIC-2 |
+| **US010** | As a student, I want to track my cumulative planned credits against the 150-credit graduation requirement. | Must Have | 3 | CF-EPIC-2 |
+| **US011** | As a student, I want multi-semester spanning modules (e.g., capstones) to automatically split credits across their consecutive semesters. | Must Have | 5 | CF-EPIC-2 |
+
+---
+
+## 3. Granular Jira Tasks & Engineering Roadmap
+
+| Ticket Key | Task Summary | Story Points | Target Epic | Assigned |
+| :--- | :--- | :--- | :--- | :--- |
+| **CF-101** | System Architecture Invariants & Contract Setup | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
+| **CF-102** | Deterministic Swimlane Layout Mathematical Engine | 5 SP | CF-EPIC-1 | Didula |
+| **CF-103** | Recursive Boolean AST Prerequisite Evaluator | 5 SP | CF-EPIC-2 | Didula |
+| **CF-104** | Local-First Zustand State Engine with Persistence | 3 SP | CF-EPIC-2 / CF-EPIC-3 | Didula |
+| **CF-105** | FastAPI Core Server & Degree Metadata Endpoints | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Didula |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│ Phase 1: Canonical Type Contracts & Schema Governance                  │
+│ CF-101: System Architecture Invariants & Contract Setup (5 SP)         │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 2: Deterministic 8-Semester Swimlane Layout Mathematics          │
+│ CF-102: Deterministic Swimlane Layout Mathematical Engine (5 SP)       │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 3: Recursive AST Boolean Rule Evaluator                          │
+│ CF-103: Recursive Boolean AST Prerequisite Evaluator (5 SP)             │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 4: Zustand Store & LocalStorage Persistence                      │
+│ CF-104: Local-First Zustand State Engine with Persistence (3 SP)       │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 5: FastAPI Core Skeleton & Endpoint Contracts                    │
+│ CF-105: FastAPI Core Server & Degree Metadata Endpoints (5 SP)         │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ Phase 6: Code Review & Quality Gate Governance                         │
+│ PR Code Review & Quality Gate Governance                               │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### Phase 1: Canonical Type Contracts & Schema Governance
-* **Goal:** Finalize TypeScript definitions matching the canonical data contracts in `architecture.md` Section 5.
+### CF-101: System Architecture Invariants & Contract Setup (5 SP)
+* **Description:** Define shared DTOs in Pydantic and configure `openapi-typescript` to generate client contracts automatically.
 * **Target Files:**
   - `src/types/curriculum.ts`
   - `src/types/CONTEXT.md`
-* **Tasks:**
-  1. Confirm `RuleType`: `'AND' | 'OR' | 'COURSE' | 'CREDIT_THRESHOLD'`.
-  2. Implement `CourseRuleNode`, `CreditThresholdRuleNode`, `LogicalRuleNode`, and `PrerequisiteRule` union.
-  3. Implement `CreditDistribution` interface (`semesterIndex: number`, `creditsAllocated: number`).
-  4. Ensure `Course` interface matches:
-     ```typescript
-     export interface Course {
-       id: string;
-       code: string;
-       title: string;
-       description: string;
-       totalCredits: number;
-       durationSemesters: number; // 1 (standard) or 2 (capstone)
-       recommendedSemester: number; // 1 through 8
-       creditDistribution: CreditDistribution[];
-       type: 'CORE' | 'ELECTIVE' | 'LAB' | 'CAPSTONE';
-       prerequisiteRule: PrerequisiteRule | null;
-       corequisites: string[];
-       offeredSemesters: ('FALL' | 'SPRING' | 'BOTH')[];
-     }
-     ```
-  5. Ensure `DegreeProgram` container matches requirements (`totalCreditsRequired: 150`, `minCreditsPerSemester: 18`, `maxCreditsPerSemester: 24`, `semestersCount: 8`).
-* **Verification:** `npx tsc --noEmit` runs with 0 errors.
+  - `backend/app/schemas/curriculum.py`
+  - `package.json` (`generate-types` script)
+* **Implementation Details:**
+  1. Define canonical types for `CourseRuleNode`, `CreditThresholdRuleNode`, `LogicalRuleNode`, and `PrerequisiteRule` union.
+  2. Implement `CreditDistribution` interface (`semesterIndex: number`, `creditsAllocated: number`).
+  3. Formulate `Course` model: `id`, `code`, `title`, `description`, `totalCredits`, `durationSemesters`, `recommendedSemester`, `creditDistribution`, `type` (`'CORE' | 'ELECTIVE' | 'LAB' | 'CAPSTONE'`), `prerequisiteRule`, `corequisites`, `offeredSemesters`.
+  4. Formulate `DegreeProgram` container: `id`, `name`, `department`, `totalCreditsRequired: 150`, `minCreditsPerSemester: 18`, `maxCreditsPerSemester: 24`, `semestersCount: 8`, `courses: Course[]`.
+  5. Setup script: `"generate-types": "openapi-typescript http://localhost:8000/openapi.json -o src/types/api.ts"`.
+* **Acceptance Criteria:** `npm run generate-types` generates identical TypeScript interfaces matching FastAPI models without manual adjustments.
 
 ---
 
-### Phase 2: Deterministic 8-Semester Swimlane Layout Mathematics
-* **Goal:** Prevent unpredictable force-directed node movement by providing exact coordinate calculation for canvas nodes.
+### CF-102: Deterministic Swimlane Layout Mathematical Engine (5 SP)
+* **Description:** Implement mathematical coordinate calculator in `src/core/layout.ts` fixing X coordinates by semester ($X = (\text{semesterIndex} - 1) \times 280\text{px}$) and vertical Y spacing via Dagre.
 * **Target Files:**
   - `src/core/layout.ts`
   - `src/core/CONTEXT.md`
-* **Algorithmic Rules:**
+  - `src/core/__tests__/layout.test.ts`
+* **Mathematical Mechanics:**
   - Horizontal $X$-coordinate is strictly fixed:
-    $$X = \text{semesterIndex} \times 280\text{px} + \text{COLUMN\_OFFSET}$$
-  - Vertical $Y$-coordinate is computed dynamically based on the course's vertical order within its semester column:
+    $$X = (\text{semesterIndex} - 1) \times 280\text{px} + \text{COLUMN\_OFFSET}$$
+  - Vertical $Y$-coordinate is calculated by order within semester bucket:
     $$Y = \text{slotIndex} \times (\text{NODE\_HEIGHT} + \text{VERTICAL\_GAP}) + \text{TOP\_PADDING}$$
-  - Multi-semester courses: Card spans across or anchors in the starting semester with explicit multi-semester visual indicators.
-* **Tasks:**
-  1. Create `calculateLayout(courses: Course[], selectedElectiveIds: string[])`:
-     - Filters courses (keeps all CORE + selected ELECTIVEs).
-     - Groups courses into buckets by `recommendedSemester` (1 to 8).
-     - Assigns deterministic $(x, y)$ positions to each node.
-     - Generates React Flow edges from prerequisites.
-* **Verification:** Unit test asserting node coordinates conform to the linear semester column bounds.
+  - Dagre barycentric ordering applied strictly within column subsets to minimize edge cross-overs.
+  - Multi-semester courses: Anchored to their start term with explicit multi-semester visual flags and horizontal span offsets.
+* **Acceptance Criteria:** Nodes render in strict columns with zero horizontal overlap across terms. Unit tests pass verifying linear coordinate assertions.
 
 ---
 
-### Phase 3: Recursive AST Boolean Rule Evaluator
-* **Goal:** Build a robust, pure evaluation engine for complex university prerequisites.
+### CF-103: Recursive Boolean AST Prerequisite Evaluator (5 SP)
+* **Description:** Write AST engine evaluating recursive `AND`, `OR`, `COURSE`, and `CREDIT_THRESHOLD` rules against completed course sets.
 * **Target Files:**
   - `src/core/algorithms/ast_evaluator.ts`
   - `src/core/__tests__/ast_evaluator.test.ts`
-* **Logic:**
+* **Implementation Signature:**
   ```typescript
   export function evaluatePrerequisite(
     rule: PrerequisiteRule | null,
     completedCourses: Set<string>,
     earnedCredits: number
-  ): boolean
+  ): boolean;
   ```
-  - `null`: returns `true` (no prerequisites).
-  - `COURSE`: checks `completedCourses.has(rule.courseId)`.
-  - `CREDIT_THRESHOLD`: checks `earnedCredits >= rule.minCredits`.
+  - `null`: returns `true` (unconditional).
+  - `COURSE`: returns `completedCourses.has(rule.courseId)`.
+  - `CREDIT_THRESHOLD`: returns `earnedCredits >= rule.minCredits`.
   - `AND`: returns `rule.children.every(child => evaluatePrerequisite(child, completedCourses, earnedCredits))`.
   - `OR`: returns `rule.children.some(child => evaluatePrerequisite(child, completedCourses, earnedCredits))`.
-* **Verification:** Unit tests covering single courses, nested `AND`/`OR` structures, credit thresholds, and empty rule sets.
+* **Acceptance Criteria:** Unit tests pass for compound prerequisite expressions with 100% logic accuracy, including deeply nested and mixed operator trees.
 
 ---
 
-### Phase 4: Zustand Store & LocalStorage Persistence
-* **Goal:** Provide reactive, local-first state management without requiring student authentication.
+### CF-104: Local-First Zustand State Engine with Persistence (3 SP)
+* **Description:** Implement Zustand store with `persist` middleware caching `activeProgramId`, `selectedElectiveIds`, and `completedCourseIds` in `localStorage`.
 * **Target Files:**
   - `src/core/store.ts`
-* **Tasks:**
-  1. Define `PlannerState` interface:
+  - `src/core/__tests__/store.test.ts`
+* **Implementation Details:**
+  1. Define `PlannerState`:
      - `activeProgramId: string`
      - `selectedElectiveIds: string[]`
      - `completedCourseIds: string[]`
@@ -139,45 +157,46 @@ Didula acts as the architectural anchor and backend lead for CourseFlow. In Spri
      - `openCourseDrawer(course: Course)`
      - `closeCourseDrawer()`
      - `resetPlanner()`
-  3. Configure Zustand `persist` middleware with `createJSONStorage(() => localStorage)`.
-  4. Ensure only necessary state fields (`activeProgramId`, `selectedElectiveIds`, `completedCourseIds`) are serialized.
-* **Verification:** State changes survive page refresh in local browser storage.
+  3. Caching via `createJSONStorage(() => localStorage)` targeting only persistent selection keys.
+* **Acceptance Criteria:** Browser refresh preserves active plan without data loss.
 
 ---
 
-### Phase 5: FastAPI Core Skeleton & Endpoint Contracts
-* **Goal:** Initialize the high-performance Python FastAPI backend service and define API contracts.
+### CF-105: FastAPI Core Server & Degree Metadata Endpoints (5 SP)
+* **Description:** Scaffold FastAPI project with endpoints: `GET /api/programs`, `GET /api/programs/{id}`, and `POST /api/plans/validate`.
 * **Target Files:**
   - `backend/app/main.py`
   - `backend/app/core/config.py`
-  - `backend/app/schemas/curriculum.py`
-  - `backend/app/api/v1/endpoints/degrees.py`
-  - `backend/app/api/v1/endpoints/courses.py`
-* **Tasks:**
-  1. Configure FastAPI app with CORS middleware allowing `http://localhost:5173`.
-  2. Implement `/health` probe endpoint.
-  3. Mirror canonical Pydantic models for `Course`, `DegreeProgram`, and `PrerequisiteRule`.
-  4. Scaffold routes:
-     - `GET /api/v1/degrees`: List available degree programs.
-     - `GET /api/v1/degrees/{id}`: Retrieve detailed curriculum graph for a degree.
-     - `POST /api/v1/validate-plan`: Validate credit limits and prerequisite AST logic on backend.
-* **Verification:** `pytest backend/tests` passes; endpoints return 200 OK.
+  - `backend/app/api/v1/endpoints/programs.py`
+  - `backend/app/api/v1/endpoints/plans.py`
+  - `backend/tests/test_programs.py`
+* **Endpoints:**
+  - `GET /api/programs`: List all degree program summaries (`id`, `name`, `department`).
+  - `GET /api/programs/{id}`: Return complete 8-semester curriculum graph JSON.
+  - `POST /api/plans/validate`: Backend validation service for semester credit totals ($\ge 18$) and prerequisite AST satisfiability.
+* **Acceptance Criteria:** Endpoints return validated JSON adhering to OpenAPI schema with status 200 OK; invalid bodies return 422 Unprocessable Entity.
 
 ---
 
-### Phase 6: Code Review & Quality Gate Governance
-* **Goal:** Ensure smooth integration across Malsha, Ishani, and Anuththara.
-* **Tasks:**
-  1. Enforce git branch conventions (`feature/<ticket-id>-<description>` into `dev`).
-  2. Review Pull Requests against Definition of Done (no `any`, strict type checking, passing tests).
-  3. Verify CI workflow status before approving squash merges into `dev`.
+## 4. Agile Ceremonies & Team Protocols
+
+1. **Sprint Planning:** First Monday of the sprint (1 hour). Review backlog items, confirm story points, and commit to sprint scope.
+2. **Daily Standup (Asynchronous on Discord/Slack):** Every morning by 09:30 AM:
+   - What did you accomplish yesterday?
+   - What are you working on today?
+   - Are there any technical blockers?
+3. **Sprint Review & Live Demo:** Final Friday of the sprint (1 hour). Demonstrate working software on the `dev` branch.
+4. **Sprint Retrospective:** Immediately following review (30 minutes). Discuss: What went well? What slowed us down? Action items for Sprint 2.
 
 ---
 
-## 3. Definition of Done (DoD) for Sprint 1
-- [ ] Canonical TypeScript schemas strictly match `architecture.md`.
-- [ ] `calculateLayout()` produces deterministic column coordinates with zero horizontal variance.
-- [ ] `evaluatePrerequisite()` handles arbitrary nested `AND`/`OR`/`CREDIT_THRESHOLD` ASTs.
-- [ ] Zustand store correctly manages guest-mode selections and persists to `localStorage`.
-- [ ] FastAPI backend service boots up cleanly with CORS enabled and health check passing.
-- [ ] 100% of unit tests pass under `npm test` and `pytest`.
+## 5. Definition of Done (DoD) & Quality Gates
+
+A story or engineering task is marked **Done** in Jira only when:
+- [ ] Code is implemented on an isolated `feature/<ticket>-<description>` branch.
+- [ ] Unit & integration tests pass with zero regressions (`npm test` and `pytest`).
+- [ ] Static typecheck passes (`npx tsc --noEmit` and Python `ruff` / typecheck).
+- [ ] PR is opened targeting `dev`, passing GitHub Actions CI checks (CourseFlow Quality Gate).
+- [ ] PR is reviewed and approved by Didula (Lead Architect).
+- [ ] PR is Squash Merged into `dev` and local branches are synchronized.
+- [ ] Feature is validated against acceptance criteria on the live development build.

@@ -19,13 +19,15 @@ interface PlannerState {
     openCourseDrawer: (course: Course) => void;
     closeCourseDrawer: () => void;
 
-    // Reset Actions
+    // Reset & Portability Actions (ADR-001)
     resetPlanner: () => void;
+    exportPlan: () => string;
+    importPlan: (planJson: string) => boolean;
 }
 
 export const usePlannerStore = create<PlannerState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             activeProgramId: 'computer-eng',
             setActiveProgram: (programId) => set({ activeProgramId: programId }),
 
@@ -60,6 +62,34 @@ export const usePlannerStore = create<PlannerState>()(
                     selectedElectiveIds: [],
                     completedCourseIds: [],
                 }),
+
+            exportPlan: () => {
+                const state = get();
+                return JSON.stringify({
+                    version: '1.0',
+                    activeProgramId: state.activeProgramId,
+                    selectedElectiveIds: state.selectedElectiveIds,
+                    completedCourseIds: state.completedCourseIds,
+                    exportedAt: new Date().toISOString(),
+                }, null, 2);
+            },
+
+            importPlan: (planJson: string) => {
+                try {
+                    const data = JSON.parse(planJson);
+                    if (data && typeof data === 'object') {
+                        set({
+                            activeProgramId: typeof data.activeProgramId === 'string' ? data.activeProgramId : 'computer-eng',
+                            selectedElectiveIds: Array.isArray(data.selectedElectiveIds) ? data.selectedElectiveIds : [],
+                            completedCourseIds: Array.isArray(data.completedCourseIds) ? data.completedCourseIds : [],
+                        });
+                        return true;
+                    }
+                    return false;
+                } catch {
+                    return false;
+                }
+            },
         }),
         {
             name: 'courseflow-local-planner',
