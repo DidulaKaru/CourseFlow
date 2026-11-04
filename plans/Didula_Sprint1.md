@@ -29,18 +29,18 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 - **CF-EPIC-2: Interactive Degree Planner & Constraint Engine** (Epic Lead with Malsha | Student Web App)
 
 ### User Stories Addressed
-| User Story ID | Narrative | Priority | Story Points | Target Epic |
-| :--- | :--- | :--- | :--- | :--- |
-| **US001** | As a student, I want instant, zero-friction access to the curriculum graph visualizer without needing to create an account or log in. | Must Have | 3 | CF-EPIC-1 |
-| **US002** | As a student, I want to switch seamlessly between the 2 initial engineering degree programs via a top navigation selector. | Must Have | 3 | CF-EPIC-1 |
-| **US003** | As a student, I want to view my degree curriculum as an interactive DAG rendered across 8 semester swimlanes. | Must Have | 8 | CF-EPIC-1 |
-| **US004** | As a student, I want to zoom, pan, and navigate smoothly across the 8-semester curriculum canvas. | Must Have | 3 | CF-EPIC-1 |
-| **US005** | As a student, I want to click any course node to highlight its upstream prerequisites and downstream unlocked courses while dimming unrelated nodes. | Must Have | 5 | CF-EPIC-1 |
-| **US007** | As a student, I want to select and deselect elective modules to customize my personalized study path. | Must Have | 5 | CF-EPIC-2 |
-| **US008** | As a student, I want to receive immediate visual warnings (red/amber badges) if I choose an elective whose prerequisites are unmet. | Must Have | 5 | CF-EPIC-2 |
-| **US009** | As a student, I want to view a real-time semester credit counter that warns me if my planned semester falls below the 18-credit minimum. | Must Have | 5 | CF-EPIC-2 |
-| **US010** | As a student, I want to track my cumulative planned credits against the 150-credit graduation requirement. | Must Have | 3 | CF-EPIC-2 |
-| **US011** | As a student, I want multi-semester spanning modules (e.g., capstones) to automatically split credits across their consecutive semesters. | Must Have | 5 | CF-EPIC-2 |
+| User Story ID | Narrative | Priority | Story Points | Target Epic | Engine & Backend Status |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **US001** | As a student, I want instant, zero-friction access to the curriculum graph visualizer without needing to create an account or log in. | Must Have | 3 | CF-EPIC-1 | [x] Implemented (CF-104) |
+| **US002** | As a student, I want to switch seamlessly between the 2 initial engineering degree programs via a top navigation selector. | Must Have | 3 | CF-EPIC-1 | [x] Implemented (CF-101, CF-105) |
+| **US003** | As a student, I want to view my degree curriculum as an interactive DAG rendered across 8 semester swimlanes. | Must Have | 8 | CF-EPIC-1 | [x] Implemented (CF-102) |
+| **US004** | As a student, I want to zoom, pan, and navigate smoothly across the 8-semester curriculum canvas. | Must Have | 3 | CF-EPIC-1 | [x] Layout Math Supported (CF-102) |
+| **US005** | As a student, I want to click any course node to highlight its upstream prerequisites and downstream unlocked courses while dimming unrelated nodes. | Must Have | 5 | CF-EPIC-1 | [x] Implemented (CF-103) |
+| **US007** | As a student, I want to select and deselect elective modules to customize my personalized study path. | Must Have | 5 | CF-EPIC-2 | [x] Implemented (CF-104) |
+| **US008** | As a student, I want to receive immediate visual warnings (red/amber badges) if I choose an elective whose prerequisites are unmet. | Must Have | 5 | CF-EPIC-2 | [x] Implemented (CF-103, CF-105) |
+| **US009** | As a student, I want to view a real-time semester credit counter that warns me if my planned semester falls below the 18-credit minimum. | Must Have | 5 | CF-EPIC-2 | [x] Implemented (CF-104, CF-105) |
+| **US010** | As a student, I want to track my cumulative planned credits against the 150-credit graduation requirement. | Must Have | 3 | CF-EPIC-2 | [x] Implemented (CF-104, CF-105) |
+| **US011** | As a student, I want multi-semester spanning modules (e.g., capstones) to automatically split credits across their consecutive semesters. | Must Have | 5 | CF-EPIC-2 | [x] Implemented (CF-102, CF-104, CF-105) |
 
 ---
 
@@ -76,7 +76,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ PR Code Review & Quality Gate Governance                               │
+│ [x] PR Code Review & Quality Gate Governance (All 23 SP Merged to dev) │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -193,10 +193,10 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 ## 5. Definition of Done (DoD) & Quality Gates
 
 A story or engineering task is marked **Done** in Jira only when:
-- [ ] Code is implemented on an isolated `feature/<ticket>-<description>` branch.
-- [ ] Unit & integration tests pass with zero regressions (`npm test` and `pytest`).
-- [ ] Static typecheck passes (`npx tsc --noEmit` and Python `ruff` / typecheck).
-- [ ] PR is opened targeting `dev`, passing GitHub Actions CI checks (CourseFlow Quality Gate).
-- [ ] PR is reviewed and approved by Didula (Lead Architect).
-- [ ] PR is Squash Merged into `dev` and local branches are synchronized.
-- [ ] Feature is validated against acceptance criteria on the live development build.
+- [x] Code is implemented on an isolated `feature/<ticket>-<description>` branch.
+- [x] Unit & integration tests pass with zero regressions (`npm test` and `pytest`).
+- [x] Static typecheck passes (`npx tsc --noEmit` and Python `ruff` / typecheck).
+- [x] PR is opened targeting `dev`, passing GitHub Actions CI checks (CourseFlow Quality Gate).
+- [x] PR is reviewed and approved by Didula (Lead Architect).
+- [x] PR is Squash Merged into `dev` and local branches are synchronized.
+- [x] Feature is validated against acceptance criteria on the live development build.

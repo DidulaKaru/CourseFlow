@@ -1,4 +1,4 @@
-# Type System & Canonical Data Contracts
+# Type System & Canonical Data Contracts (CF-101)
 
 ## 1. Core Principles & Invariants
 - **Single Source of Truth (SSOT):** All canonical domain contracts for the frontend application are defined in `src/types/curriculum.ts`.

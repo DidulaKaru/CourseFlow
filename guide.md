@@ -51,7 +51,7 @@ These architectural decisions are finalized. Do not refactor or deviate from the
 
 | Member | Primary Ownership Domain | Sprint 1 Deliverables | Sprint 2 Deliverables |
 | :--- | :--- | :--- | :--- |
-| **Didula** (Lead) | Architecture, Math & Backend | Layout math ($X/Y$), Zustand store, AST boolean rule evaluator, FastAPI backend skeleton. | In-app course editor API, review screen endpoints, AST persistence logic. |
+| **Didula** (Lead) | Architecture, Math & Backend | Layout math ($X/Y$), Zustand store, AST boolean rule evaluator, FastAPI backend skeleton (CF-101 – CF-105: Completed [x]). | In-app course editor API, review screen endpoints, AST persistence logic. |
 | **Malsha** | Frontend & Documentation | Custom `CourseNode` card, 8-semester swimlane headers, degree switcher, PDF export, Jira/docs. | Extraction review split-screen UI, inline correction forms, admin editor modal. |
 | **Ishani** | QA & DevOps | Docker Compose dev stack, CI pipeline automation, Vitest & Pytest test suites. | End-to-end integration tests for document upload API; test fixtures for malformed PDFs. |
 | **Anuththara** | Database & AI Engineering | PostgreSQL models, Alembic migrations, curriculum transcription for 2 degrees, seed script. | `pdfplumber` text pipeline, Ollama/Qwen setup, Instructor Pydantic extraction scripts. |
