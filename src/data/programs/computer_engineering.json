@@ -1,0 +1,1159 @@
+{
+  "id": "computer-eng",
+  "name": "Computer Engineering",
+  "department": "Department of Computer Engineering",
+  "totalCreditsRequired": 150,
+  "minCreditsPerSemester": 18,
+  "maxCreditsPerSemester": 24,
+  "semestersCount": 8,
+  "courses": [
+    {
+      "id": "MA1001",
+      "code": "MA1001",
+      "title": "Calculus I",
+      "description": "Single-variable calculus, differential and integral calculus with applications in engineering.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO1001",
+      "code": "CO1001",
+      "title": "Introduction to Computer Engineering",
+      "description": "Historical context of computing, Boolean algebra basics, number systems, and computing ethics.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO1002",
+      "code": "CO1002",
+      "title": "Programming Methodology",
+      "description": "Procedural and modular programming fundamentals in C/C++, structured decomposition, and algorithm design.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO1003L",
+      "code": "CO1003L",
+      "title": "Computing Laboratory I",
+      "description": "Practical hands-on programming lab implementing core procedural algorithms and Linux command-line tools.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "CO1002"
+      ],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE1001",
+      "code": "EE1001",
+      "title": "Basic Electrical Engineering",
+      "description": "DC and AC circuit analysis, Kirchhoff's laws, Thevenin and Norton theorems, and basic semiconductor devices.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE1002L",
+      "code": "EE1002L",
+      "title": "Electrical Measurements Lab",
+      "description": "Laboratory practice with oscilloscopes, digital multimeters, and electrical circuit characterization.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "EE1001"
+      ],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EN1001",
+      "code": "EN1001",
+      "title": "Communication Skills",
+      "description": "Technical report writing, oral presentations, and engineering documentation standards.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "MA1002",
+      "code": "MA1002",
+      "title": "Calculus II",
+      "description": "Multivariable functions, partial derivatives, multiple integrals, and vector analysis.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA1001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO1020",
+      "code": "CO1020",
+      "title": "Discrete Mathematics",
+      "description": "Set theory, relations, combinatorics, graph theory basics, and mathematical induction.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO1001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO1030",
+      "code": "CO1030",
+      "title": "Digital Logic Design",
+      "description": "Combinational and sequential logic design, Karnaugh maps, flip-flops, registers, and finite state machines.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO1001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO1031L",
+      "code": "CO1031L",
+      "title": "Digital Electronics Lab",
+      "description": "Breadboarding digital ICs, FPGA synthesis with Verilog, and sequential logic verification.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "CO1030"
+      ],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO1040",
+      "code": "CO1040",
+      "title": "Object-Oriented Design",
+      "description": "Encapsulation, inheritance, polymorphism, design patterns, and unit testing in Java / C++.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO1002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EN1002",
+      "code": "EN1002",
+      "title": "Professional Ethics & Law",
+      "description": "Intellectual property, cybersecurity laws, software licensing, and engineering professional liability.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "MA2001",
+      "code": "MA2001",
+      "title": "Linear Algebra",
+      "description": "Vector spaces, matrices, determinants, eigenvalues, eigenvectors, and singular value decomposition.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA1002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "MA2002",
+      "code": "MA2002",
+      "title": "Differential Equations",
+      "description": "Ordinary differential equations, Laplace transforms, and boundary value problems.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA1002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO2001",
+      "code": "CO2001",
+      "title": "Data Structures & Algorithms",
+      "description": "Asymptotic complexity, stacks, queues, trees, balanced BSTs, heaps, hashing, and graph algorithms.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO1002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO2002",
+      "code": "CO2002",
+      "title": "Computer Architecture",
+      "description": "Instruction set architecture (RISC-V), processor datapath, pipelining, hazards, and memory hierarchies.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO1030"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO2003",
+      "code": "CO2003",
+      "title": "Signals & Systems",
+      "description": "Continuous and discrete-time signals, linear time-invariant systems, Fourier and Z-transforms.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA1002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO2004L",
+      "code": "CO2004L",
+      "title": "Algorithms Laboratory",
+      "description": "Competitive programming problems, graph traversal implementations, dynamic programming, and profiling.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "CO2001"
+      ],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "MA2003",
+      "code": "MA2003",
+      "title": "Probability & Statistics",
+      "description": "Random variables, probability distributions, estimation, hypothesis testing, and regression analysis.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA2001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO2010",
+      "code": "CO2010",
+      "title": "Database Management Systems",
+      "description": "Relational algebra, SQL, normalization, transaction processing, indexing, and NoSQL databases.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO2020",
+      "code": "CO2020",
+      "title": "Software Engineering Principles",
+      "description": "Agile methodologies, requirements modeling, software architecture, CI/CD pipelines, and automated testing.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO1040"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO2030",
+      "code": "CO2030",
+      "title": "Microprocessor Systems",
+      "description": "ARM architecture, bus protocols, memory interfacing, interrupt handling, and assembly programming.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO2031L",
+      "code": "CO2031L",
+      "title": "Microprocessor Lab",
+      "description": "Interfacing microcontrollers with sensors, actuators, UART, SPI, and I2C peripherals.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "CO2030"
+      ],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO2050",
+      "code": "CO2050",
+      "title": "Computer Communications",
+      "description": "Data transmission, physical layer modulation, link layer framing, error detection, and MAC protocols.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2003"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO3001",
+      "code": "CO3001",
+      "title": "Operating Systems",
+      "description": "Processes, kernel architecture, CPU scheduling, concurrency, synchronization, deadlocks, and virtual memory.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO3002",
+      "code": "CO3002",
+      "title": "Computer Networks",
+      "description": "Internet protocol suite, IP routing algorithms, TCP/UDP transport mechanics, congestion control, and DNS.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2050"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO3010",
+      "code": "CO3010",
+      "title": "Theory of Computation",
+      "description": "Regular languages, finite automata, context-free grammars, Turing machines, and NP-completeness.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO1020"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO3020",
+      "code": "CO3020",
+      "title": "Web Application Technologies",
+      "description": "Full-stack web development, REST APIs, asynchronous web frameworks, and reactive client interfaces.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2010"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO3030",
+      "code": "CO3030",
+      "title": "Embedded Software",
+      "description": "Real-time operating systems (RTOS), task scheduling, memory management in microcontrollers, and hardware abstraction.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2030"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO3040",
+      "code": "CO3040",
+      "title": "Operations Research",
+      "description": "Linear programming, simplex algorithm, duality, queuing theory, and optimization methods.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA2001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CE3001",
+      "code": "CE3001",
+      "title": "Embedded Systems Engineering",
+      "description": "SoC architectures, device drivers, real-time bus protocols, low-power design, and hardware-software co-design.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO3030"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO3050",
+      "code": "CO3050",
+      "title": "Distributed Systems",
+      "description": "Consensus algorithms (Raft/Paxos), distributed transactions, RPC frameworks, and fault tolerance.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO3001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO3060",
+      "code": "CO3060",
+      "title": "Information Security",
+      "description": "Symmetric and asymmetric cryptography, PKI, authentication protocols, network security, and secure coding.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO3002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO3070",
+      "code": "CO3070",
+      "title": "Compiler Design",
+      "description": "Lexical analysis, LL/LR parsing, semantic analysis, intermediate representation, and code generation.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO3010"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO3080",
+      "code": "CO3080",
+      "title": "Mobile Application Development",
+      "description": "Cross-platform and native mobile architectures, background services, local storage, and sensor APIs.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2020"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "MN3001",
+      "code": "MN3001",
+      "title": "Engineering Economics & Finance",
+      "description": "Cost estimation, cash flow analysis, return on investment, financial modeling, and risk assessment.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CE4001",
+      "code": "CE4001",
+      "title": "Comprehensive Engineering Design Project",
+      "description": "Two-semester capstone research and hardware prototyping project solving industry-defined technical briefs.",
+      "totalCredits": 6,
+      "durationSemesters": 2,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        },
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CAPSTONE",
+      "prerequisiteRule": {
+        "type": "AND",
+        "children": [
+          {
+            "type": "COURSE",
+            "courseId": "CE3001"
+          },
+          {
+            "type": "OR",
+            "children": [
+              {
+                "type": "COURSE",
+                "courseId": "MA2001"
+              },
+              {
+                "type": "COURSE",
+                "courseId": "MA2002"
+              }
+            ]
+          },
+          {
+            "type": "CREDIT_THRESHOLD",
+            "minCredits": 90
+          }
+        ]
+      },
+      "corequisites": [
+        "CE4002"
+      ],
+      "offeredSemesters": [
+        "BOTH"
+      ]
+    },
+    {
+      "id": "CE4002",
+      "code": "CE4002",
+      "title": "Project Management & Quality Assurance",
+      "description": "Software lifecycle management, project scheduling, quality management standards (ISO/IEEE), and team governance.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO544",
+      "code": "CO544",
+      "title": "Machine Learning",
+      "description": "Supervised learning, unsupervised learning, model evaluation, neural networks, and gradient descent optimization.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO541",
+      "code": "CO541",
+      "title": "Artificial Intelligence",
+      "description": "Heuristic search, adversarial games, constraint satisfaction problems, and knowledge representation.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO542",
+      "code": "CO542",
+      "title": "Computer Vision",
+      "description": "Image processing, edge detection, feature descriptors, camera geometry, object detection, and CNNs.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA2001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO543",
+      "code": "CO543",
+      "title": "High Performance Computing",
+      "description": "Parallel architectures, OpenMP, MPI, GPU computing with CUDA, and scalable algorithm design.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO2002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO545",
+      "code": "CO545",
+      "title": "Cloud Computing & DevOps",
+      "description": "Microservices architectures, container orchestration with Kubernetes, serverless paradigms, and cloud resilience.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO3050"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO546",
+      "code": "CO546",
+      "title": "Deep Learning Systems",
+      "description": "Deep architectures (Transformers, Diffusion models), backpropagation mechanics, PyTorch, and model quantization.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO544"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO547",
+      "code": "CO547",
+      "title": "Autonomous Robotics",
+      "description": "Robot kinematics, SLAM, sensor fusion (Kalman filters), path planning, and ROS2 frameworks.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CE3001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "CO548",
+      "code": "CO548",
+      "title": "Blockchain Architectures",
+      "description": "Cryptographic hashing, consensus protocols (PoW, PoS), smart contracts, and decentralized architectures.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "CO3060"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "MN4001",
+      "code": "MN4001",
+      "title": "Technology Entrepreneurship",
+      "description": "Tech venture creation, business model canvases, venture financing, IP protection, and startup pitching.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    }
+  ]
+}
