@@ -3,50 +3,31 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "frontend"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "oxlint",
-    "test": "vitest run",
-    "preview": "vite preview",
-    "prepare": "husky",
-    "generate-types": "openapi-typescript http://localhost:8000/openapi.json -o src/types/api.ts"
-  },
-  "dependencies": {
-    "@react-pdf/renderer": "^4.9.0",
-    "@xyflow/react": "^12.12.0",
-    "lucide-react": "^1.55.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "zod": "^4.6.6",
-    "zustand": "^5.0.15"
+    "start": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm run backend\" \"npm run dev\"",
+    "dev": "npm --workspace=frontend run dev",
+    "backend": "python -m uvicorn app.main:app --reload --port 8000 --app-dir backend",
+    "build": "npm --workspace=frontend run build",
+    "lint": "npm --workspace=frontend run lint",
+    "test": "npm --workspace=frontend test",
+    "typecheck": "npm --workspace=frontend run typecheck",
+    "preview": "npm --workspace=frontend run preview",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^24.19.2",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
-    "@vitejs/plugin-react": "^6.1.1",
-    "autoprefixer": "^10.6.1",
+    "concurrently": "^9.1.2",
     "husky": "^9.1.7",
-    "jsdom": "^29.1.1",
-    "lint-staged": "^17.6.0",
-    "openapi-typescript": "^7.13.0",
-    "oxlint": "^1.81.0",
-    "postcss": "^8.5.29",
-    "tailwindcss": "^4.3.3",
-    "typescript": "~6.0.2",
-    "vite": "^8.3.0",
-    "vitest": "^5.0.5"
-  },
-  "overrides": {
-    "openapi-typescript": {
-      "typescript": "$typescript"
-    }
+    "lint-staged": "^17.6.0"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "oxlint"
+    "frontend/**/*.{js,jsx,ts,tsx}": [
+      "npm --workspace=frontend run lint"
+    ],
+    "backend/**/*.py": [
+      "python -m ruff check"
     ]
   }
 }

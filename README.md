@@ -87,7 +87,7 @@ CourseFlow formalizes curriculum planning by treating an academic degree program
 
 ## 4. Repository Architecture & Context Slicing
 
-CourseFlow uses an agent-centric, context-sliced directory structure. Every functional domain contains an authoritative `CONTEXT.md` defining its inputs, outputs, and invariants to prevent token degradation and keep development modular:
+CourseFlow uses an agent-centric, context-sliced directory structure separating the frontend and backend applications cleanly:
 
 ```text
 courseflow/
@@ -101,34 +101,39 @@ courseflow/
 │   ├── Malsha_Sprint1.md          # Frontend & Documentation Lead
 │   ├── Ishani_Sprint1.md          # QA & DevOps Lead
 │   └── Anuththara_Sprint1.md      # Database & AI Engineering Lead
-├── backend/                       # Python FastAPI Backend
+├── backend/                       # Python FastAPI Backend Service
 │   ├── CONTEXT.md
 │   ├── app/                       # FastAPI application (main, config, api, models, schemas)
+│   ├── alembic/                   # Database schema migrations
 │   ├── tests/                     # Pytest suite
-│   ├── scripts/                   # Database seed scripts
+│   ├── scripts/                   # Database seed and startup scripts
 │   └── requirements.txt
-├── src/
-│   ├── types/                     # TypeScript contracts (Single Source of Truth)
-│   │   ├── CONTEXT.md
-│   │   └── curriculum.ts          # Course, PrerequisiteRule AST, DegreeProgram
-│   ├── core/                      # Engine, graph math, and global state
-│   │   ├── CONTEXT.md
-│   │   ├── store.ts               # Zustand store (localStorage persistence)
-│   │   ├── layout.ts              # 8-Semester swimlane coordinate calculator
-│   │   └── algorithms/            # AST evaluator, cycle detection, critical path
-│   ├── features/                  # Isolated feature slices
-│   │   ├── canvas/                # React Flow canvas, CourseNode, and Swimlanes
-│   │   ├── planner/               # Credit counters, constraints, and PDF export
-│   │   ├── drawer/                # Slide-over course details panel
-│   │   └── admin/                 # In-app course editor modal
-│   └── data/                      # Verified curriculum seed files
-│       ├── CONTEXT.md
-│       ├── mock_course.json       # Day-1 component development mock
-│       └── programs/              # Standardized JSON curricula for degrees
-├── docker-compose.yml             # Local dev stack (PostgreSQL + pgvector, Backend, Ollama)
+├── frontend/                      # React + TypeScript + Vite Web Application
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── tsconfig.json
+│   ├── tsconfig.app.json
+│   ├── tsconfig.node.json
+│   └── src/
+│       ├── types/                 # TypeScript contracts (Single Source of Truth)
+│       │   ├── CONTEXT.md
+│       │   └── curriculum.ts      # Course, PrerequisiteRule AST, DegreeProgram
+│       ├── core/                  # Engine, graph math, and global state
+│       │   ├── CONTEXT.md
+│       │   ├── store.ts           # Zustand store (localStorage persistence)
+│       │   ├── layout.ts          # 8-Semester swimlane coordinate calculator
+│       │   └── algorithms/        # AST evaluator, cycle detection, critical path
+│       ├── features/              # Isolated feature slices
+│       │   ├── canvas/            # React Flow canvas, CourseNode, and Swimlanes
+│       │   ├── planner/           # Credit counters, constraints, and PDF export
+│       │   └── drawer/            # Slide-over course details panel
+│       └── data/                  # Verified curriculum seed files
+│           ├── CONTEXT.md
+│           ├── mock_course.json   # Day-1 component development mock
+│           └── programs/          # Standardized JSON curricula for degrees
 ├── guide.md                       # Operational developer rulebook & Git guidelines
-├── package.json
-└── vite.config.ts
+├── package.json                   # Root monorepo workspace orchestrator
+└── README.md
 ```
 
 ---
@@ -140,10 +145,7 @@ courseflow/
 | **Didula** | Lead Architect & Backend Developer | System architecture, FastAPI REST API, graph algorithms (DFS cycle detection, Kahn's sort, Critical Path), AST evaluation engine, contract sync, PR code review & merge governance. | Python (FastAPI), NetworkX, Pydantic, TypeScript, Git | **CF-101 – CF-105** (23 SP - Completed [x]) |
 | **Malsha** | Frontend & Documentation Specialist | React Flow canvas visualizer, custom Tailwind CourseNode cards, 8-semester swimlane headers, module details drawer, client-side PDF export, Jira board management, Confluence/Markdown documentation. | React 18, TypeScript, Tailwind CSS v4, @xyflow/react, Zustand, @react-pdf/renderer | **CF-111 – CF-117** (31 SP) |
 | **Ishani** | QA & DevOps Engineer | Docker containerization, local development stack orchestration, GitHub Actions CI/CD workflows, automated testing suites (Pytest, Vitest/Playwright), pre-commit gates, code coverage reports. | Docker, GitHub Actions, Pytest, Vitest, Ruff, Husky | **CF-121 – CF-125** (23 SP) |
-| **Anuththara** | Database & AI Engineer | PostgreSQL schema design, Alembic migrations, initial 2-degree program seed data, pdfplumber syllabus parsing, local Ollama runtime (Qwen 2.5 7B), Instructor grammar-guided AST extraction. | PostgreSQL, pgvector, SQLAlchemy, Alembic, pdfplumber, Ollama, Instructor | **CF-131 – CF-135** (21 SP) |
-
-> Detailed individual sprint plans, ticket specs, and acceptance criteria are documented in [plans/Didula_Sprint1.md](file:///plans/Didula_Sprint1.md), [plans/Malsha_Sprint1.md](file:///plans/Malsha_Sprint1.md), [plans/Ishani_Sprint1.md](file:///plans/Ishani_Sprint1.md), and [plans/Anuththara_Sprint1.md](file:///plans/Anuththara_Sprint1.md).
-
+| **Anuththara** | Database & AI Engineer | PostgreSQL schema design, Alembic migrations, initial 2-degree program seed data, pdfplumber syllabus parsing, local Ollama runtime (Qwen 2.5 7B), Instructor grammar-guided AST extraction. | PostgreSQL, pgvector, SQLAlchemy, Alembic, pdfplumber, Ollama, Instructor | **CF-131 – CF-135** (21 SP - Completed [x]) |
 
 ---
 
@@ -154,32 +156,39 @@ courseflow/
 - **Node.js:** v20.x or higher
 - **npm:** v10.x or higher
 - **Python:** v3.11 or higher
-- **Docker & Docker Compose** (for PostgreSQL with pgvector)
-- **Git**
+- **PostgreSQL / Docker**
 
-### Installation & Local Development
+### Quickstart: Run Everything (Backend + Frontend)
+
+From the project root:
 
 ```powershell
-# 1. Clone the repository
-git clone https://github.com/DidulaKaru/CourseFlow.git
-cd CourseFlow
-
-# 2. Start PostgreSQL with pgvector via Docker Compose
-docker compose up -d db
-
-# 3. Install frontend dependencies and launch dev server
+# 1. Install dependencies
 npm install
-npm run dev
 
-# 4. (Optional) Run backend API locally
-cd backend
-python -m venv venv
-venv\Scripts\activate   # On Windows
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+# 2. Launch both Backend & Frontend concurrently
+npm start
 ```
 
-Visit `http://localhost:5173` to explore the canvas locally.
+- **Frontend Canvas:** Visit `http://localhost:5173`
+- **Backend API Docs:** Visit `http://localhost:8000/docs`
+
+### Running Services Independently
+
+```powershell
+# Run Frontend only (from root or frontend/)
+npm run dev
+
+# Run Backend only (from root or backend/)
+npm run backend
+# or: cd backend && python -m uvicorn app.main:app --reload --port 8000
+
+# Start local PostgreSQL database
+powershell -File backend/scripts/start_db.ps1
+
+# Populate database from JSON curriculum files
+cd backend && python scripts/seed_db.py
+```
 
 ### Quality Verification
 
@@ -187,14 +196,14 @@ Before pushing code or opening a Pull Request, verify that all static checks pas
 
 ```powershell
 # Frontend verification
-npx tsc --noEmit
+npm run typecheck
 npm run lint
 npm test
 npm run build
 
 # Backend verification
-ruff check backend/
-pytest backend/tests
+python -m ruff check backend/
+python -m pytest backend/tests
 ```
 
 ---
@@ -205,34 +214,12 @@ pytest backend/tests
   - **Sprint Window:** October 12, 2026 – November 01, 2026 (3 Weeks)
   - **Sprint Goal:** Ship a working, zero-login Student Web App for 2 engineering degree programs (Computer Engineering & Electrical Engineering) rendering an 8-semester swimlane DAG canvas, interactive elective selection, >= 18 semester credit checks, 150 total credit validation, multi-semester split credits, and client-side PDF plan export. Complete Docker setup, database schema foundation, and CI/CD quality gates.
   - **Backlog & Engineering Scope:** 14 User Stories (58 SP, US001–US014) | 22 Granular Jira Tasks (98 SP, CF-101–CF-135)
-  - **Didula's Engineering Status:** All 5 assigned tasks (**CF-101 through CF-105, 23 SP**) are 100% complete, verified with unit and integration tests (21 pytest, 52 vitest), and merged into `dev`.
   - **Target Epics:**
     - `CF-EPIC-1`: Curriculum DAG Canvas & Dependency Visualizer (Lead: Malsha & Didula)
     - `CF-EPIC-2`: Interactive Degree Planner & Constraint Engine (Lead: Didula & Malsha)
     - `CF-EPIC-3`: Study Plan Export & Local Persistence (Lead: Malsha)
     - `CF-EPIC-4`: Infrastructure, DevOps & Automated Quality Gates (Lead: Ishani)
     - `CF-EPIC-5`: Database Architecture & Curriculum Data Modeling (Lead: Anuththara)
-- **Sprint 2: MIS Document Extraction Engine & Admin In-App Course Editor**
-  - **Sprint Window:** November 02, 2026 – November 22, 2026 (3 Weeks)
-  - **Sprint Goal:** Deliver an automated Module Information Sheet (MIS) Ingestion & Feature Extraction Engine capable of parsing syllabus PDFs/DOCXs, extracting metadata and prerequisite ASTs using a local Small Language Model (Qwen 2.5 7B via Ollama + Instructor), surfaced via a side-by-side human review screen with 1-click database commit. Deploy authenticated admin in-app module content editor.
-  - **Target Epics:** `CF-EPIC-6`, `CF-EPIC-7`, `CF-EPIC-8`, `CF-EPIC-9`
-- **Sprint 3: Frictionless Alumni Portal & Graph Integrity**
-  - Zero-login public alumni feedback submission portal.
-  - Bayesian weighted rating aggregator and Industry Heatmap canvas toggle.
-  - Visual prerequisite edge editor in admin portal with real-time DFS 3-color cycle detection.
-  - Expansion to all 5 faculty engineering degree programs.
-- **Sprint 4: Graph-Constrained RAG Career Recommendation Engine**
-  - `pgvector` indexing of course syllabi and alumni reviews.
-  - Two-stage retrieval: semantic vector search + NetworkX topological & credit feasibility pruning.
-  - LLM career advisor generating actionable study paths with recommended external resources.
-  - Programmatic path highlighting on the interactive canvas.
-- **Sprint 5: Cohort Bottleneck Analytics & Generalization**
-  - Academic advisor dashboard visualizing cohort progression bottlenecks and high-fail choke points.
-  - CSV report exporter for faculty curriculum meetings.
-  - Implementation of Hierarchical Credit Bucket engine for Major/Minor degree tracks.
-- **Sprint 6: Tool-Augmented Advising Agent, System Polish & Viva Prep**
-  - Conversational advising agent with deterministic graph tools (prerequisite check, credit headroom, slack calculator).
-  - End-to-end performance tuning, automated test suites, and project viva demonstration runbooks.
 
 ---
 

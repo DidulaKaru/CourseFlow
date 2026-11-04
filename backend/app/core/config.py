@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
 
+    # Database Configuration
+    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/courseflow"
+
     # CORS Configuration
     CORS_ORIGINS: list[str] = ["*"]
 
@@ -30,7 +33,17 @@ class Settings(BaseSettings):
 
     # Paths
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent.parent
-    DATA_PROGRAMS_DIR: Path = BASE_DIR / "src" / "data" / "programs"
+
+    @property
+    def DATA_PROGRAMS_DIR(self) -> Path:
+        """Resolve curriculum programs directory in frontend/src or src."""
+        frontend_path = self.BASE_DIR / "frontend" / "src" / "data" / "programs"
+        if frontend_path.exists():
+            return frontend_path
+        container_path = Path("/frontend/src/data/programs")
+        if container_path.exists():
+            return container_path
+        return self.BASE_DIR / "src" / "data" / "programs"
 
 
 settings = Settings()

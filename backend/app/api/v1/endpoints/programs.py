@@ -22,7 +22,9 @@ def _get_fallback_computer_eng() -> DegreeProgram:
     """Generate in-memory Computer Engineering curriculum graph."""
     # Attempt to load mock course to ensure exact identity fidelity
     repo_root = Path(__file__).resolve().parent.parent.parent.parent.parent
-    mock_course_file = repo_root / "src" / "data" / "mock_course.json"
+    mock_course_file = (repo_root / "frontend" / "src" / "data" / "mock_course.json" if (repo_root / "frontend" / "src" / "data" / "mock_course.json").exists() else repo_root / "src" / "data" / "mock_course.json")
+    if not mock_course_file.exists() and Path("/frontend/src/data/mock_course.json").exists():
+        mock_course_file = Path("/frontend/src/data/mock_course.json")
     capstone_course: Course | None = None
 
     if mock_course_file.exists():

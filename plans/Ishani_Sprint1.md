@@ -37,13 +37,13 @@ Ishani's testing suites and DevOps infrastructure form the underlying reliabilit
 
 ## 3. Granular Jira Tasks & Engineering Roadmap
 
-| Ticket Key | Task Summary | Story Points | Target Epic | Assigned |
-| :--- | :--- | :--- | :--- | :--- |
-| **CF-121** | Docker Compose Local Environment Stack | 5 SP | CF-EPIC-4 | Ishani |
-| **CF-122** | GitHub Actions CI/CD Pipeline & Branch Airlocks | 5 SP | CF-EPIC-4 | Ishani |
-| **CF-123** | Pre-Commit Quality Hooks (Husky & Lint-Staged) | 3 SP | CF-EPIC-4 | Ishani |
-| **CF-124** | Automated Backend Test Suite (Pytest) | 5 SP | CF-EPIC-4 | Ishani |
-| **CF-125** | Automated Frontend Test Suite (Vitest) | 5 SP | CF-EPIC-4 | Ishani |
+| Ticket Key | Task Summary | Story Points | Target Epic | Assigned | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| [x] **CF-121** | Docker Compose Local Environment Stack | 5 SP | CF-EPIC-4 | Ishani | Completed |
+| [x] **CF-122** | GitHub Actions CI/CD Pipeline & Branch Airlocks | 5 SP | CF-EPIC-4 | Ishani | Completed |
+| [x] **CF-123** | Pre-Commit Quality Hooks (Husky & Lint-Staged) | 3 SP | CF-EPIC-4 | Ishani | Completed |
+| [x] **CF-124** | Automated Backend Test Suite (Pytest) | 5 SP | CF-EPIC-4 | Ishani | Completed |
+| [x] **CF-125** | Automated Frontend Test Suite (Vitest) | 5 SP | CF-EPIC-4 | Ishani | Completed |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐

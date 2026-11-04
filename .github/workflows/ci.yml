@@ -7,8 +7,8 @@ on:
     branches: [main, dev]
 
 jobs:
-  validate:
-    name: Typecheck, Lint & Build
+  frontend:
+    name: Frontend Quality Gate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -29,5 +29,30 @@ jobs:
       - name: Linter Check
         run: npm run lint
 
+      - name: Frontend Test Suite (Vitest)
+        run: npm test
+
       - name: Production Bundle Verification
         run: npm run build
+
+  backend:
+    name: Backend Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Python Linter Check (Ruff)
+        run: ruff check backend/
+
+      - name: Automated Backend Tests (Pytest)
+        run: pytest backend/tests
