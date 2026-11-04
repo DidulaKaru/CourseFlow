@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { Award, CheckCircle2, Workflow } from 'lucide-react';
 import { usePlannerStore } from '@/core/store';
 import { getProgram, getProgramCourses } from '@/data/mockCourses';
+import { ExportPdfButton } from '@/features/planner/components/ExportPdfButton';
 import type { Course, DegreeProgram } from '@/types/curriculum';
 import { DegreeSelector } from './DegreeSelector';
 
@@ -14,9 +15,9 @@ export interface TopNavProps {
 }
 
 /**
- * Top Navigation Bar (CF-115).
+ * Top Navigation Bar (CF-115 & CF-116).
  * Houses CourseFlow brand identity, the degree program dropdown switcher,
- * global graduation credit counter (N / 150 Credits), and future export actions.
+ * global graduation credit counter (N / 150 Credits), and client-side PDF export action.
  */
 export const TopNav = memo(function TopNav({
     courses,
@@ -68,7 +69,7 @@ export const TopNav = memo(function TopNav({
                 <DegreeSelector />
             </div>
 
-            {/* Right Section: Global Graduation Credit Counter & Action Slots */}
+            {/* Right Section: Global Graduation Credit Counter & PDF Exporter Action */}
             <div className="flex items-center gap-3 sm:gap-4">
                 {/* Global Graduation Credit Counter */}
                 <div
@@ -116,8 +117,8 @@ export const TopNav = memo(function TopNav({
                     </div>
                 </div>
 
-                {/* Slot for future actions (e.g. CF-116 Export PDF Button) */}
-                {children}
+                {/* Client-Side PDF Study Plan Exporter (CF-116) or custom children */}
+                {children ?? <ExportPdfButton program={currentProgram} />}
             </div>
         </header>
     );

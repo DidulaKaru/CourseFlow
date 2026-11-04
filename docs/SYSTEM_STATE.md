@@ -75,7 +75,7 @@
 | [x] **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 | CF-EPIC-1 / CF-EPIC-2 | Header shows current semester credit sum and updates in real time on elective toggle. |
 | [x] **CF-114** | Slide-Over Module Details Drawer | 5 | CF-EPIC-1 | Drawer transitions smoothly from right; closes on backdrop click or Escape key. |
 | [x] **CF-115** | Degree Switcher Navigation Bar | 3 | CF-EPIC-1 | Switching programs updates canvas graph instantly with zero full-page reload. |
-| **CF-116** | Client-Side PDF Study Plan Exporter | 5 | CF-EPIC-3 | Clicking "Download Plan PDF" downloads a formatted PDF within 2 seconds. |
+| [x] **CF-116** | Client-Side PDF Study Plan Exporter | 5 | CF-EPIC-3 | Clicking "Download Plan PDF" downloads a formatted PDF within 2 seconds. |
 | **CF-117** | Project Documentation & Jira Board Initialization | 3 | Governance | Jira backlog organized with epics, points, and assignments matching this plan. |
 
 ### Ishani (QA & DevOps Engineer) — 23 SP
@@ -122,6 +122,7 @@ A story is only marked **Done** in Jira when:
 ---
 
 ## 7. Current Execution Status
+- [x] **CF-116:** Client-Side PDF Study Plan Exporter completed (StudyPlanPDF official 2-page academic layout with @react-pdf/renderer, 8-semester tabular credit breakdown, multi-semester capstone split credit accounting, official compliance verification stamp, dynamic filename CourseFlow_Plan_<Degree>_<Timestamp>.pdf, and ExportPdfButton embedded in TopNav).
 - [x] **CF-115:** Degree Switcher Navigation Bar completed (TopNav with CourseFlow brand identity, DegreeSelector dropdown for Computer Engineering and Electrical and Information Engineering, global graduation credit meter tracking N / 150 Credits with eligibility status, and instant zero-reload canvas graph recomputation via Zustand activeProgramId).
 - [x] **CF-114:** Slide-Over Module Details Drawer completed (smooth right slide-in, Escape/backdrop dismissal, syllabus objectives, contact hours breakdown, AST prerequisite logic chips, multi-semester timeline, and interactive study plan toggles).
 - [x] **CF-113:** Semester Swimlane Column Headers & Credit Meters completed (sticky 8-semester column banners, real-time credit summation, multi-semester capstone credit slices, and underload/overload visual badges).
