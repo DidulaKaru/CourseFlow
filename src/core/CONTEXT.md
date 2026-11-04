@@ -1,7 +1,7 @@
 # Core Graph & State Engine
 
 ## 1. Domain Scope & Invariants
-- **Deterministic Swimlane Layout (`layout.ts`):**
+- **Deterministic Swimlane Layout (`layout.ts` - CF-102):**
   - **Horizontal Coordinates ($X$):** Strictly fixed by mathematical formula:
     $$X = (\text{semesterIndex} - 1) \times 280\text{px} + \text{COLUMN\_OFFSET}$$
     Nodes are never freely moved horizontally across semester boundaries.
@@ -11,7 +11,7 @@
   - **Multi-Semester Spanning Modules:** Anchored to their start term with `isMultiSemester: true` and horizontal span width offset.
   - **Edge Generation:** Creates directed prerequisite edges (`source` = prerequisite $\rightarrow$ `target` = dependent) using `smoothstep` routing.
 
-- **Recursive Boolean AST Prerequisite Evaluator (`algorithms/ast_evaluator.ts`):**
+- **Recursive Boolean AST Prerequisite Evaluator (`algorithms/ast_evaluator.ts` - CF-103):**
   - Evaluates recursive boolean trees against student progress:
     - `null`: Unconditional pass (`true`).
     - `COURSE`: Completed set contains `courseId`.
@@ -22,7 +22,7 @@
   - Formatting: `formatPrerequisiteRule` converts recursive AST into mathematical boolean logic strings (e.g. `(EC101 AND EC102) OR (EC105 AND ≥ 30 Credits)`).
   - Progression helpers: `isCourseUnlocked` and `calculateEarnedCredits`.
 
-- **Local-First State Store (`store.ts`):**
+- **Local-First State Store (`store.ts` - CF-104):**
   - Manages global Zustand store with `persist` middleware caching in browser `localStorage` under key `courseflow-local-planner`.
   - Partitioned Persistence: Only `activeProgramId`, `selectedElectiveIds`, and `completedCourseIds` persist; UI drawer state remains transient.
   - Credit Constraints Engine:
@@ -32,7 +32,7 @@
   - Study Plan Portability (ADR-001): `exportPlan` generates formatted JSON with schema version and timestamps; `importPlan` safely rehydrates state with structural validation.
 
 - **Algorithms Roadmap (`algorithms/`):**
-  - `ast_evaluator.ts`: Recursive boolean prerequisite AST engine (CF-103).
+  - `ast_evaluator.ts`: Recursive boolean prerequisite AST engine (CF-103 - Implemented).
   - Cycle detection: DFS 3-coloring algorithm $O(V+E)$.
   - Longest / critical path analysis ($L(u)$ dynamic programming).
 

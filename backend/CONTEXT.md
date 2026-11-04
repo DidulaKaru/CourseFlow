@@ -32,10 +32,13 @@ backend/
 └── requirements.txt               # Python dependencies
 ```
 
-## 3. Endpoints Implemented (CF-105)
-- `GET /api/programs` & `GET /api/v1/programs`: Returns high-level summaries (`DegreeProgramSummary`) for all active degree programs (`computer-eng`, `electrical-eng`).
-- `GET /api/programs/{id}` & `GET /api/v1/programs/{id}`: Returns complete 8-semester curriculum DAG (`DegreeProgram`) with courses, multi-semester capstone splits, and prerequisite ASTs. Returns 404 for unknown IDs.
-- `POST /api/plans/validate` & `POST /api/v1/plans/validate`: Backend validation service for semester credit totals ($\ge 18$ credits warning), term caps ($\le 24$ credits), 150-credit graduation requirement, and prerequisite AST satisfiability.
+## 3. Endpoints & Core Engines Implemented
+- **CF-101 (Schemas & Invariants):** Canonical Pydantic schemas in `schemas/curriculum.py` (`DegreeProgram`, `Course`, `PrerequisiteRule`, `CreditDistribution`).
+- **CF-103 (AST Prerequisite Engine):** Recursive boolean evaluator in `core/ast_evaluator.py` evaluating compound rules with diagnostics.
+- **CF-105 (Degree Metadata & Plan Validation Endpoints):**
+  - `GET /api/programs` & `GET /api/v1/programs`: Returns high-level summaries (`DegreeProgramSummary`) for all active degree programs (`computer-eng`, `electrical-eng`).
+  - `GET /api/programs/{id}` & `GET /api/v1/programs/{id}`: Returns complete 8-semester curriculum DAG (`DegreeProgram`) with courses, multi-semester capstone splits, and prerequisite ASTs. Returns 404 for unknown IDs.
+  - `POST /api/plans/validate` & `POST /api/v1/plans/validate`: Backend validation service for semester credit totals ($\ge 18$ credits warning), term caps ($\le 24$ credits), 150-credit graduation requirement, and prerequisite AST satisfiability.
 
 ## 4. Operational Commands
 - Start dev server: `uvicorn app.main:app --reload --port 8000` (run from `backend/`)

@@ -137,7 +137,7 @@ courseflow/
 
 | Member | Official Role | Core Ownership Domains | Tech Stack | Sprint 1 Jira Tasks (Story Points) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Didula** | Lead Architect & Backend Developer | System architecture, FastAPI REST API, graph algorithms (DFS cycle detection, Kahn's sort, Critical Path), AST evaluation engine, contract sync, PR code review & merge governance. | Python (FastAPI), NetworkX, Pydantic, TypeScript, Git | **CF-101 – CF-105** (23 SP) |
+| **Didula** | Lead Architect & Backend Developer | System architecture, FastAPI REST API, graph algorithms (DFS cycle detection, Kahn's sort, Critical Path), AST evaluation engine, contract sync, PR code review & merge governance. | Python (FastAPI), NetworkX, Pydantic, TypeScript, Git | **CF-101 – CF-105** (23 SP - Completed [x]) |
 | **Malsha** | Frontend & Documentation Specialist | React Flow canvas visualizer, custom Tailwind CourseNode cards, 8-semester swimlane headers, module details drawer, client-side PDF export, Jira board management, Confluence/Markdown documentation. | React 18, TypeScript, Tailwind CSS v4, @xyflow/react, Zustand, @react-pdf/renderer | **CF-111 – CF-117** (31 SP) |
 | **Ishani** | QA & DevOps Engineer | Docker containerization, local development stack orchestration, GitHub Actions CI/CD workflows, automated testing suites (Pytest, Vitest/Playwright), pre-commit gates, code coverage reports. | Docker, GitHub Actions, Pytest, Vitest, Ruff, Husky | **CF-121 – CF-125** (23 SP) |
 | **Anuththara** | Database & AI Engineer | PostgreSQL schema design, Alembic migrations, initial 2-degree program seed data, pdfplumber syllabus parsing, local Ollama runtime (Qwen 2.5 7B), Instructor grammar-guided AST extraction. | PostgreSQL, pgvector, SQLAlchemy, Alembic, pdfplumber, Ollama, Instructor | **CF-131 – CF-135** (21 SP) |
@@ -205,6 +205,7 @@ pytest backend/tests
   - **Sprint Window:** October 12, 2026 – November 01, 2026 (3 Weeks)
   - **Sprint Goal:** Ship a working, zero-login Student Web App for 2 engineering degree programs (Computer Engineering & Electrical Engineering) rendering an 8-semester swimlane DAG canvas, interactive elective selection, >= 18 semester credit checks, 150 total credit validation, multi-semester split credits, and client-side PDF plan export. Complete Docker setup, database schema foundation, and CI/CD quality gates.
   - **Backlog & Engineering Scope:** 14 User Stories (58 SP, US001–US014) | 22 Granular Jira Tasks (98 SP, CF-101–CF-135)
+  - **Didula's Engineering Status:** All 5 assigned tasks (**CF-101 through CF-105, 23 SP**) are 100% complete, verified with unit and integration tests (21 pytest, 52 vitest), and merged into `dev`.
   - **Target Epics:**
     - `CF-EPIC-1`: Curriculum DAG Canvas & Dependency Visualizer (Lead: Malsha & Didula)
     - `CF-EPIC-2`: Interactive Degree Planner & Constraint Engine (Lead: Didula & Malsha)

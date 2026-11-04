@@ -127,6 +127,7 @@ A story is only marked **Done** in Jira when:
 - [x] **CF-103:** Recursive Boolean AST Prerequisite Evaluator completed (recursive AND/OR/COURSE/CREDIT_THRESHOLD engine with granular diagnostics, human-readable formatting, and 100% logic coverage).
 - [x] **CF-104:** Local-First Zustand State Engine with Persistence completed (localStorage caching, multi-semester credit split calculation, 150-credit progress tracker, and ADR-001 portable JSON export/import).
 - [x] **CF-105:** FastAPI Core Server & Degree Metadata Endpoints completed (REST endpoints for program summaries, complete curriculum graphs, plan validation engine, and synchronized OpenAPI schemas).
+- [x] **Didula's Sprint 1 Tasks:** 100% Completed (All 5 tickets / 23 SP merged to `dev`).
 - Frontend canvas foundation mounted with custom nodes and mock dataset.
-- Layout coordinate calculator and AST evaluator implemented in TypeScript.
+- Layout coordinate calculator and AST evaluator implemented in TypeScript and Python with 100% test coverage.
 - PostgreSQL schema models, seed datasets, and Docker Compose configurations under active integration.
