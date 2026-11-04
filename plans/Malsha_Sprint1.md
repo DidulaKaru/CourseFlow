@@ -54,7 +54,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 | :--- | :--- | :--- | :--- | :--- |
 | [x] **CF-111** | Interactive React Flow Canvas Setup | 5 SP | CF-EPIC-1 | Malsha |
 | [x] **CF-112** | Custom CourseNode Component with Tailwind CSS v4 | 5 SP | CF-EPIC-1 | Malsha |
-| **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Malsha |
+| [x] **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Malsha |
 | **CF-114** | Slide-Over Module Details Drawer | 5 SP | CF-EPIC-1 | Malsha |
 | **CF-115** | Degree Switcher Navigation Bar | 3 SP | CF-EPIC-1 | Malsha |
 | **CF-116** | Client-Side PDF Study Plan Exporter | 5 SP | CF-EPIC-3 | Malsha |
@@ -70,7 +70,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-113: Semester Swimlane Column Headers & Credit Meters (5 SP)        │
+│ [x] CF-113: Semester Swimlane Column Headers & Credit Meters (5 SP)        │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -125,7 +125,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 
 ---
 
-### CF-113: Semester Swimlane Column Headers & Credit Meters (5 SP)
+### [x] CF-113: Semester Swimlane Column Headers & Credit Meters (5 SP)
 * **Description:** Construct sticky semester headers (Semesters 1-8) featuring real-time credit summation and red visual warnings when load < 18 credits.
 * **Target Files:**
   - `src/features/canvas/components/SwimlaneHeader.tsx`
@@ -138,7 +138,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
   3. Visual feedback:
      - Green pill indicator when $18 \le \text{credits} \le 24$.
      - Red/Amber warning badge with alert icon when $\text{credits} < 18$ or $\text{credits} > 24$.
-* **Acceptance Criteria:** Header shows current semester credit sum and updates in real time on elective toggle.
+* **Acceptance Criteria:** [x] Header shows current semester credit sum and updates in real time on elective toggle.
 
 ---
 

@@ -17,6 +17,7 @@ import { mockCourses } from '@/data/mockCourses';
 import type { Course } from '@/types/curriculum';
 import { CourseNode } from './components/CourseNode';
 import type { ExtendedCourseNodeData } from './components/CourseNode';
+import { SwimlaneHeaders } from './components/SwimlaneHeader';
 import {
     applyGraphHighlights,
     getDownstreamCourseIds,
@@ -197,6 +198,9 @@ export function CurriculumCanvas({
                 proOptions={{ hideAttribution: true }}
                 className="w-full h-full"
             >
+                {/* 8-Semester Sticky Swimlane Column Headers & Credit Meters (CF-113) */}
+                <SwimlaneHeaders courses={courses} />
+
                 {/* Viewport Controls: Zoom, Pan, FitView */}
                 <Controls
                     showInteractive={false}
