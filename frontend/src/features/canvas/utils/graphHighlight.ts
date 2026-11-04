@@ -76,7 +76,8 @@ export function getDownstreamCourseIds(nodeId: string, edges: Edge[]): Set<strin
 }
 
 /**
- * Applies illumination and dimming to nodes and edges based on active course selection/hover.
+ * Applies illumination and dimming to constellation nodes and edges
+ * based on active course selection/hover in the Skyrim Skill Tree.
  */
 export function applyGraphHighlights(
     activeId: string | null,
@@ -84,7 +85,7 @@ export function applyGraphHighlights(
     edges: Edge[]
 ): GraphHighlightResult {
     if (!activeId) {
-        // Return default normal states for all nodes and edges
+        // Dormant State: Faint, cold starlight ray (strokeWidth: 1.25px, opacity: 0.65)
         const resetNodes: AnyCanvasNode[] = nodes.map((n) => {
             if (n.type !== 'courseNode') {
                 return n;
@@ -102,8 +103,8 @@ export function applyGraphHighlights(
             ...e,
             animated: false,
             style: {
-                stroke: '#64748b',
-                strokeWidth: 1.5,
+                stroke: 'rgba(255, 255, 255, 0.15)',
+                strokeWidth: 1.25,
                 opacity: 0.65,
                 strokeDasharray: e.style?.strokeDasharray,
             },
@@ -160,7 +161,7 @@ export function applyGraphHighlights(
                 animated: true,
                 style: {
                     stroke: '#06b6d4',
-                    strokeWidth: 2.5,
+                    strokeWidth: 1.75,
                     opacity: 1,
                     strokeDasharray: e.style?.strokeDasharray,
                 },
@@ -173,20 +174,21 @@ export function applyGraphHighlights(
                 animated: true,
                 style: {
                     stroke: '#10b981',
-                    strokeWidth: 2.5,
+                    strokeWidth: 1.75,
                     opacity: 1,
                     strokeDasharray: e.style?.strokeDasharray,
                 },
             };
         }
 
+        // Non-connected paths drop to opacity: 0.08
         return {
             ...e,
             animated: false,
             style: {
-                stroke: '#334155',
+                stroke: 'rgba(255, 255, 255, 0.08)',
                 strokeWidth: 1,
-                opacity: 0.15,
+                opacity: 0.08,
                 strokeDasharray: e.style?.strokeDasharray,
             },
         };
