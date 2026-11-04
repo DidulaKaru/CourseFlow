@@ -67,6 +67,35 @@ def test_compound_logical_rules():
     assert evaluate_prerequisite(rule, {"EC101"}, 30) is False
 
 
+def test_deeply_nested_compound_ast():
+    """Verify 4-level deep nested AST expression evaluates correctly."""
+    # (A AND (B OR (C AND (Credits >= 60))))
+    rule: PrerequisiteRule = LogicalRuleNode(
+        type="AND",
+        children=[
+            CourseRuleNode(course_id="A"),
+            LogicalRuleNode(
+                type="OR",
+                children=[
+                    CourseRuleNode(course_id="B"),
+                    LogicalRuleNode(
+                        type="AND",
+                        children=[
+                            CourseRuleNode(course_id="C"),
+                            CreditThresholdRuleNode(min_credits=60),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    assert evaluate_prerequisite(rule, {"A", "B"}, 0) is True
+    assert evaluate_prerequisite(rule, {"A", "C"}, 60) is True
+    assert evaluate_prerequisite(rule, {"A", "C"}, 59) is False
+    assert evaluate_prerequisite(rule, {"B", "C"}, 100) is False
+
+
 def test_diagnostics_and_formatting():
     """Verify diagnostic breakdowns and human-readable formatting."""
     rule: PrerequisiteRule = LogicalRuleNode(
@@ -91,3 +120,20 @@ def test_diagnostics_and_formatting():
 
     formatted = format_prerequisite_rule(rule)
     assert formatted == "CE3001 AND (MA2001 OR MA2002) AND ≥ 90 Credits"
+
+
+def test_diagnostics_fully_satisfied():
+    """Verify diagnostic properties when all prerequisite criteria are met."""
+    rule: PrerequisiteRule = LogicalRuleNode(
+        type="AND",
+        children=[
+            CourseRuleNode(course_id="MA1001"),
+            CreditThresholdRuleNode(min_credits=30),
+        ],
+    )
+
+    diag = evaluate_prerequisite_with_diagnostics(rule, {"MA1001"}, 30)
+    assert diag.is_satisfied is True
+    assert len(diag.missing_course_ids) == 0
+    assert diag.credit_deficit == 0
+    assert "Prerequisites satisfied" in diag.summary

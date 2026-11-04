@@ -114,11 +114,20 @@ export const CourseNode = memo(function CourseNode({
             }}
             title={`${course.code}: ${course.title} — ${course.description || prereqEval.summary}`}
         >
-            {/* Target Handle: incoming prerequisite connections (Left) */}
+            {/* Primary Target Handle: incoming prerequisite connections from above (Top) */}
+            <Handle
+                type="target"
+                position={Position.Top}
+                id="top"
+                className="!w-3 !h-3 !bg-cyan-400 !border-2 !border-slate-900 transition-transform hover:!scale-125 -top-1.5"
+            />
+
+            {/* Supplementary Target Handle for horizontal compatibility */}
             <Handle
                 type="target"
                 position={Position.Left}
-                className="!w-2.5 !h-2.5 !bg-cyan-400 !border-2 !border-slate-900 transition-transform hover:!scale-125"
+                id="left"
+                className="!w-2 !h-2 !bg-cyan-400/50 !border !border-slate-900 opacity-40 hover:opacity-100"
             />
 
             {/* 1. Header: Course Code, Credit Pill, Type Badge, and Quick Completion Toggle */}
@@ -235,11 +244,20 @@ export const CourseNode = memo(function CourseNode({
                 )}
             </div>
 
-            {/* Source Handle: outgoing unlocked connections (Right) */}
+            {/* Primary Source Handle: outgoing unlocked connections downward (Bottom) */}
+            <Handle
+                type="source"
+                position={Position.Bottom}
+                id="bottom"
+                className="!w-3 !h-3 !bg-emerald-400 !border-2 !border-slate-900 transition-transform hover:!scale-125 -bottom-1.5"
+            />
+
+            {/* Supplementary Source Handle for horizontal compatibility */}
             <Handle
                 type="source"
                 position={Position.Right}
-                className="!w-2.5 !h-2.5 !bg-emerald-400 !border-2 !border-slate-900 transition-transform hover:!scale-125"
+                id="right"
+                className="!w-2 !h-2 !bg-emerald-400/50 !border !border-slate-900 opacity-40 hover:opacity-100"
             />
         </div>
     );

@@ -4,30 +4,34 @@ import {
     BackgroundVariant,
     Controls,
     MiniMap,
+    PanOnScrollMode,
     ReactFlow,
+    ReactFlowProvider,
     useEdgesState,
     useNodesState,
+    useReactFlow,
 } from '@xyflow/react';
 import type { Edge, NodeMouseHandler } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
 import { calculateLayout } from '@/core/layout';
-import type { CourseLayoutNode } from '@/core/layout';
 import { usePlannerStore } from '@/core/store';
 import { mockCourses } from '@/data/mockCourses';
 import type { Course } from '@/types/curriculum';
 import { CourseNode } from './components/CourseNode';
 import type { ExtendedCourseNodeData } from './components/CourseNode';
-import { SwimlaneHeaders } from './components/SwimlaneHeader';
+import { SwimlaneHeaderNode } from './components/SwimlaneHeader';
 import {
     applyGraphHighlights,
     getDownstreamCourseIds,
     getUpstreamCourseIds,
+    type AnyCanvasNode,
 } from './utils/graphHighlight';
 
-// Register node types at module level to prevent re-instantiation across renders
+// Register node types at module level
 const nodeTypes = {
     courseNode: CourseNode,
+    swimlaneHeader: SwimlaneHeaderNode,
 };
 
 const defaultEdgeOptions: Partial<Edge> = {
@@ -41,11 +45,13 @@ export interface CurriculumCanvasProps {
     className?: string;
 }
 
-export function CurriculumCanvas({
+function InnerCurriculumCanvas({
     courses = mockCourses,
     programName = 'Computer Engineering',
     className = '',
 }: CurriculumCanvasProps) {
+    const { setViewport, getViewport } = useReactFlow();
+
     // Selection and hover states
     const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
     const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
@@ -56,13 +62,13 @@ export function CurriculumCanvas({
     // Zustand store action to inspect course in slide-over drawer
     const openCourseDrawer = usePlannerStore((state) => state.openCourseDrawer);
 
-    // 1. Calculate deterministic layout from courses
+    // 1. Calculate deterministic top-to-bottom layout from courses
     const layout = useMemo(() => {
         return calculateLayout(courses);
     }, [courses]);
 
     // 2. React Flow node and edge state collections
-    const [nodes, setNodes, onNodesChange] = useNodesState<CourseLayoutNode>(layout.nodes);
+    const [nodes, setNodes, onNodesChange] = useNodesState<AnyCanvasNode>(layout.nodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(layout.edges);
 
     // Derived active dependency statistics for the HUD overlay
@@ -98,19 +104,24 @@ export function CurriculumCanvas({
     }
 
     // 4. Hover handlers
-    const handleNodeMouseEnter: NodeMouseHandler<CourseLayoutNode> = useCallback((_, node) => {
-        setHoveredCourseId(node.id);
+    const handleNodeMouseEnter: NodeMouseHandler<AnyCanvasNode> = useCallback((_, node) => {
+        if (node.type === 'courseNode') {
+            setHoveredCourseId(node.id);
+        }
     }, []);
 
-    const handleNodeMouseLeave: NodeMouseHandler<CourseLayoutNode> = useCallback(() => {
+    const handleNodeMouseLeave: NodeMouseHandler<AnyCanvasNode> = useCallback(() => {
         setHoveredCourseId(null);
     }, []);
 
     // 5. Selection handlers (click node to toggle selection, click canvas pane to deselect)
-    const handleNodeClick: NodeMouseHandler<CourseLayoutNode> = useCallback(
+    const handleNodeClick: NodeMouseHandler<AnyCanvasNode> = useCallback(
         (_, node) => {
-            setSelectedCourseId((prev) => (prev === node.id ? null : node.id));
-            openCourseDrawer(node.data.course);
+            if (node.type === 'courseNode' && 'course' in node.data) {
+                const course = (node.data as { course: Course }).course;
+                setSelectedCourseId((prev) => (prev === node.id ? null : node.id));
+                openCourseDrawer(course);
+            }
         },
         [openCourseDrawer]
     );
@@ -120,15 +131,41 @@ export function CurriculumCanvas({
         setHoveredCourseId(null);
     }, []);
 
+    // 6. Smooth Jump to Semester Handler
+    const handleJumpToSemester = useCallback(
+        (semesterY: number) => {
+            const current = getViewport();
+            setViewport(
+                {
+                    x: current.x,
+                    y: -semesterY * current.zoom + 80,
+                    zoom: current.zoom,
+                },
+                { duration: 400 }
+            );
+        },
+        [getViewport, setViewport]
+    );
+
     // Lookup active course model for the HUD info banner
     const activeCourse = useMemo(() => {
         if (!activeCourseId) return null;
         return courses.find((c) => c.id === activeCourseId) ?? null;
     }, [activeCourseId, courses]);
 
+    // Responsive initial viewport positioning
+    const initialViewport = useMemo(() => {
+        if (typeof window === 'undefined') return { x: 40, y: 30, zoom: 0.95 };
+        const windowW = window.innerWidth;
+        const targetW = 1360;
+        const zoom = Math.min(1.0, Math.max(0.75, (windowW - 80) / targetW));
+        const x = Math.max(20, (windowW - targetW * zoom) / 2);
+        return { x, y: 30, zoom };
+    }, []);
+
     return (
         <div className={`relative w-full h-full bg-slate-950 overflow-hidden ${className}`}>
-            {/* Top HUD: Program Info & Dependency Legend */}
+            {/* Top HUD: Program Info, Graph Highlight Legend & Semester Jump Bar */}
             <div className="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-3 bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-slate-800 shadow-2xl pointer-events-auto">
                 <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse" />
@@ -157,6 +194,23 @@ export function CurriculumCanvas({
                         <span className="w-2 h-2 rounded-full bg-indigo-400" />
                         <span>Active</span>
                     </div>
+                </div>
+
+                <div className="h-4 w-[1px] bg-slate-800 hidden md:block" />
+
+                {/* Quick Semester Jump Pills */}
+                <div className="flex items-center gap-1">
+                    {layout.semesters.map((sem) => (
+                        <button
+                            key={`jump-${sem.semesterIndex}`}
+                            type="button"
+                            onClick={() => handleJumpToSemester(sem.y)}
+                            className="px-2 py-0.5 text-[10px] font-semibold text-slate-400 hover:text-white hover:bg-slate-800/90 rounded border border-transparent hover:border-slate-700 transition-colors font-mono cursor-pointer"
+                            title={`Jump to Semester ${sem.semesterIndex}`}
+                        >
+                            S{sem.semesterIndex}
+                        </button>
+                    ))}
                 </div>
             </div>
 
@@ -205,19 +259,18 @@ export function CurriculumCanvas({
                 onPaneClick={handlePaneClick}
                 nodeTypes={nodeTypes}
                 defaultEdgeOptions={defaultEdgeOptions}
-                fitView
-                fitViewOptions={{ padding: 0.15 }}
-                minZoom={0.2}
-                maxZoom={2.0}
+                panOnScroll={true}
+                panOnScrollMode={PanOnScrollMode.Vertical}
+                zoomOnScroll={false}
+                defaultViewport={initialViewport}
+                minZoom={0.4}
+                maxZoom={1.5}
                 nodesConnectable={false}
                 elementsSelectable={true}
                 proOptions={{ hideAttribution: true }}
                 className="w-full h-full"
             >
-                {/* 8-Semester Sticky Swimlane Column Headers & Credit Meters (CF-113) */}
-                <SwimlaneHeaders courses={courses} />
-
-                {/* Viewport Controls: Zoom, Pan, FitView */}
+                {/* Viewport Controls: Zoom, Pan, Reset */}
                 <Controls
                     showInteractive={false}
                     className="!bg-slate-900/90 !border !border-slate-800 !rounded-xl !shadow-2xl !p-1 [&>button]:!bg-slate-800 [&>button]:!border-slate-700 [&>button]:!fill-slate-300 [&>button:hover]:!bg-slate-700"
@@ -234,6 +287,7 @@ export function CurriculumCanvas({
                 {/* Minimap for Canvas Navigation */}
                 <MiniMap
                     nodeColor={(n) => {
+                        if (n.type === 'swimlaneHeader') return '#3b82f6';
                         const data = n.data as unknown as ExtendedCourseNodeData;
                         if (data.highlightStatus === 'active') return '#6366f1';
                         if (data.highlightStatus === 'upstream') return '#06b6d4';
@@ -262,5 +316,13 @@ export function CurriculumCanvas({
                 />
             </ReactFlow>
         </div>
+    );
+}
+
+export function CurriculumCanvas(props: CurriculumCanvasProps) {
+    return (
+        <ReactFlowProvider>
+            <InnerCurriculumCanvas {...props} />
+        </ReactFlowProvider>
     );
 }

@@ -81,20 +81,20 @@
 ### Ishani (QA & DevOps Engineer) — 23 SP
 | Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
 | :--- | :--- | :--- | :--- | :--- |
-| **CF-121** | Docker Compose Local Environment Stack | 5 | CF-EPIC-4 | `docker compose up` starts all services with zero manual configuration. |
-| **CF-122** | GitHub Actions CI/CD Pipeline & Branch Airlocks | 5 | CF-EPIC-4 | Pull requests are blocked on GitHub if any check fails. |
-| **CF-123** | Pre-Commit Quality Hooks (Husky & Lint-Staged) | 3 | CF-EPIC-4 | Commits containing TypeScript errors or formatting defects are rejected locally. |
-| **CF-124** | Automated Backend Test Suite (Pytest) | 5 | CF-EPIC-4 | Test suite achieves >= 85% code coverage across core algorithmic modules. |
-| **CF-125** | Automated Frontend Test Suite (Vitest) | 5 | CF-EPIC-4 | All frontend tests pass in under 5 seconds in CI pipeline. |
+| [x] **CF-121** | Docker Compose Local Environment Stack | 5 | CF-EPIC-4 | `docker compose up` starts all services with zero manual configuration. |
+| [x] **CF-122** | GitHub Actions CI/CD Pipeline & Branch Airlocks | 5 | CF-EPIC-4 | Pull requests are blocked on GitHub if any check fails. |
+| [x] **CF-123** | Pre-Commit Quality Hooks (Husky & Lint-Staged) | 3 | CF-EPIC-4 | Commits containing TypeScript errors or formatting defects are rejected locally. |
+| [x] **CF-124** | Automated Backend Test Suite (Pytest) | 5 | CF-EPIC-4 | Test suite achieves >= 85% code coverage across core algorithmic modules. |
+| [x] **CF-125** | Automated Frontend Test Suite (Vitest) | 5 | CF-EPIC-4 | All frontend tests pass in under 5 seconds in CI pipeline. |
 
 ### Anuththara (Database & AI Engineer) — 21 SP
 | Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
 | :--- | :--- | :--- | :--- | :--- |
-| **CF-131** | PostgreSQL Database Initialization & SQLAlchemy Models | 5 | CF-EPIC-5 | Tables created with foreign keys, unique course code constraints, and JSONB columns for AST trees. |
-| **CF-132** | Database Migration Framework (Alembic) | 3 | CF-EPIC-5 | `alembic upgrade head` runs cleanly from a fresh database container. |
-| **CF-133** | Curriculum Dataset Collection & Validation: Computer Engineering | 5 | CF-EPIC-5 | All core and elective modules, prerequisites, and credit distributions validated with zero syntax errors. |
-| **CF-134** | Curriculum Dataset Collection & Validation: Electrical Engineering | 5 | CF-EPIC-5 | Complete curriculum accurately represented; all cross-departmental prerequisites resolve. |
-| **CF-135** | Automated Database Seeder Script | 3 | CF-EPIC-5 | Script runs idempotently (safe to re-run without creating duplicate records). |
+| [x] **CF-131** | PostgreSQL Database Initialization & SQLAlchemy Models | 5 | CF-EPIC-5 | Tables created with foreign keys, unique course code constraints, and JSONB columns for AST trees. |
+| [x] **CF-132** | Database Migration Framework (Alembic) | 3 | CF-EPIC-5 | `alembic upgrade head` runs cleanly from a fresh database container. |
+| [x] **CF-133** | Curriculum Dataset Collection & Validation: Computer Engineering | 5 | CF-EPIC-5 | All core and elective modules, prerequisites, and credit distributions validated with zero syntax errors. |
+| [x] **CF-134** | Curriculum Dataset Collection & Validation: Electrical Engineering | 5 | CF-EPIC-5 | Complete curriculum accurately represented; all cross-departmental prerequisites resolve. |
+| [x] **CF-135** | Automated Database Seeder Script | 3 | CF-EPIC-5 | Script runs idempotently (safe to re-run without creating duplicate records). |
 
 ---
 
@@ -122,6 +122,11 @@ A story is only marked **Done** in Jira when:
 ---
 
 ## 7. Current Execution Status
+- [x] **CF-135:** Automated Database Seeder Script completed (`seed_db.py` idempotently upserts programs, courses, credit distributions, and AST rules).
+- [x] **CF-134:** Curriculum Dataset: Electrical Engineering completed and validated (`electrical_engineering.json` with 95 courses, 0 dangling references).
+- [x] **CF-133:** Curriculum Dataset: Computer Engineering completed and validated (`computer_engineering.json` with 80 courses, 0 dangling references).
+- [x] **CF-132:** Database Migration Framework (Alembic) completed (`0001_initial_curriculum_tables.py` verified with upgrade/downgrade).
+- [x] **CF-131:** PostgreSQL Database Initialization & SQLAlchemy Models completed (`app/models/curriculum.py` with `DegreeProgram`, `Course`, `CreditDistribution`, `PrerequisiteRule`, `program_courses`).
 - [x] **CF-116:** Client-Side PDF Study Plan Exporter completed (StudyPlanPDF official 2-page academic layout with @react-pdf/renderer, 8-semester tabular credit breakdown, multi-semester capstone split credit accounting, official compliance verification stamp, dynamic filename CourseFlow_Plan_<Degree>_<Timestamp>.pdf, and ExportPdfButton embedded in TopNav).
 - [x] **CF-115:** Degree Switcher Navigation Bar completed (TopNav with CourseFlow brand identity, DegreeSelector dropdown for Computer Engineering and Electrical and Information Engineering, global graduation credit meter tracking N / 150 Credits with eligibility status, and instant zero-reload canvas graph recomputation via Zustand activeProgramId).
 - [x] **CF-114:** Slide-Over Module Details Drawer completed (smooth right slide-in, Escape/backdrop dismissal, syllabus objectives, contact hours breakdown, AST prerequisite logic chips, multi-semester timeline, and interactive study plan toggles).
@@ -134,6 +139,7 @@ A story is only marked **Done** in Jira when:
 - [x] **CF-104:** Local-First Zustand State Engine with Persistence completed (localStorage caching, multi-semester credit split calculation, 150-credit progress tracker, and ADR-001 portable JSON export/import).
 - [x] **CF-105:** FastAPI Core Server & Degree Metadata Endpoints completed (REST endpoints for program summaries, complete curriculum graphs, plan validation engine, and synchronized OpenAPI schemas).
 - [x] **Didula's Sprint 1 Tasks:** 100% Completed (All 5 tickets / 23 SP merged to `dev`).
+- [x] **Anuththara's Sprint 1 Tasks:** 100% Completed (All 5 tickets / 21 SP verified and seeded into PostgreSQL).
 - Frontend canvas foundation mounted with custom nodes and mock dataset.
 - Layout coordinate calculator and AST evaluator implemented in TypeScript and Python with 100% test coverage.
-- PostgreSQL schema models, seed datasets, and Docker Compose configurations under active integration.
+- PostgreSQL schema models, seed datasets, and database migrations fully operational and validated.

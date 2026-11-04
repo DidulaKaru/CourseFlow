@@ -90,7 +90,7 @@ def test_credit_distribution_validation():
 def test_mock_course_parsing():
     """Verify Course model parses the official mock_course.json data."""
     repo_root = Path(__file__).resolve().parent.parent.parent
-    mock_file = repo_root / "src" / "data" / "mock_course.json"
+    mock_file = (repo_root / "frontend" / "src" / "data" / "mock_course.json" if (repo_root / "frontend" / "src" / "data" / "mock_course.json").exists() else repo_root / "src" / "data" / "mock_course.json")
     assert mock_file.exists(), f"mock_course.json not found at {mock_file}"
 
     with open(mock_file, encoding="utf-8") as f:

@@ -44,37 +44,37 @@ Anuththara leads database architecture, schema migrations, authoritative curricu
 
 | Ticket Key | Task Summary | Story Points | Target Epic | Assigned |
 | :--- | :--- | :--- | :--- | :--- |
-| **CF-131** | PostgreSQL Database Initialization & SQLAlchemy Models | 5 SP | CF-EPIC-5 | Anuththara |
-| **CF-132** | Database Migration Framework (Alembic) | 3 SP | CF-EPIC-5 | Anuththara |
-| **CF-133** | Curriculum Dataset Collection & Validation: Computer Engineering | 5 SP | CF-EPIC-5 | Anuththara |
-| **CF-134** | Curriculum Dataset Collection & Validation: Electrical Engineering | 5 SP | CF-EPIC-5 | Anuththara |
-| **CF-135** | Automated Database Seeder Script | 3 SP | CF-EPIC-5 | Anuththara |
+| [x] **CF-131** | PostgreSQL Database Initialization & SQLAlchemy Models | 5 SP | CF-EPIC-5 | Anuththara |
+| [x] **CF-132** | Database Migration Framework (Alembic) | 3 SP | CF-EPIC-5 | Anuththara |
+| [x] **CF-133** | Curriculum Dataset Collection & Validation: Computer Engineering | 5 SP | CF-EPIC-5 | Anuththara |
+| [x] **CF-134** | Curriculum Dataset Collection & Validation: Electrical Engineering | 5 SP | CF-EPIC-5 | Anuththara |
+| [x] **CF-135** | Automated Database Seeder Script | 3 SP | CF-EPIC-5 | Anuththara |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│ CF-131: PostgreSQL Database Initialization & SQLAlchemy Models (5 SP)   │
+│ [x] CF-131: PostgreSQL Database Initialization & SQLAlchemy Models (5 SP)
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-132: Database Migration Framework (Alembic) (3 SP)                  │
+│ [x] CF-132: Database Migration Framework (Alembic) (3 SP)              │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-133: Curriculum Dataset: Computer Engineering (5 SP)                │
+│ [x] CF-133: Curriculum Dataset: Computer Engineering (5 SP)            │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-134: Curriculum Dataset: Electrical Engineering (5 SP)              │
+│ [x] CF-134: Curriculum Dataset: Electrical Engineering (5 SP)          │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-135: Automated Database Seeder Script (3 SP)                        │
+│ [x] CF-135: Automated Database Seeder Script (3 SP)                    │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### CF-131: PostgreSQL Database Initialization & SQLAlchemy Models (5 SP)
+### [x] CF-131: PostgreSQL Database Initialization & SQLAlchemy Models (5 SP)
 * **Description:** Design relational schema: `degree_programs`, `courses`, `prerequisite_rules`, and `credit_distributions`.
 * **Target Files:**
   - `backend/app/models/curriculum.py`
@@ -84,11 +84,11 @@ Anuththara leads database architecture, schema migrations, authoritative curricu
   2. `Course`: `id` (VARCHAR PK), `code` (VARCHAR UNIQUE), `title`, `description`, `total_credits`, `duration_semesters`, `recommended_semester`, `type` (`CORE`, `ELECTIVE`, `LAB`, `CAPSTONE`), `prerequisite_rule` (native `JSONB` for AST tree), `corequisites` (JSONB array), `offered_semesters` (JSONB array).
   3. `CreditDistribution`: `id` (SERIAL PK), `course_id` (FK -> `courses.id`), `semester_index`, `credits_allocated`.
   4. Enable `CREATE EXTENSION IF NOT EXISTS vector;` for pgvector readiness.
-* **Acceptance Criteria:** Tables created with foreign keys, unique course code constraints, and JSONB columns for AST trees.
+* **Acceptance Criteria:** [x] Tables created with foreign keys, unique course code constraints, and JSONB columns for AST trees.
 
 ---
 
-### CF-132: Database Migration Framework (Alembic) (3 SP)
+### [x] CF-132: Database Migration Framework (Alembic) (3 SP)
 * **Description:** Configure Alembic migration pipeline for automated, reproducible schema evolution.
 * **Target Files:**
   - `backend/alembic.ini`
@@ -99,11 +99,11 @@ Anuththara leads database architecture, schema migrations, authoritative curricu
   2. Import SQLAlchemy `Base.metadata` in `env.py` for automated migration generation.
   3. Generate initial migration revision: `0001_initial_curriculum_tables.py`.
   4. Validate rollback with `alembic downgrade -1` and re-apply with `alembic upgrade head`.
-* **Acceptance Criteria:** `alembic upgrade head` runs cleanly from a fresh database container.
+* **Acceptance Criteria:** [x] `alembic upgrade head` runs cleanly from a fresh database container.
 
 ---
 
-### CF-133: Curriculum Dataset Collection & Validation: Computer Engineering (5 SP)
+### [x] CF-133: Curriculum Dataset Collection & Validation: Computer Engineering (5 SP)
 * **Description:** Transcribe all 8 semesters of Computer Engineering into a validated JSON seed file and database seed script.
 * **Target Files:**
   - `src/data/programs/computer_engineering.json`
@@ -112,11 +112,11 @@ Anuththara leads database architecture, schema migrations, authoritative curricu
   2. Multi-semester course modeling: Model 6-credit Final Year Project spanning Semester 7 (3 credits) and Semester 8 (3 credits) via `creditDistribution`.
   3. Prerequisite AST modeling: Convert all faculty handbook prerequisites into valid recursive boolean AST structures (`COURSE`, `AND`, `OR`, `CREDIT_THRESHOLD`).
   4. Ensure all referenced `courseId` values exist within the dataset.
-* **Acceptance Criteria:** All core and elective modules, prerequisites, and credit distributions validated with zero syntax errors.
+* **Acceptance Criteria:** [x] All core and elective modules, prerequisites, and credit distributions validated with zero syntax errors.
 
 ---
 
-### CF-134: Curriculum Dataset Collection & Validation: Electrical Engineering (5 SP)
+### [x] CF-134: Curriculum Dataset Collection & Validation: Electrical Engineering (5 SP)
 * **Description:** Transcribe all 8 semesters of Electrical Engineering into a validated JSON seed file and database seed script.
 * **Target Files:**
   - `src/data/programs/electrical_engineering.json`
@@ -125,11 +125,11 @@ Anuththara leads database architecture, schema migrations, authoritative curricu
   2. Model 2-semester spanning modules with discrete credit distribution arrays.
   3. Resolve all cross-departmental prerequisites (e.g., shared mathematics, basic computing, and electronics courses).
   4. Verify total required credits $\ge 150$ with semester credit loads within 18–24 boundaries.
-* **Acceptance Criteria:** Complete curriculum accurately represented; all cross-departmental prerequisites resolve.
+* **Acceptance Criteria:** [x] Complete curriculum accurately represented; all cross-departmental prerequisites resolve.
 
 ---
 
-### CF-135: Automated Database Seeder Script (3 SP)
+### [x] CF-135: Automated Database Seeder Script (3 SP)
 * **Description:** Write `scripts/seed_db.py` populating PostgreSQL directly from validated JSON curriculum files.
 * **Target Files:**
   - `backend/scripts/seed_db.py`
@@ -138,7 +138,7 @@ Anuththara leads database architecture, schema migrations, authoritative curricu
   2. Upsert `degree_programs` records.
   3. Upsert `courses` and associated `credit_distributions`.
   4. Validate data integrity: Check for dangling prerequisite course codes and ensure idempotent execution (re-running does not duplicate rows or violate constraints).
-* **Acceptance Criteria:** Script runs idempotently (safe to re-run without creating duplicate records).
+* **Acceptance Criteria:** [x] Script runs idempotently (safe to re-run without creating duplicate records).
 
 ---
 
@@ -157,10 +157,10 @@ Anuththara leads database architecture, schema migrations, authoritative curricu
 ## 5. Definition of Done (DoD) & Quality Gates
 
 A story or engineering task is marked **Done** in Jira only when:
-- [ ] Code is implemented on an isolated `feature/<ticket>-<description>` branch.
-- [ ] Unit & integration tests pass with zero regressions (`npm test` and `pytest`).
-- [ ] Static typecheck passes (`npx tsc --noEmit` and Python `ruff` / typecheck).
-- [ ] PR is opened targeting `dev`, passing GitHub Actions CI checks (CourseFlow Quality Gate).
-- [ ] PR is reviewed and approved by Didula (Lead Architect).
-- [ ] PR is Squash Merged into `dev` and local branches are synchronized.
-- [ ] Feature is validated against acceptance criteria on the live development build.
+- [x] Code is implemented on an isolated `feature/<ticket>-<description>` branch.
+- [x] Unit & integration tests pass with zero regressions (`npm test` and `pytest`).
+- [x] Static typecheck passes (`npx tsc --noEmit` and Python `ruff` / typecheck).
+- [x] PR is opened targeting `dev`, passing GitHub Actions CI checks (CourseFlow Quality Gate).
+- [x] PR is reviewed and approved by Didula (Lead Architect).
+- [x] PR is Squash Merged into `dev` and local branches are synchronized.
+- [x] Feature is validated against acceptance criteria on the live development build.

@@ -1,9 +1,11 @@
-import type { Edge } from '@xyflow/react';
-import type { CourseLayoutNode } from '@/core/layout';
+import type { Edge, Node } from '@xyflow/react';
+import type { CourseLayoutNode, SwimlaneHeaderLayoutNode } from '@/core/layout';
 import type { NodeHighlightStatus } from '../components/CourseNode';
 
+export type AnyCanvasNode = CourseLayoutNode | SwimlaneHeaderLayoutNode | Node;
+
 export interface GraphHighlightResult {
-    nodes: CourseLayoutNode[];
+    nodes: AnyCanvasNode[];
     edges: Edge[];
     upstreamIds: Set<string>;
     downstreamIds: Set<string>;
@@ -78,18 +80,23 @@ export function getDownstreamCourseIds(nodeId: string, edges: Edge[]): Set<strin
  */
 export function applyGraphHighlights(
     activeId: string | null,
-    nodes: CourseLayoutNode[],
+    nodes: AnyCanvasNode[],
     edges: Edge[]
 ): GraphHighlightResult {
     if (!activeId) {
         // Return default normal states for all nodes and edges
-        const resetNodes: CourseLayoutNode[] = nodes.map((n) => ({
-            ...n,
-            data: {
-                ...n.data,
-                highlightStatus: 'normal' as NodeHighlightStatus,
-            },
-        }));
+        const resetNodes: AnyCanvasNode[] = nodes.map((n) => {
+            if (n.type !== 'courseNode') {
+                return n;
+            }
+            return {
+                ...n,
+                data: {
+                    ...n.data,
+                    highlightStatus: 'normal' as NodeHighlightStatus,
+                },
+            };
+        });
 
         const resetEdges: Edge[] = edges.map((e) => ({
             ...e,
@@ -114,7 +121,11 @@ export function applyGraphHighlights(
     const downstreamIds = getDownstreamCourseIds(activeId, edges);
 
     // Update nodes
-    const updatedNodes: CourseLayoutNode[] = nodes.map((n) => {
+    const updatedNodes: AnyCanvasNode[] = nodes.map((n) => {
+        if (n.type !== 'courseNode') {
+            return n;
+        }
+
         let status: NodeHighlightStatus = 'dimmed';
         if (n.id === activeId) {
             status = 'active';
@@ -148,7 +159,7 @@ export function applyGraphHighlights(
                 ...e,
                 animated: true,
                 style: {
-                    stroke: '#06b6d4', // Cyan for upstream prerequisites
+                    stroke: '#06b6d4',
                     strokeWidth: 2.5,
                     opacity: 1,
                     strokeDasharray: e.style?.strokeDasharray,
@@ -161,7 +172,7 @@ export function applyGraphHighlights(
                 ...e,
                 animated: true,
                 style: {
-                    stroke: '#10b981', // Emerald for downstream unlocked modules
+                    stroke: '#10b981',
                     strokeWidth: 2.5,
                     opacity: 1,
                     strokeDasharray: e.style?.strokeDasharray,
@@ -175,7 +186,7 @@ export function applyGraphHighlights(
             style: {
                 stroke: '#334155',
                 strokeWidth: 1,
-                opacity: 0.12,
+                opacity: 0.15,
                 strokeDasharray: e.style?.strokeDasharray,
             },
         };
