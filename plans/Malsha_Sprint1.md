@@ -56,7 +56,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 | [x] **CF-112** | Custom CourseNode Component with Tailwind CSS v4 | 5 SP | CF-EPIC-1 | Malsha |
 | [x] **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Malsha |
 | [x] **CF-114** | Slide-Over Module Details Drawer | 5 SP | CF-EPIC-1 | Malsha |
-| **CF-115** | Degree Switcher Navigation Bar | 3 SP | CF-EPIC-1 | Malsha |
+| [x] **CF-115** | Degree Switcher Navigation Bar | 3 SP | CF-EPIC-1 | Malsha |
 | **CF-116** | Client-Side PDF Study Plan Exporter | 5 SP | CF-EPIC-3 | Malsha |
 | **CF-117** | Project Documentation & Jira Board Initialization | 3 SP | Governance | Malsha |
 
@@ -78,7 +78,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-115: Degree Switcher Navigation Bar (3 SP)                          │
+│ [x] CF-115: Degree Switcher Navigation Bar (3 SP)                      │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -169,7 +169,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
   1. Create top header bar with CourseFlow logo, degree dropdown selector, and global graduation credit counter ($N / 150\text{ Credits}$).
   2. Degree options: `Computer Engineering` and `Electrical Engineering`.
   3. Switching degrees invokes `setActiveProgram()` in Zustand store, clearing irrelevant selections and recalculating canvas graph instantly.
-* **Acceptance Criteria:** Switching programs updates the canvas graph instantly with zero full-page reload.
+* **Acceptance Criteria:** [x] Switching programs updates the canvas graph instantly with zero full-page reload.
 
 ---
 

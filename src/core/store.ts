@@ -126,7 +126,19 @@ export const usePlannerStore = create<PlannerState>()(
     persist(
         (set, get) => ({
             activeProgramId: 'computer-eng',
-            setActiveProgram: (programId) => set({ activeProgramId: programId }),
+            setActiveProgram: (programId) =>
+                set((state) => {
+                    if (state.activeProgramId === programId) {
+                        return {};
+                    }
+                    return {
+                        activeProgramId: programId,
+                        selectedElectiveIds: [],
+                        completedCourseIds: [],
+                        inspectedCourse: null,
+                        isDrawerOpen: false,
+                    };
+                }),
 
             selectedElectiveIds: [],
             completedCourseIds: [],

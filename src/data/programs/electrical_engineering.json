@@ -1,0 +1,1131 @@
+{
+  "id": "electrical-eng",
+  "name": "Electrical Engineering",
+  "department": "Department of Electrical and Electronic Engineering",
+  "totalCreditsRequired": 150,
+  "minCreditsPerSemester": 18,
+  "maxCreditsPerSemester": 24,
+  "semestersCount": 8,
+  "courses": [
+    {
+      "id": "EE1001",
+      "code": "EE1001",
+      "title": "Circuit Theory",
+      "description": "DC and AC circuit analysis, Kirchhoff's laws, Thevenin and Norton theorems, and resonant circuits.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "MA1001_EE",
+      "code": "MA1001",
+      "title": "Calculus I",
+      "description": "Single-variable calculus, differential and integral calculus with engineering applications.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE1002L",
+      "code": "EE1002L",
+      "title": "Electrical Measurements Lab",
+      "description": "Laboratory practice with oscilloscopes, function generators, multimeters, and circuit characterization.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "EE1001"
+      ],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "PH1001",
+      "code": "PH1001",
+      "title": "Engineering Physics",
+      "description": "Classical mechanics, wave optics, electromagnetism fundamentals, and quantum physics introduction.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "CO1002_EE",
+      "code": "CO1002",
+      "title": "Programming Methodology",
+      "description": "Procedural programming in C/C++, algorithmic thinking, and modular code development.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EN1001_EE",
+      "code": "EN1001",
+      "title": "Communication Skills",
+      "description": "Technical writing, technical presentation delivery, and professional correspondence.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "ME1001",
+      "code": "ME1001",
+      "title": "Engineering Workshop Practice",
+      "description": "Machining, sheet metal forming, welding, and safety protocols in engineering workshops.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "MA1002_EE",
+      "code": "MA1002",
+      "title": "Calculus II",
+      "description": "Multivariable calculus, vector fields, Green's and Stokes' theorems.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA1001_EE"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE1010",
+      "code": "EE1010",
+      "title": "Electronic Devices",
+      "description": "PN junction physics, BJT and MOSFET characteristics, small-signal models, and biasing circuits.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE1001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE1011L",
+      "code": "EE1011L",
+      "title": "Electronics Laboratory I",
+      "description": "Experimental verification of diode clippers, transistor amplifiers, and frequency responses.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "EE1010"
+      ],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE1020",
+      "code": "EE1020",
+      "title": "Network Analysis & Synthesis",
+      "description": "Two-port networks, transient analysis using Laplace transform, network topology, and passive filters.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE1001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "PH1002",
+      "code": "PH1002",
+      "title": "Materials Science for Electrical Engineering",
+      "description": "Dielectric, magnetic, conducting, and superconducting materials properties in electronics.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EN1002_EE",
+      "code": "EN1002",
+      "title": "Professional Ethics & Law",
+      "description": "Engineering code of ethics, health & safety regulations, environmental compliance, and legal liabilities.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "MA2001_EE",
+      "code": "MA2001",
+      "title": "Linear Algebra",
+      "description": "Matrices, vector spaces, eigenvalues, eigenvectors, and quadratic forms.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA1002_EE"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "MA2002_EE",
+      "code": "MA2002",
+      "title": "Differential Equations",
+      "description": "First and second order ODEs, series solutions, Fourier series, and boundary value problems.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA1002_EE"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE2001",
+      "code": "EE2001",
+      "title": "Electromagnetic Fields",
+      "description": "Electrostatics, magnetostatics, Maxwell's equations, plane electromagnetic wave propagation.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE1001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE2002",
+      "code": "EE2002",
+      "title": "Signals & Systems",
+      "description": "Continuous and discrete LTI systems, Fourier transform, Laplace transform, and Z-transform.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA1001_EE"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE2010",
+      "code": "EE2010",
+      "title": "Analog Integrated Circuits",
+      "description": "Op-amp circuit architectures, active filters, feedback topologies, oscillators, and voltage regulators.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE1010"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE2011L",
+      "code": "EE2011L",
+      "title": "Circuits Design Lab",
+      "description": "SPICE simulation and hardware testing of operational amplifier circuits and active filters.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "EE2010"
+      ],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "MA2003_EE",
+      "code": "MA2003",
+      "title": "Probability & Statistics",
+      "description": "Random variables, statistical distributions, hypothesis testing, and stochastic processes.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "MA2001_EE"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE2020",
+      "code": "EE2020",
+      "title": "Electrical Machines I",
+      "description": "Magnetic circuits, single-phase and three-phase transformers, DC generators, and DC motors.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE2030",
+      "code": "EE2030",
+      "title": "Digital Systems",
+      "description": "Combinational and sequential logic design, finite state machines, Verilog HDL, and FPGA design.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE1010"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE2031L",
+      "code": "EE2031L",
+      "title": "Digital Electronics Lab",
+      "description": "FPGA synthesis, Verilog testbenches, sequential counters, and digital memory interfacing.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "EE2030"
+      ],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE2040",
+      "code": "EE2040",
+      "title": "Control Systems Engineering",
+      "description": "Feedback control systems, root locus, Bode plots, Nyquist stability, PID controllers, and state-space models.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE2050",
+      "code": "EE2050",
+      "title": "Telecommunication Principles",
+      "description": "Analog and digital modulation (AM, FM, QAM), noise analysis, transmission lines, and antenna fundamentals.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE3001",
+      "code": "EE3001",
+      "title": "Power Systems Analysis",
+      "description": "Transmission line modeling, symmetrical components, bus admittance matrices, and Gauss-Seidel load flow.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE3010",
+      "code": "EE3010",
+      "title": "Electrical Machines II",
+      "description": "Three-phase induction motors, synchronous generators and motors, fractional horsepower motors, and drive dynamics.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2020"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE3020",
+      "code": "EE3020",
+      "title": "Power Electronics",
+      "description": "Thyristors, IGBTs, phase-controlled rectifiers, buck/boost DC-DC converters, and PWM inverters.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE1010"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE3030",
+      "code": "EE3030",
+      "title": "Digital Signal Processing",
+      "description": "Discrete Fourier transform, FFT algorithms, FIR and IIR digital filter design, and quantization effects.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2002"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE3040",
+      "code": "EE3040",
+      "title": "Renewable Energy Systems",
+      "description": "Photovoltaic cells, wind turbines, maximum power point tracking (MPPT), and grid interconnection.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2020"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE3050",
+      "code": "EE3050",
+      "title": "Power Engineering Lab",
+      "description": "Load flow experiments, synchronous generator synchronization, and transformer parameter extraction.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "LAB",
+      "prerequisiteRule": null,
+      "corequisites": [
+        "EE3001"
+      ],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE3060",
+      "code": "EE3060",
+      "title": "High Voltage Engineering",
+      "description": "Breakdown in gases, liquids and solids, impulse generators, surge arresters, and insulation coordination.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE3001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE3070",
+      "code": "EE3070",
+      "title": "Communication Networks",
+      "description": "OSI and TCP/IP models, routing algorithms, transport layer protocols, wireless LANs, and network security.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2050"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE3080",
+      "code": "EE3080",
+      "title": "Microcontroller Systems",
+      "description": "Embedded ARM architectures, timers, interrupts, ADC/DAC peripherals, and RTOS fundamentals.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2030"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE3090",
+      "code": "EE3090",
+      "title": "Smart Grid Technologies",
+      "description": "Advanced metering infrastructure (AMI), wide-area monitoring, phasor measurement units, and demand response.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE3001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE3095",
+      "code": "EE3095",
+      "title": "Industrial Automation & SCADA",
+      "description": "Programmable logic controllers (PLCs), ladder logic, SCADA architecture, and industrial fieldbuses.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2040"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "MN3001_EE",
+      "code": "MN3001",
+      "title": "Engineering Economics & Finance",
+      "description": "Cost estimation, cash flows, net present value, internal rate of return, and engineering risk appraisal.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE4001",
+      "code": "EE4001",
+      "title": "Electrical Engineering Capstone",
+      "description": "Two-semester power, telecommunications, or control engineering hardware and research capstone project.",
+      "totalCredits": 6,
+      "durationSemesters": 2,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        },
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CAPSTONE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE3001"
+      },
+      "corequisites": [
+        "EE4002"
+      ],
+      "offeredSemesters": [
+        "BOTH"
+      ]
+    },
+    {
+      "id": "EE4002",
+      "code": "EE4002",
+      "title": "Project Management & Quality Systems",
+      "description": "Work breakdown structures, critical path scheduling, agile methodologies, and quality management.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE4010",
+      "code": "EE4010",
+      "title": "Power System Protection",
+      "description": "Overcurrent relays, distance relays, differential protection of transformers, and digital protection relays.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE3001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE4020",
+      "code": "EE4020",
+      "title": "Wireless Communications",
+      "description": "Cellular concepts, multipath fading channels, OFDM, MIMO architectures, and 5G/6G standards.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE3070"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE4030",
+      "code": "EE4030",
+      "title": "Electric Vehicle Technologies",
+      "description": "Battery management systems (BMS), electric powertrains, regenerative braking, and EV charging infrastructure.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE3020"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE4040",
+      "code": "EE4040",
+      "title": "Advanced Control Systems",
+      "description": "Nonlinear control, optimal control (LQR/LQG), sliding mode control, and adaptive control systems.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2040"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ]
+    },
+    {
+      "id": "EE4050",
+      "code": "EE4050",
+      "title": "High Voltage DC (HVDC) Transmission",
+      "description": "HVDC converters, VSC-HVDC transmission, AC-DC interaction, and DC circuit breaker technologies.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE3060"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE4060",
+      "code": "EE4060",
+      "title": "Optical Communication Systems",
+      "description": "Optical fibers, semiconductor lasers, photodetectors, WDM optical networks, and link budget design.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE3070"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE4070",
+      "code": "EE4070",
+      "title": "Power Quality Management",
+      "description": "Voltage sags, harmonic distortion, active power filters, custom power devices (D-STATCOM, DVR).",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE3001"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "EE4080",
+      "code": "EE4080",
+      "title": "Biomedical Instrumentation",
+      "description": "Bioelectric potentials (ECG, EEG, EMG), biopotential amplifiers, medical imaging, and patient safety.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2010"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    },
+    {
+      "id": "MN4001_EE",
+      "code": "MN4001",
+      "title": "Technology Entrepreneurship",
+      "description": "Startup creation, business model generation, seed financing, intellectual property, and venture pitching.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ]
+    }
+  ]
+}
