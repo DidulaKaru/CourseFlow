@@ -136,4 +136,4 @@ def test_diagnostics_fully_satisfied():
     assert diag.is_satisfied is True
     assert len(diag.missing_course_ids) == 0
     assert diag.credit_deficit == 0
-    assert "All prerequisites satisfied" in diag.summary
+    assert "Prerequisites satisfied" in diag.summary
