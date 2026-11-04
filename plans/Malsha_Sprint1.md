@@ -52,8 +52,8 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 
 | Ticket Key | Task Summary | Story Points | Target Epic | Assigned |
 | :--- | :--- | :--- | :--- | :--- |
-| **CF-111** | Interactive React Flow Canvas Setup | 5 SP | CF-EPIC-1 | Malsha |
-| **CF-112** | Custom CourseNode Component with Tailwind CSS v4 | 5 SP | CF-EPIC-1 | Malsha |
+| [x] **CF-111** | Interactive React Flow Canvas Setup | 5 SP | CF-EPIC-1 | Malsha |
+| [x] **CF-112** | Custom CourseNode Component with Tailwind CSS v4 | 5 SP | CF-EPIC-1 | Malsha |
 | **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Malsha |
 | **CF-114** | Slide-Over Module Details Drawer | 5 SP | CF-EPIC-1 | Malsha |
 | **CF-115** | Degree Switcher Navigation Bar | 3 SP | CF-EPIC-1 | Malsha |
@@ -62,11 +62,11 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│ CF-111: Interactive React Flow Canvas Setup (5 SP)                     │
+│ [x] CF-111: Interactive React Flow Canvas Setup (5 SP)                     │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-112: Custom CourseNode Component with Tailwind CSS v4 (5 SP)        │
+│ [x] CF-112: Custom CourseNode Component with Tailwind CSS v4 (5 SP)        │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -92,7 +92,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 
 ---
 
-### CF-111: Interactive React Flow Canvas Setup (5 SP)
+### [x] CF-111: Interactive React Flow Canvas Setup (5 SP)
 * **Description:** Mount `@xyflow/react` in `src/features/canvas/GraphCanvas.tsx` (or `CurriculumCanvas.tsx`) with zoom, pan, mini-map, and controls.
 * **Target Files:**
   - `src/features/canvas/CurriculumCanvas.tsx`
@@ -103,11 +103,11 @@ Malsha leads user-facing frontend component development, visual layout engineeri
   2. Implement viewport controls: `<Controls />`, `<MiniMap />`, and `<Background variant={BackgroundVariant.Dots} />`.
   3. Configure edge options: smoothstep routing with animated active highlight strokes.
   4. Implement hover and selection handlers: Dim non-connected nodes when a course is hovered/clicked; illuminate upstream prerequisite dependencies and downstream unlocked electives.
-* **Acceptance Criteria:** Canvas renders smoothly at 60 FPS on 1080p and 4K displays with responsive pan/zoom capabilities.
+* **Acceptance Criteria:** [x] Canvas renders smoothly at 60 FPS on 1080p and 4K displays with responsive pan/zoom capabilities.
 
 ---
 
-### CF-112: Custom CourseNode Component with Tailwind CSS v4 (5 SP)
+### [x] CF-112: Custom CourseNode Component with Tailwind CSS v4 (5 SP)
 * **Description:** Build responsive node cards displaying course code, title, credits, type badge (Core, Elective, Capstone), and connection handles.
 * **Target Files:**
   - `src/features/canvas/components/CourseNode.tsx`
@@ -121,7 +121,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
      - Source Handle (`type="source"`, `position={Position.Right}`).
   2. Direct toggle on card: Fast checkbox/button to select/deselect elective courses without opening drawer.
   3. Dynamic styling: Amber/Red border alert when prerequisite AST rules are unmet; Indigo border for Core; Emerald for Selected Electives.
-* **Acceptance Criteria:** Left handle = target, Right handle = source; styles dynamically reflect default, warning, and completed states.
+* **Acceptance Criteria:** [x] Left handle = target, Right handle = source; styles dynamically reflect default, warning, and completed states.
 
 ---
 
