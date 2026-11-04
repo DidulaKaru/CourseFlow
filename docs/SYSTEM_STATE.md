@@ -72,7 +72,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | [x] **CF-111** | Interactive React Flow Canvas Setup | 5 | CF-EPIC-1 | Canvas renders smoothly at 60 FPS on 1080p and 4K displays. |
 | [x] **CF-112** | Custom CourseNode Component with Tailwind CSS v4 | 5 | CF-EPIC-1 | Left handle = target, Right handle = source; styles dynamically reflect default, warning, and completed states. |
-| **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 | CF-EPIC-1 / CF-EPIC-2 | Header shows current semester credit sum and updates in real time on elective toggle. |
+| [x] **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 | CF-EPIC-1 / CF-EPIC-2 | Header shows current semester credit sum and updates in real time on elective toggle. |
 | **CF-114** | Slide-Over Module Details Drawer | 5 | CF-EPIC-1 | Drawer transitions smoothly from right; closes on backdrop click or Escape key. |
 | **CF-115** | Degree Switcher Navigation Bar | 3 | CF-EPIC-1 | Switching programs updates canvas graph instantly with zero full-page reload. |
 | **CF-116** | Client-Side PDF Study Plan Exporter | 5 | CF-EPIC-3 | Clicking "Download Plan PDF" downloads a formatted PDF within 2 seconds. |
@@ -122,6 +122,7 @@ A story is only marked **Done** in Jira when:
 ---
 
 ## 7. Current Execution Status
+- [x] **CF-113:** Semester Swimlane Column Headers & Credit Meters completed (sticky 8-semester column banners, real-time credit summation, multi-semester capstone credit slices, and underload/overload visual badges).
 - [x] **CF-111:** Interactive React Flow Canvas Setup completed (smoothstep routing, controls, minimap, hover and selection dependency illumination).
 - [x] **CF-112:** Custom CourseNode Component with Tailwind CSS v4 completed (Left target handle, Right source handle, dynamic status badges, direct elective toggle, AST prerequisite warning alert, and completed states).
 - [x] **CF-101:** System Architecture Invariants & Contract Setup completed.

@@ -10,7 +10,7 @@
   - **Direct Toggle on Card:** Fast checkbox/button to select/deselect elective courses directly without opening the drawer.
   - **Footer:** Dynamic status badges: `Completed` (emerald badge), `Warning: Unmet` (amber/red alert badge displaying missing prerequisite courses and credit deficits), and `Prereqs Satisfied`.
   - **Dynamic Styling:** Amber/red border alert when prerequisite AST rules are unmet; Indigo border for Core modules; Emerald border for Selected Electives; dynamic integration with canvas hover and selection highlight states.
-- **Swimlanes (`SwimlaneHeader.tsx` - CF-113):** 8 vertical semester swimlane columns spaced horizontally at $X = (\text{semesterIndex} - 1) \times 280\text{px}$. Each header displays real-time credit loads with warning pills (Green if $18 \le \text{credits} \le 24$, Amber/Red alert if $< 18$ or $> 24$).
+- **Semester Swimlane Headers & Credit Meters (`components/SwimlaneHeader.tsx` - CF-113):** 8 vertical semester column header banners aligned horizontally via React Flow viewport coordinate transformation ($X_{\text{screen}} = X_{\text{canvas}} \times \text{zoom} + panX$). Features real-time credit summation via `usePlannerStore.getSemesterCredits()`, multi-semester capstone split credit accounting, credit meter progress bars with minimum 18-credit markers, and dynamic compliance pills (Emerald `Valid Load` when $18 \le \text{credits} \le 24$, Rose `< 18 cr Underload` alert badge with `AlertTriangle`, and Amber `> 24 cr Overload` badge).
 - **Degree Selector (`DegreeSelector.tsx` - CF-115):** Dropdown toggling active degree curriculum in `usePlannerStore`.
 
 ## Invariants
