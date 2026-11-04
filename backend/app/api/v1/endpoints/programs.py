@@ -250,8 +250,8 @@ def _get_fallback_electrical_eng() -> DegreeProgram:
 
     return DegreeProgram(
         id="electrical-eng",
-        name="Electrical Engineering",
-        department="Department of Electrical and Electronic Engineering",
+        name="Electrical and Information Engineering",
+        department="Department of Electrical and Information Engineering",
         total_credits_required=settings.TOTAL_CREDITS_REQUIRED,
         min_credits_per_semester=settings.MIN_CREDITS_PER_SEMESTER,
         max_credits_per_semester=settings.MAX_CREDITS_PER_SEMESTER,

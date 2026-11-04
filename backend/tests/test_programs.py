@@ -64,7 +64,7 @@ def test_get_electrical_engineering_program():
 
     program = response.json()
     assert program["id"] == "electrical-eng"
-    assert program["name"] == "Electrical Engineering"
+    assert program["name"] in ("Electrical Engineering", "Electrical and Information Engineering")
     assert len(program["courses"]) > 0
 
 

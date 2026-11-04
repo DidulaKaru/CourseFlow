@@ -57,7 +57,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 | [x] **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Malsha |
 | [x] **CF-114** | Slide-Over Module Details Drawer | 5 SP | CF-EPIC-1 | Malsha |
 | [x] **CF-115** | Degree Switcher Navigation Bar | 3 SP | CF-EPIC-1 | Malsha |
-| **CF-116** | Client-Side PDF Study Plan Exporter | 5 SP | CF-EPIC-3 | Malsha |
+| [x] **CF-116** | Client-Side PDF Study Plan Exporter | 5 SP | CF-EPIC-3 | Malsha |
 | **CF-117** | Project Documentation & Jira Board Initialization | 3 SP | Governance | Malsha |
 
 ```
@@ -82,7 +82,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-116: Client-Side PDF Study Plan Exporter (5 SP)                     │
+│ [x] CF-116: Client-Side PDF Study Plan Exporter (5 SP)                     │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -167,13 +167,13 @@ Malsha leads user-facing frontend component development, visual layout engineeri
   - `src/features/canvas/components/TopNav.tsx`
 * **Implementation Details:**
   1. Create top header bar with CourseFlow logo, degree dropdown selector, and global graduation credit counter ($N / 150\text{ Credits}$).
-  2. Degree options: `Computer Engineering` and `Electrical Engineering`.
+  2. Degree options: `Computer Engineering` and `Electrical and Information Engineering`.
   3. Switching degrees invokes `setActiveProgram()` in Zustand store, clearing irrelevant selections and recalculating canvas graph instantly.
 * **Acceptance Criteria:** [x] Switching programs updates the canvas graph instantly with zero full-page reload.
 
 ---
 
-### CF-116: Client-Side PDF Study Plan Exporter (5 SP)
+### [x] CF-116: Client-Side PDF Study Plan Exporter (5 SP)
 * **Description:** Implement `@react-pdf/renderer` generating a clean, 2-page printable academic study plan grouped by semester with credit totals.
 * **Target Files:**
   - `src/features/planner/StudyPlanPDF.tsx`
@@ -184,7 +184,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
      - 8-Semester tabular breakdown: Semester column, Course Code, Course Title, Course Type, Semester Credits.
      - Credit compliance verification stamp ($\ge 18\text{ cr/sem}$ and $150\text{ total credits}$).
   2. Embed `PDFDownloadLink` in top navigation bar with dynamic filename: `CourseFlow_Plan_<Degree>_<Timestamp>.pdf`.
-* **Acceptance Criteria:** Clicking "Download Plan PDF" downloads a formatted PDF within 2 seconds.
+* **Acceptance Criteria:** [x] Clicking "Download Plan PDF" downloads a formatted PDF within 2 seconds.
 
 ---
 
