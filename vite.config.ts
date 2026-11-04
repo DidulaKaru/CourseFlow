@@ -17,5 +17,8 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    alias: {
+      '@react-pdf/renderer': '@react-pdf/renderer/lib/react-pdf.browser.js',
+    },
   },
 })

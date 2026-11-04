@@ -287,7 +287,7 @@ export interface DegreeProgram {
   * [x] `CF-113`: Semester Swimlane Column Headers & Credit Meters (5 SP)
   * [x] `CF-114`: Slide-Over Module Details Drawer (5 SP)
   * [x] `CF-115`: Degree Switcher Navigation Bar (3 SP)
-  * `CF-116`: Client-Side PDF Study Plan Exporter (5 SP)
+  * [x] CF-116: Client-Side PDF Study Plan Exporter (5 SP)
   * `CF-117`: Project Documentation & Jira Board Initialization (3 SP)
 
 #### Ishani: QA & DevOps Engineer (23 SP)
