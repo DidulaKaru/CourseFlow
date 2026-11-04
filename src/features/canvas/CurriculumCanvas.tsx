@@ -13,6 +13,7 @@ import '@xyflow/react/dist/style.css';
 
 import { calculateLayout } from '@/core/layout';
 import type { CourseLayoutNode } from '@/core/layout';
+import { usePlannerStore } from '@/core/store';
 import { mockCourses } from '@/data/mockCourses';
 import type { Course } from '@/types/curriculum';
 import { CourseNode } from './components/CourseNode';
@@ -51,6 +52,9 @@ export function CurriculumCanvas({
 
     // Active course is the hovered one (temporary focus) or clicked one (locked focus)
     const activeCourseId = hoveredCourseId || selectedCourseId;
+
+    // Zustand store action to inspect course in slide-over drawer
+    const openCourseDrawer = usePlannerStore((state) => state.openCourseDrawer);
 
     // 1. Calculate deterministic layout from courses
     const layout = useMemo(() => {
@@ -95,9 +99,13 @@ export function CurriculumCanvas({
     }, []);
 
     // 5. Selection handlers (click node to toggle selection, click canvas pane to deselect)
-    const handleNodeClick: NodeMouseHandler<CourseLayoutNode> = useCallback((_, node) => {
-        setSelectedCourseId((prev) => (prev === node.id ? null : node.id));
-    }, []);
+    const handleNodeClick: NodeMouseHandler<CourseLayoutNode> = useCallback(
+        (_, node) => {
+            setSelectedCourseId((prev) => (prev === node.id ? null : node.id));
+            openCourseDrawer(node.data.course);
+        },
+        [openCourseDrawer]
+    );
 
     const handlePaneClick = useCallback(() => {
         setSelectedCourseId(null);

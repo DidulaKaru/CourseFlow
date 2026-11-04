@@ -55,7 +55,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 | [x] **CF-111** | Interactive React Flow Canvas Setup | 5 SP | CF-EPIC-1 | Malsha |
 | [x] **CF-112** | Custom CourseNode Component with Tailwind CSS v4 | 5 SP | CF-EPIC-1 | Malsha |
 | [x] **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 SP | CF-EPIC-1 / CF-EPIC-2 | Malsha |
-| **CF-114** | Slide-Over Module Details Drawer | 5 SP | CF-EPIC-1 | Malsha |
+| [x] **CF-114** | Slide-Over Module Details Drawer | 5 SP | CF-EPIC-1 | Malsha |
 | **CF-115** | Degree Switcher Navigation Bar | 3 SP | CF-EPIC-1 | Malsha |
 | **CF-116** | Client-Side PDF Study Plan Exporter | 5 SP | CF-EPIC-3 | Malsha |
 | **CF-117** | Project Documentation & Jira Board Initialization | 3 SP | Governance | Malsha |
@@ -74,7 +74,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
-│ CF-114: Slide-Over Module Details Drawer (5 SP)                        │
+│ [x] CF-114: Slide-Over Module Details Drawer (5 SP)                        │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -142,7 +142,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 
 ---
 
-### CF-114: Slide-Over Module Details Drawer (5 SP)
+### [x] CF-114: Slide-Over Module Details Drawer (5 SP)
 * **Description:** Implement slide-over panel displaying syllabus description, contact hours, and prerequisite trees when a node is clicked.
 * **Target Files:**
   - `src/features/drawer/ModuleDetailsDrawer.tsx`
@@ -156,7 +156,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
      - Course syllabus objectives, lecture/lab/tutorial contact hours.
      - Action buttons: "Add to Study Plan" / "Remove from Plan" (electives), "Mark Completed" toggle.
   3. Smooth CSS slide-in transition from right viewport edge; dismiss on backdrop click or `Escape` keypress.
-* **Acceptance Criteria:** Drawer transitions smoothly from right; closes on backdrop click or Escape key.
+* **Acceptance Criteria:** [x] Drawer transitions smoothly from right; closes on backdrop click or Escape key.
 
 ---
 
