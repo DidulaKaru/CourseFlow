@@ -19,6 +19,7 @@ const emptySubscribe = () => () => {};
 /**
  * Client-Side PDF Study Plan Exporter Button (CF-116).
  * Styled with an austere, razor-sharp rectangular plate aesthetic matching Skyrim HUD specifications.
+ * Responsive layout ensures full mobile screen compliance without horizontal overflow.
  */
 export function ExportPdfButton({
     program: injectedProgram,
@@ -49,12 +50,12 @@ export function ExportPdfButton({
             <button
                 type="button"
                 disabled
-                className={`inline-flex items-center gap-2 border border-white/15 bg-white/5 text-slate-400 text-xs font-mono uppercase tracking-widest px-3 py-1.5 cursor-not-allowed select-none rounded-none ${className}`}
+                className={`inline-flex items-center gap-1.5 sm:gap-2 border border-white/15 bg-white/5 text-slate-400 text-xs font-mono uppercase tracking-widest px-2.5 sm:px-3 py-1 sm:py-1.5 cursor-not-allowed select-none rounded-none shrink-0 ${className}`}
                 data-testid="export-pdf-button-loading"
                 aria-label="Preparing study plan export"
             >
                 <Download className="w-3.5 h-3.5 shrink-0" />
-                <span>Download Plan PDF</span>
+                <span><span className="hidden sm:inline">Download Plan </span>PDF</span>
             </button>
         );
     }
@@ -71,7 +72,7 @@ export function ExportPdfButton({
                 />
             }
             fileName={dynamicFileName}
-            className={`inline-flex items-center gap-2 border border-white/15 bg-white/5 hover:bg-white/10 active:border-white/30 text-slate-200 text-xs font-mono uppercase tracking-widest px-3 py-1.5 transition-colors cursor-pointer select-none rounded-none shadow-sm ${className}`}
+            className={`inline-flex items-center gap-1.5 sm:gap-2 border border-white/15 bg-white/5 hover:bg-white/10 active:border-white/30 text-slate-200 text-xs font-mono uppercase tracking-widest px-2.5 sm:px-3 py-1 sm:py-1.5 transition-colors cursor-pointer select-none rounded-none shadow-sm shrink-0 ${className}`}
             data-testid="export-pdf-button"
             aria-label="Download academic study plan PDF"
         >
@@ -79,7 +80,7 @@ export function ExportPdfButton({
                 <>
                     <Download className={`w-3.5 h-3.5 shrink-0 ${loading ? 'animate-pulse' : ''}`} />
                     <span className="whitespace-nowrap">
-                        {loading ? 'Preparing PDF...' : 'Download Plan PDF'}
+                        {loading ? 'Preparing PDF...' : <><span className="hidden sm:inline">Download Plan </span>PDF</>}
                     </span>
                 </>
             )}
