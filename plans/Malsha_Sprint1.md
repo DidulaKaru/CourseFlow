@@ -167,7 +167,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
   - `src/features/canvas/components/TopNav.tsx`
 * **Implementation Details:**
   1. Create top header bar with CourseFlow logo, degree dropdown selector, and global graduation credit counter ($N / 150\text{ Credits}$).
-  2. Degree options: `Computer Engineering` and `Electrical Engineering`.
+  2. Degree options: `Computer Engineering` and `Electrical and Information Engineering`.
   3. Switching degrees invokes `setActiveProgram()` in Zustand store, clearing irrelevant selections and recalculating canvas graph instantly.
 * **Acceptance Criteria:** [x] Switching programs updates the canvas graph instantly with zero full-page reload.
 

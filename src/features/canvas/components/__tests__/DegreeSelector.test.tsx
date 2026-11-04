@@ -40,7 +40,7 @@ describe('DegreeSelector Component (CF-115)', () => {
 
         expect(options).toEqual([
             { value: 'computer-eng', text: 'Computer Engineering' },
-            { value: 'electrical-eng', text: 'Electrical Engineering' },
+            { value: 'electrical-eng', text: 'Electrical and Information Engineering' },
         ]);
 
         expect(select.value).toBe('computer-eng');
@@ -69,7 +69,7 @@ describe('DegreeSelector Component (CF-115)', () => {
 
         const select = container.querySelector('select') as HTMLSelectElement;
 
-        // Change select value to electrical engineering
+        // Change select value to electrical and information engineering
         act(() => {
             select.value = 'electrical-eng';
             select.dispatchEvent(new Event('change', { bubbles: true }));

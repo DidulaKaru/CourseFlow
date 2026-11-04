@@ -122,7 +122,7 @@ A story is only marked **Done** in Jira when:
 ---
 
 ## 7. Current Execution Status
-- [x] **CF-115:** Degree Switcher Navigation Bar completed (TopNav with CourseFlow brand identity, DegreeSelector dropdown for Computer Engineering and Electrical Engineering, global graduation credit meter tracking N / 150 Credits with eligibility status, and instant zero-reload canvas graph recomputation via Zustand activeProgramId).
+- [x] **CF-115:** Degree Switcher Navigation Bar completed (TopNav with CourseFlow brand identity, DegreeSelector dropdown for Computer Engineering and Electrical and Information Engineering, global graduation credit meter tracking N / 150 Credits with eligibility status, and instant zero-reload canvas graph recomputation via Zustand activeProgramId).
 - [x] **CF-114:** Slide-Over Module Details Drawer completed (smooth right slide-in, Escape/backdrop dismissal, syllabus objectives, contact hours breakdown, AST prerequisite logic chips, multi-semester timeline, and interactive study plan toggles).
 - [x] **CF-113:** Semester Swimlane Column Headers & Credit Meters completed (sticky 8-semester column banners, real-time credit summation, multi-semester capstone credit slices, and underload/overload visual badges).
 - [x] **CF-111:** Interactive React Flow Canvas Setup completed (smoothstep routing, controls, minimap, hover and selection dependency illumination).
