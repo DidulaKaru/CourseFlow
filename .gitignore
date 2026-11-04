@@ -36,3 +36,4 @@ ENV/
 .venv
 .pytest_cache/
 .ruff_cache/
+.antigravity/
