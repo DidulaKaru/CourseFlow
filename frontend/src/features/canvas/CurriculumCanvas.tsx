@@ -13,6 +13,7 @@ import {
 } from '@xyflow/react';
 import type { Edge, NodeMouseHandler } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { Compass } from 'lucide-react';
 
 import { calculateLayout } from '@/core/layout';
 import { usePlannerStore } from '@/core/store';
@@ -55,6 +56,7 @@ function InnerCurriculumCanvas({
     // Selection and hover states
     const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
     const [hoveredCourseId, setHoveredCourseId] = useState<string | null>(null);
+    const [showMobileRadar, setShowMobileRadar] = useState(false);
 
     // Active course is the hovered one (temporary focus) or clicked one (locked focus)
     const activeCourseId = hoveredCourseId || selectedCourseId;
@@ -131,14 +133,66 @@ function InnerCurriculumCanvas({
         setHoveredCourseId(null);
     }, []);
 
-    // 6. Smooth Jump to Semester Handler
+    // 6. Responsive Viewport Scaling & Auto-Centering Engine
+    const getResponsiveViewport = useCallback((windowW: number) => {
+        const targetW = 1360; // 5 columns (1280px) + horizontal breathing margin
+        // Responsive margins: phones use tight margins (16px) to maximize screen area
+        const horizontalPadding = windowW < 640 ? 16 : windowW < 1024 ? 36 : 80;
+        const calculatedZoom = Math.min(1.0, (windowW - horizontalPadding) / targetW);
+        // Allow zoom down to 0.15 so small phones never clamp to an oversized card
+        const zoom = Math.max(0.15, calculatedZoom);
+        const x = Math.max(8, (windowW - targetW * zoom) / 2);
+        const y = windowW < 640 ? 60 : 30;
+        return { x, y, zoom };
+    }, []);
+
+    // Initial viewport calculation for React Flow
+    const initialViewport = useMemo(() => {
+        if (typeof window === 'undefined') return { x: 40, y: 30, zoom: 0.95 };
+        return getResponsiveViewport(window.innerWidth);
+    }, [getResponsiveViewport]);
+
+    // Live auto-fit on window resize or mobile orientation change
+    useEffect(() => {
+        const handleResize = () => {
+            if (typeof window === 'undefined') return;
+            const nextVp = getResponsiveViewport(window.innerWidth);
+            const current = getViewport();
+            setViewport({
+                x: nextVp.x,
+                y: current.y,
+                zoom: nextVp.zoom,
+            });
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [getResponsiveViewport, getViewport, setViewport]);
+
+    // Adapt viewport when courses dataset changes
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const nextVp = getResponsiveViewport(window.innerWidth);
+            setViewport(nextVp);
+        }
+    }, [courses, getResponsiveViewport, setViewport]);
+
+    // Fit Graph Width action
+    const handleFitWidth = useCallback(() => {
+        if (typeof window === 'undefined') return;
+        const nextVp = getResponsiveViewport(window.innerWidth);
+        setViewport(nextVp, { duration: 400 });
+    }, [getResponsiveViewport, setViewport]);
+
+    // 7. Smooth Jump to Semester Handler with responsive header offset
     const handleJumpToSemester = useCallback(
         (semesterY: number) => {
             const current = getViewport();
+            const headerOffset = typeof window !== 'undefined' && window.innerWidth < 640 ? 90 : 70;
             setViewport(
                 {
                     x: current.x,
-                    y: -semesterY * current.zoom + 80,
+                    y: -semesterY * current.zoom + headerOffset,
                     zoom: current.zoom,
                 },
                 { duration: 400 }
@@ -153,35 +207,25 @@ function InnerCurriculumCanvas({
         return courses.find((c) => c.id === activeCourseId) ?? null;
     }, [activeCourseId, courses]);
 
-    // Responsive initial viewport positioning
-    const initialViewport = useMemo(() => {
-        if (typeof window === 'undefined') return { x: 40, y: 30, zoom: 0.95 };
-        const windowW = window.innerWidth;
-        const targetW = 1360;
-        const zoom = Math.min(1.0, Math.max(0.75, (windowW - 80) / targetW));
-        const x = Math.max(20, (windowW - targetW * zoom) / 2);
-        return { x, y: 30, zoom };
-    }, []);
-
     return (
         <div className={`relative w-full h-full bg-[#030508] skyrim-canvas-bg overflow-hidden ${className}`}>
             {/* Top HUD: Program Info, Constellation Legend & Semester Jump Bar */}
-            <div className="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-3 bg-[#030508]/85 backdrop-blur-md px-4 py-2 rounded-sm border border-white/10 shadow-2xl pointer-events-auto">
-                <div className="flex items-center gap-2.5">
-                    <div className="w-2 h-2 rotate-45 border border-white/60 bg-[var(--star-pip)] shadow-[0_0_6px_var(--constellation-beam)]" />
-                    <span className="font-serif uppercase font-bold text-xs tracking-[0.15em] text-slate-200">
+            <div className="absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-10 flex flex-wrap items-center gap-2 sm:gap-3 bg-[#030508]/90 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm border border-white/10 shadow-2xl pointer-events-auto max-w-[calc(100vw-1rem)] sm:max-w-none">
+                <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 border border-white/60 bg-[var(--star-pip)] shadow-[0_0_6px_var(--constellation-beam)] shrink-0" />
+                    <span className="font-serif uppercase font-bold text-[11px] sm:text-xs tracking-[0.12em] sm:tracking-[0.15em] text-slate-200 whitespace-nowrap">
                         {programName}
                     </span>
                     <span className="text-white/20 text-xs font-mono">|</span>
-                    <span className="text-xs font-mono text-slate-400">
+                    <span className="text-[11px] sm:text-xs font-mono text-slate-400 whitespace-nowrap">
                         {courses.length} Courses
                     </span>
                 </div>
 
-                <div className="h-4 w-[1px] bg-white/10 hidden sm:block" />
+                <div className="h-4 w-[1px] bg-white/10 hidden md:block" />
 
                 {/* Skyrim Constellation Graph Highlight Legend */}
-                <div className="flex items-center gap-3 text-[11px] font-mono">
+                <div className="hidden sm:flex items-center gap-3 text-[11px] font-mono">
                     <div className="flex items-center gap-1.5 text-cyan-300">
                         <span className="w-1.5 h-1.5 rotate-45 bg-[#00F0FF] shadow-[0_0_6px_rgba(0,240,255,0.7)]" />
                         <span>Prerequisite</span>
@@ -196,16 +240,24 @@ function InnerCurriculumCanvas({
                     </div>
                 </div>
 
-                <div className="h-4 w-[1px] bg-white/10 hidden md:block" />
+                <div className="h-4 w-[1px] bg-white/10 hidden lg:block" />
 
-                {/* Quick Semester Jump Pills */}
-                <div className="flex items-center gap-1">
+                {/* Quick Semester Jump Pills with Mobile Horizontal Scroll */}
+                <div className="flex items-center gap-1 overflow-x-auto max-w-full pb-0.5 sm:pb-0 scrollbar-none">
+                    <button
+                        type="button"
+                        onClick={handleFitWidth}
+                        className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-[var(--accent-primary)] hover:text-white hover:bg-white/10 rounded-none border border-[var(--accent-primary)]/40 hover:border-white/20 transition-colors cursor-pointer shrink-0"
+                        title="Fit entire constellation to screen width"
+                    >
+                        Fit Width
+                    </button>
                     {layout.semesters.map((sem) => (
                         <button
                             key={`jump-${sem.semesterIndex}`}
                             type="button"
                             onClick={() => handleJumpToSemester(sem.y)}
-                            className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 rounded-none border border-transparent hover:border-white/15 transition-colors cursor-pointer"
+                            className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 rounded-none border border-transparent hover:border-white/15 transition-colors cursor-pointer shrink-0"
                             title={`Jump to Semester ${sem.semesterIndex}`}
                         >
                             S{sem.semesterIndex}
@@ -214,19 +266,32 @@ function InnerCurriculumCanvas({
                 </div>
             </div>
 
+            {/* Mobile Radar Toggle Button */}
+            <div className="absolute top-2 right-2 md:hidden z-10">
+                <button
+                    type="button"
+                    onClick={() => setShowMobileRadar((prev) => !prev)}
+                    className="p-1.5 bg-[#030508]/90 border border-white/10 rounded-none text-slate-300 hover:text-white transition-colors shadow-lg"
+                    title="Toggle Armillary Radar Minimap"
+                    aria-label="Toggle Radar Minimap"
+                >
+                    <Compass className="w-4 h-4" />
+                </button>
+            </div>
+
             {/* Active Selection Banner (Bottom Center) */}
             {activeCourse && (
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-3 bg-[#030508]/90 backdrop-blur-md px-4 py-2 rounded-sm border border-white/10 shadow-2xl text-xs text-slate-200 font-mono">
-                    <div className="flex items-center gap-2">
-                        <span className="font-bold text-[var(--accent-primary)] tracking-wider">
+                <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 sm:gap-3 bg-[#030508]/95 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm border border-white/10 shadow-2xl text-xs text-slate-200 font-mono max-w-[calc(100vw-2rem)] truncate">
+                    <div className="flex items-center gap-1.5 sm:gap-2 truncate">
+                        <span className="font-bold text-[var(--accent-primary)] tracking-wider shrink-0">
                             {activeCourse.code}
                         </span>
-                        <span className="text-slate-400 line-clamp-1 max-w-[220px]">
+                        <span className="text-slate-400 truncate max-w-[120px] sm:max-w-[220px]">
                             {activeCourse.title}
                         </span>
                     </div>
-                    <div className="h-3.5 w-[1px] bg-white/10" />
-                    <div className="flex items-center gap-2 text-[11px]">
+                    <div className="h-3.5 w-[1px] bg-white/10 shrink-0" />
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] shrink-0">
                         <span className="text-cyan-300">
                             {upstreamCount} upstream
                         </span>
@@ -239,7 +304,7 @@ function InnerCurriculumCanvas({
                         <button
                             type="button"
                             onClick={handlePaneClick}
-                            className="ml-1 text-[10px] font-mono uppercase tracking-wider text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 px-2 py-0.5 rounded-none border border-white/15 transition-colors"
+                            className="ml-1 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 px-1.5 sm:px-2 py-0.5 rounded-none border border-white/15 transition-colors shrink-0"
                         >
                             Clear
                         </button>
@@ -262,9 +327,11 @@ function InnerCurriculumCanvas({
                 panOnScroll={true}
                 panOnScrollMode={PanOnScrollMode.Vertical}
                 zoomOnScroll={false}
+                zoomOnPinch={true}
+                panOnDrag={true}
                 defaultViewport={initialViewport}
-                minZoom={0.4}
-                maxZoom={1.5}
+                minZoom={0.12}
+                maxZoom={2.5}
                 nodesConnectable={false}
                 elementsSelectable={true}
                 proOptions={{ hideAttribution: true }}
@@ -273,7 +340,7 @@ function InnerCurriculumCanvas({
                 {/* Viewport Controls: Minimal Translucent Floating Glass Stack */}
                 <Controls
                     showInteractive={false}
-                    className="!bg-[#030508]/85 !backdrop-blur-md !border !border-white/10 !rounded-sm !shadow-2xl !p-0.5 [&>button]:!bg-transparent [&>button]:!border-b [&>button]:!border-white/10 [&>button]:!fill-slate-300 [&>button:hover]:!bg-white/10 [&>button:last-child]:!border-b-0 [&>button]:!rounded-none"
+                    className="!bg-[#030508]/85 !backdrop-blur-md !border !border-white/10 !rounded-sm !shadow-2xl !p-0.5 [&>button]:!bg-transparent [&>button]:!border-b [&>button]:!border-white/10 [&>button]:!fill-slate-300 [&>button:hover]:!bg-white/10 [&>button:last-child]:!border-b-0 [&>button]:!rounded-none [&>button]:!w-7 [&>button]:!h-7 sm:[&>button]:!w-8 sm:[&>button]:!h-8"
                 />
 
                 {/* Celestial Dot Starfield Grid */}
@@ -284,7 +351,7 @@ function InnerCurriculumCanvas({
                     color="rgba(255, 255, 255, 0.08)"
                 />
 
-                {/* Minimap: Celestial Armillary Radar */}
+                {/* Minimap: Celestial Armillary Radar (Visible on tablet/desktop, or toggled on mobile) */}
                 <MiniMap
                     nodeColor={(n) => {
                         if (n.type === 'swimlaneHeader') return 'rgba(255, 255, 255, 0.12)';
@@ -311,7 +378,9 @@ function InnerCurriculumCanvas({
                     nodeStrokeWidth={1}
                     zoomable
                     pannable
-                    className="!bg-[#030508]/90 !backdrop-blur-md !border !border-white/10 !rounded-sm !shadow-2xl"
+                    className={`!bg-[#030508]/90 !backdrop-blur-md !border !border-white/10 !rounded-sm !shadow-2xl ${
+                        showMobileRadar ? '!block' : '!hidden md:!block'
+                    }`}
                     maskColor="rgba(3, 5, 8, 0.85)"
                 />
             </ReactFlow>

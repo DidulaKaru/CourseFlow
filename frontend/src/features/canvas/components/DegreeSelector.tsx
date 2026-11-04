@@ -15,6 +15,7 @@ export interface DegreeSelectorProps {
  * Allows instant switching between programs (e.g. Computer Engineering, Electrical Engineering).
  * Dispatches `setActiveProgram` to the Zustand planner store, clears irrelevant selections,
  * and synchronizes the root document department attribute ('ce' | 'ee').
+ * Features responsive max-width truncation for mobile screen ergonomics.
  */
 export function DegreeSelector({
     className = '',
@@ -43,16 +44,16 @@ export function DegreeSelector({
     };
 
     return (
-        <div className={`relative inline-flex items-center ${className}`}>
+        <div className={`relative inline-flex items-center shrink min-w-0 ${className}`}>
             <div className="absolute left-2.5 pointer-events-none flex items-center">
                 {/* Skyrim celestial diamond node indicator */}
-                <div className="w-2 h-2 rotate-45 border border-white/60 bg-[var(--star-pip)] shadow-[0_0_6px_var(--constellation-beam)]" />
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 border border-white/60 bg-[var(--star-pip)] shadow-[0_0_6px_var(--constellation-beam)] shrink-0" />
             </div>
             <select
                 aria-label="Select Degree Program"
                 value={activeProgramId}
                 onChange={handleChange}
-                className="appearance-none bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-mono uppercase tracking-widest pl-7 pr-7 py-1.5 rounded-none border border-white/10 hover:border-white/25 focus:outline-none focus:border-[var(--constellation-beam)] transition-colors cursor-pointer select-none"
+                className="appearance-none bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-mono uppercase tracking-widest pl-6 sm:pl-7 pr-6 sm:pr-7 py-1 sm:py-1.5 rounded-none border border-white/10 hover:border-white/25 focus:outline-none focus:border-[var(--constellation-beam)] transition-colors cursor-pointer select-none max-w-[130px] sm:max-w-[200px] md:max-w-none text-ellipsis overflow-hidden"
                 data-testid="degree-selector"
             >
                 {programs.map((program) => (

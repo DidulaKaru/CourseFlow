@@ -92,12 +92,12 @@ flowchart TD
 
 ---
 
-## 4. Component Implementations
+## 4. Component Implementations & Responsive Ergonomics
 
 ### A. Top Navigation Bar (`TopNav.tsx` & `DegreeSelector.tsx`)
 - **HUD Glass Surface**: `backdrop-blur-md bg-[#030508]/85 border-b border-white/10`.
 - **Logomark**: `CourseFlow` in all-caps 'Cinzel', tracked out with a centered 45° diamond star pip.
-- **Department Selector**: Minimalist, flush translucent pill (`bg-white/5 border border-white/10 text-xs font-mono uppercase tracking-widest text-slate-200`). Toggling departments updates the root DOM attribute `data-department` instantly.
+- **Department Selector**: Minimalist, flush translucent pill (`bg-white/5 border border-white/10 text-xs font-mono uppercase tracking-widest text-slate-200`). Toggling departments updates the root DOM attribute `data-department` instantly. Text truncates gracefully on mobile screens (`max-w-[130px] sm:max-w-[200px]`).
 - **Graduation Credit Bar (Skyrim Skill Progression Bar)**:
   - Thin 3px horizontal track with 1px metallic end-caps.
   - Active fill colored with `var(--constellation-beam)` and atmospheric beam glow.
@@ -130,9 +130,16 @@ flowchart TD
   - *Unconnected Constellations*: Drop into the background void at `opacity: 0.08`.
 
 ### E. Canvas Controls & Radar Minimap
-- **Minimap (Celestial Armillary Radar)**: Minimalist celestial radar (`bg-[#030508]/90 border border-white/10 rounded-sm`) rendering nodes as diamond star pips.
+- **Minimap (Celestial Armillary Radar)**: Minimalist celestial radar (`bg-[#030508]/90 border border-white/10 rounded-sm`) rendering nodes as diamond star pips. Automatically hidden on mobile viewports (`< 768px`) with an optional diamond radar toggle button to keep mobile screens uncluttered.
 - **Controls Stack**: Translucent floating glass stack (`+`, `-`, `Fit View`) with 1px hairline dividers and square buttons.
 - **Starfield Background**: Celestial dot starfield (`BackgroundVariant.Dots`, 24px gap, size 1, `rgba(255, 255, 255, 0.08)`).
+
+### F. Responsive Viewport Scaling & Screen Size Ergonomics
+- **Dynamic Viewport Auto-Fitting**: `getResponsiveViewport` evaluates the actual viewport width `window.innerWidth`. On mobile phones (`360px - 480px`), it calculates the exact zoom factor (`~0.25 - 0.28`) and centers the graph horizontally with 16px margins, preventing the graph from rendering 3x too large.
+- **Live Resize & Orientation Listener**: A window resize listener automatically recalculates the zoom and horizontal centering whenever the user resizes their desktop browser or rotates their mobile phone.
+- **Pinch-to-Zoom & Touch Navigation**: Enabled `zoomOnPinch={true}` and `panOnDrag={true}` with an expanded zoom scale (`minZoom: 0.12`, `maxZoom: 2.5`), allowing users on mobile to pinch-zoom seamlessly between the whole constellation overview and extreme close-ups of individual module cards.
+- **Fit Width Shortcut**: Added a dedicated `Fit Width` shortcut pill in the semester jump bar to immediately reset the canvas to the optimal width on any screen.
+- **Mobile Semester Jump Offsets**: Jump pill navigation accounts for mobile HUD offsets so jumped semester headers never get occluded behind floating headers.
 
 ---
 
