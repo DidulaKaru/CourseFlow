@@ -70,8 +70,8 @@
 ### Malsha (Frontend & Documentation Specialist) — 31 SP
 | Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
 | :--- | :--- | :--- | :--- | :--- |
-| **CF-111** | Interactive React Flow Canvas Setup | 5 | CF-EPIC-1 | Canvas renders smoothly at 60 FPS on 1080p and 4K displays. |
-| **CF-112** | Custom CourseNode Component with Tailwind CSS v4 | 5 | CF-EPIC-1 | Left handle = target, Right handle = source; styles dynamically reflect default, warning, and completed states. |
+| [x] **CF-111** | Interactive React Flow Canvas Setup | 5 | CF-EPIC-1 | Canvas renders smoothly at 60 FPS on 1080p and 4K displays. |
+| [x] **CF-112** | Custom CourseNode Component with Tailwind CSS v4 | 5 | CF-EPIC-1 | Left handle = target, Right handle = source; styles dynamically reflect default, warning, and completed states. |
 | **CF-113** | Semester Swimlane Column Headers & Credit Meters | 5 | CF-EPIC-1 / CF-EPIC-2 | Header shows current semester credit sum and updates in real time on elective toggle. |
 | **CF-114** | Slide-Over Module Details Drawer | 5 | CF-EPIC-1 | Drawer transitions smoothly from right; closes on backdrop click or Escape key. |
 | **CF-115** | Degree Switcher Navigation Bar | 3 | CF-EPIC-1 | Switching programs updates canvas graph instantly with zero full-page reload. |
@@ -122,6 +122,8 @@ A story is only marked **Done** in Jira when:
 ---
 
 ## 7. Current Execution Status
+- [x] **CF-111:** Interactive React Flow Canvas Setup completed (smoothstep routing, controls, minimap, hover and selection dependency illumination).
+- [x] **CF-112:** Custom CourseNode Component with Tailwind CSS v4 completed (Left target handle, Right source handle, dynamic status badges, direct elective toggle, AST prerequisite warning alert, and completed states).
 - [x] **CF-101:** System Architecture Invariants & Contract Setup completed.
 - [x] **CF-102:** Deterministic Swimlane Layout Mathematical Engine completed (barycentric ordering, deterministic X/Y coordinates, multi-semester spanning modules).
 - [x] **CF-103:** Recursive Boolean AST Prerequisite Evaluator completed (recursive AND/OR/COURSE/CREDIT_THRESHOLD engine with granular diagnostics, human-readable formatting, and 100% logic coverage).
