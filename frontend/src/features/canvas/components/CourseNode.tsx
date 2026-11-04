@@ -20,23 +20,29 @@ export interface ExtendedCourseNodeData {
 
 const TYPE_STYLES: Record<CourseType, { badge: string; label: string }> = {
     CORE: {
-        badge: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
+        badge: 'border-white/15 text-slate-300 bg-white/5',
         label: 'CORE',
     },
     ELECTIVE: {
-        badge: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+        badge: 'border-white/15 text-slate-400 bg-white/5',
         label: 'ELECTIVE',
     },
     CAPSTONE: {
-        badge: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+        badge: 'border-amber-500/30 text-amber-300 bg-amber-950/20',
         label: 'CAPSTONE',
     },
     LAB: {
-        badge: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+        badge: 'border-cyan-500/30 text-cyan-300 bg-cyan-950/20',
         label: 'LAB',
     },
 };
 
+/**
+ * Course Card Node.
+ * Represents a constellation star-point anchoring an engineering module in the Skyrim Skill Tree.
+ * Features 2px radius razor-sharp geometry, dark translucent glass finish, diamond star node pips,
+ * high-contrast silver monospace course code, and precision prerequisite illumination.
+ */
 export const CourseNode = memo(function CourseNode({
     data,
     selected,
@@ -70,44 +76,35 @@ export const CourseNode = memo(function CourseNode({
 
     const typeConfig = TYPE_STYLES[course.type] ?? TYPE_STYLES.CORE;
 
-    // Determine card dynamic border and background styling
-    let cardStyle = '';
+    // Determine card dynamic border and atmospheric glass finish
+    let cardStyle = 'bg-[#070B12]/85 border-white/10 hover:border-[var(--node-border-highlight)] text-slate-200';
 
     if (highlightStatus === 'dimmed') {
         // Dimmed state from canvas hover/selection isolation
-        cardStyle = 'bg-slate-950/60 border-slate-800 text-slate-500 opacity-25 grayscale-[30%]';
+        cardStyle = 'bg-[#030508]/60 border-white/5 text-slate-600 opacity-20 grayscale';
     } else if (highlightStatus === 'active' || selected) {
-        // Active selected node
-        cardStyle = 'bg-slate-900 border-indigo-500 ring-2 ring-indigo-500/80 shadow-lg shadow-indigo-500/25 text-white';
+        // Active selected node: glowing department constellation beam border
+        cardStyle = 'bg-[#0A0F18]/95 border-[var(--constellation-beam)] ring-1 ring-[var(--constellation-beam)] shadow-[0_0_15px_var(--constellation-beam-glow)] text-white';
     } else if (highlightStatus === 'upstream') {
         // Upstream prerequisite dependency illuminated
-        cardStyle = 'bg-slate-900 border-cyan-400 ring-2 ring-cyan-500/70 shadow-md shadow-cyan-500/20 text-white';
+        cardStyle = 'bg-[#0A0F18]/95 border-[#00F0FF] ring-1 ring-[#00F0FF]/50 shadow-[0_0_12px_rgba(0,240,255,0.25)] text-white';
     } else if (highlightStatus === 'downstream') {
         // Downstream unlocked elective/dependent illuminated
-        cardStyle = 'bg-slate-900 border-emerald-400 ring-2 ring-emerald-500/70 shadow-md shadow-emerald-500/20 text-white';
+        cardStyle = 'bg-[#0A0F18]/95 border-[#10B981] ring-1 ring-[#10B981]/50 shadow-[0_0_12px_rgba(16,185,129,0.25)] text-white';
     } else if (isCompleted) {
-        // Completed course
-        cardStyle = 'bg-slate-900/95 border-emerald-500/80 ring-1 ring-emerald-500/40 text-slate-100 shadow-sm';
+        // Completed course: golden flared star core with subtle metallic ring
+        cardStyle = 'bg-[#070B12]/90 border-amber-500/40 ring-1 ring-amber-500/20 text-slate-100 shadow-[0_0_10px_rgba(245,158,11,0.15)]';
     } else if (isPrereqUnmet) {
-        // Warning: Unmet prerequisite AST alert (Amber/Red border alert)
-        cardStyle = 'bg-slate-900/95 border-amber-500/90 ring-1 ring-amber-500/50 shadow-md shadow-amber-500/10 text-slate-100';
+        // Missing Prereqs: Translucent smoked background with etched warning border
+        cardStyle = 'bg-[#070B12]/60 border-red-500/40 text-slate-300 shadow-[0_0_8px_rgba(239,68,68,0.1)]';
     } else if (isSelectedElective) {
-        // Selected elective
-        cardStyle = 'bg-slate-900/95 border-emerald-500 ring-1 ring-emerald-500/40 shadow-sm text-slate-100';
-    } else if (course.type === 'CORE') {
-        // Mandatory Core module
-        cardStyle = 'bg-slate-900/90 border-indigo-500/50 hover:border-indigo-400/80 text-slate-100 shadow-sm';
-    } else if (course.type === 'CAPSTONE') {
-        // Capstone module
-        cardStyle = 'bg-slate-900/90 border-amber-500/50 hover:border-amber-400/80 text-slate-100 shadow-sm';
-    } else {
-        // Default unselected elective or lab
-        cardStyle = 'bg-slate-900/90 border-slate-700/80 hover:border-slate-500 text-slate-100 shadow-sm';
+        // Selected elective: crisp emerald starlight hairline
+        cardStyle = 'bg-[#070B12]/90 border-emerald-500/40 ring-1 ring-emerald-500/20 text-slate-100';
     }
 
     return (
         <div
-            className={`relative rounded-xl border p-3 transition-all duration-200 select-none cursor-pointer flex flex-col justify-between ${cardStyle}`}
+            className={`relative rounded-sm border p-3 transition-all duration-200 select-none cursor-pointer flex flex-col justify-between backdrop-blur-sm ${cardStyle}`}
             style={{
                 width: spanWidth ?? 240,
                 minHeight: 110,
@@ -119,7 +116,11 @@ export const CourseNode = memo(function CourseNode({
                 type="target"
                 position={Position.Top}
                 id="top"
-                className="!w-3 !h-3 !bg-cyan-400 !border-2 !border-slate-900 transition-transform hover:!scale-125 -top-1.5"
+                className={`!w-2.5 !h-2.5 !rotate-45 !rounded-none !border !border-white/40 !-top-1.5 transition-transform hover:!scale-125 ${
+                    isCompleted
+                        ? '!bg-[#F59E0B] !shadow-[0_0_8px_#F59E0B]'
+                        : '!bg-[var(--star-pip)] !shadow-[0_0_6px_var(--constellation-beam-glow)]'
+                }`}
             />
 
             {/* Supplementary Target Handle for horizontal compatibility */}
@@ -127,24 +128,24 @@ export const CourseNode = memo(function CourseNode({
                 type="target"
                 position={Position.Left}
                 id="left"
-                className="!w-2 !h-2 !bg-cyan-400/50 !border !border-slate-900 opacity-40 hover:opacity-100"
+                className="!w-1.5 !h-1.5 !bg-white/20 !border-0 opacity-40 hover:opacity-100"
             />
 
             {/* 1. Header: Course Code, Credit Pill, Type Badge, and Quick Completion Toggle */}
             <div className="flex items-center justify-between gap-1.5 mb-1">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="font-mono font-bold text-xs tracking-tight text-white">
+                    <span className="font-mono font-semibold text-xs tracking-wider text-slate-100">
                         {course.code}
                     </span>
                     <span
-                        className={`text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded border ${typeConfig.badge}`}
+                        className={`text-[9px] font-mono uppercase px-1.5 py-0.2 rounded-none border tracking-widest ${typeConfig.badge}`}
                     >
                         {typeConfig.label}
                     </span>
                 </div>
 
-                <div className="flex items-center gap-1">
-                    <span className="text-[10px] font-medium text-slate-400 bg-slate-800/90 px-1.5 py-0.5 rounded border border-slate-700/60 font-mono">
+                <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-mono text-[var(--accent-primary)] font-medium">
                         {course.totalCredits} cr
                     </span>
                     {/* Fast Course Completion Toggle */}
@@ -154,31 +155,31 @@ export const CourseNode = memo(function CourseNode({
                             e.stopPropagation();
                             toggleCompletedCourse(course.id);
                         }}
-                        className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${
+                        className={`w-5 h-5 rounded-none border flex items-center justify-center transition-colors ${
                             isCompleted
-                                ? 'bg-emerald-500 text-slate-950 hover:bg-emerald-400'
-                                : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700'
+                                ? 'border-amber-400/60 bg-amber-500/20 text-amber-200 shadow-[0_0_6px_rgba(245,158,11,0.5)]'
+                                : 'border-white/15 bg-white/5 text-slate-400 hover:text-white hover:border-white/30'
                         }`}
                         title={isCompleted ? 'Mark course as incomplete' : 'Mark course as completed'}
                         aria-label={`Toggle completion for ${course.code}`}
                     >
-                        <Check className="w-3 h-3 stroke-[3]" />
+                        <Check className="w-3 h-3 stroke-[2.5]" />
                     </button>
                 </div>
             </div>
 
-            {/* 2. Body: Course Title (with full tooltip on hover) & Spanning Banner */}
+            {/* 2. Body: Course Title & Spanning Banner */}
             <div className="my-1 flex-1">
                 <p
-                    className="text-xs font-medium leading-snug line-clamp-2 text-slate-200"
+                    className="text-[12px] font-normal leading-snug line-clamp-2 text-slate-300"
                     title={`${course.code}: ${course.title}`}
                 >
                     {course.title}
                 </p>
 
                 {isMultiSemester && (
-                    <div className="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                    <div className="mt-1 inline-flex items-center gap-1.5 text-[10px] font-mono px-1.5 py-0.5 rounded-none bg-amber-500/10 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rotate-45 bg-amber-400" />
                         <span>{durationSemesters}-Sem Spanning</span>
                     </div>
                 )}
@@ -192,22 +193,22 @@ export const CourseNode = memo(function CourseNode({
                         e.stopPropagation();
                         toggleElective(course.id);
                     }}
-                    className={`my-1 w-full flex items-center justify-between px-2 py-0.5 rounded text-[10px] font-semibold transition-all border ${
+                    className={`my-1 w-full flex items-center justify-between px-2 py-0.5 rounded-none text-[10px] font-mono uppercase tracking-wider transition-all border ${
                         isSelectedElective
-                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
-                            : 'bg-slate-800/80 text-slate-400 border-slate-700/80 hover:bg-slate-700/90 hover:text-slate-200'
+                            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/25'
+                            : 'bg-white/5 text-slate-400 border-white/10 hover:border-white/20 hover:text-slate-200'
                     }`}
                     title={isSelectedElective ? 'Remove elective from plan' : 'Add elective to plan'}
                 >
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1.5">
                         {isSelectedElective ? (
-                            <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
+                            <Check className="w-3 h-3 text-emerald-400 stroke-[2.5]" />
                         ) : (
                             <Plus className="w-3 h-3 text-slate-400" />
                         )}
                         <span>{isSelectedElective ? 'Selected Elective' : 'Select Elective'}</span>
                     </span>
-                    <span className="font-mono text-[9px] text-slate-400">
+                    <span className="text-[9px] text-slate-400">
                         {isSelectedElective ? 'Active' : '+Elective'}
                     </span>
                 </button>
@@ -215,30 +216,30 @@ export const CourseNode = memo(function CourseNode({
 
             {/* 3. Footer: Dynamic Status Badge (Completed, Warning / Unmet, Prerequisites Satisfied) */}
             <div className="mt-1 flex items-center justify-between gap-1 text-[10px]">
-                <span className="text-slate-500 font-mono text-[9px]">
+                <span className="text-slate-500 font-mono text-[9px] uppercase tracking-wider">
                     Sem {data.semesterIndex}
                 </span>
 
                 {isCompleted ? (
-                    <span className="inline-flex items-center gap-1 font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                    <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                        <CheckCircle2 className="w-3 h-3 text-amber-400" />
                         <span>Completed</span>
                     </span>
                 ) : isPrereqUnmet ? (
                     <span
-                        className="inline-flex items-center gap-1 font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/40"
+                        className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-red-950/20 text-red-400 border border-red-500/30"
                         title={prereqEval.summary}
                     >
-                        <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
+                        <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
                         <span className="line-clamp-1">Warning: Unmet</span>
                     </span>
                 ) : hasPrerequisites ? (
-                    <span className="inline-flex items-center gap-1 font-medium px-1.5 py-0.5 rounded bg-slate-800/90 text-slate-300 border border-slate-700/60">
+                    <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-white/5 text-slate-300 border border-white/10">
                         <Check className="w-3 h-3 text-emerald-400" />
                         <span>Prereqs Satisfied</span>
                     </span>
                 ) : (
-                    <span className="inline-flex items-center gap-1 font-medium px-1.5 py-0.5 rounded bg-slate-800/60 text-slate-400 border border-slate-700/40">
+                    <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-white/[0.02] text-slate-500 border border-white/5">
                         <span>No Prereqs</span>
                     </span>
                 )}
@@ -249,7 +250,7 @@ export const CourseNode = memo(function CourseNode({
                 type="source"
                 position={Position.Bottom}
                 id="bottom"
-                className="!w-3 !h-3 !bg-emerald-400 !border-2 !border-slate-900 transition-transform hover:!scale-125 -bottom-1.5"
+                className="!w-2 !h-2 !rotate-45 !rounded-none !border !border-white/30 !bg-[var(--star-pip)] !-bottom-1 transition-transform hover:!scale-125"
             />
 
             {/* Supplementary Source Handle for horizontal compatibility */}
@@ -257,7 +258,7 @@ export const CourseNode = memo(function CourseNode({
                 type="source"
                 position={Position.Right}
                 id="right"
-                className="!w-2 !h-2 !bg-emerald-400/50 !border !border-slate-900 opacity-40 hover:opacity-100"
+                className="!w-1.5 !h-1.5 !bg-white/20 !border-0 opacity-40 hover:opacity-100"
             />
         </div>
     );

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { usePlannerStore } from '@/core/store';
 import { getProgram } from '@/data/mockCourses';
 import { CurriculumCanvas } from '@/features/canvas/CurriculumCanvas';
@@ -8,8 +9,16 @@ export default function App() {
     const activeProgramId = usePlannerStore((state) => state.activeProgramId);
     const activeProgram = getProgram(activeProgramId);
 
+    // Dynamic Theme Engine: Synchronize Skyrim Department Constellation ('ce' | 'ee')
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            document.documentElement.dataset.department =
+                activeProgramId === 'electrical-eng' ? 'ee' : 'ce';
+        }
+    }, [activeProgramId]);
+
     return (
-        <div className="w-screen h-screen overflow-hidden bg-slate-950 flex flex-col relative">
+        <div className="w-screen h-screen overflow-hidden bg-[#030508] text-[#F8FAFC] flex flex-col relative skyrim-canvas-bg font-sans">
             <TopNav
                 courses={activeProgram.courses}
                 program={activeProgram}

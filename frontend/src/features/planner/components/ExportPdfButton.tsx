@@ -18,9 +18,7 @@ const emptySubscribe = () => () => {};
 
 /**
  * Client-Side PDF Study Plan Exporter Button (CF-116).
- * Embeds `@react-pdf/renderer`'s `PDFDownloadLink` in the top navigation bar.
- * Clicking generates and triggers immediate download of a 2-page academic study plan
- * with 8-semester tabular credit breakdown and graduation compliance verification stamp.
+ * Styled with an austere, razor-sharp rectangular plate aesthetic matching Skyrim HUD specifications.
  */
 export function ExportPdfButton({
     program: injectedProgram,
@@ -51,7 +49,7 @@ export function ExportPdfButton({
             <button
                 type="button"
                 disabled
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/70 text-white/80 text-xs font-semibold cursor-not-allowed ${className}`}
+                className={`inline-flex items-center gap-2 border border-white/15 bg-white/5 text-slate-400 text-xs font-mono uppercase tracking-widest px-3 py-1.5 cursor-not-allowed select-none rounded-none ${className}`}
                 data-testid="export-pdf-button-loading"
                 aria-label="Preparing study plan export"
             >
@@ -73,13 +71,13 @@ export function ExportPdfButton({
                 />
             }
             fileName={dynamicFileName}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all cursor-pointer select-none ${className}`}
+            className={`inline-flex items-center gap-2 border border-white/15 bg-white/5 hover:bg-white/10 active:border-white/30 text-slate-200 text-xs font-mono uppercase tracking-widest px-3 py-1.5 transition-colors cursor-pointer select-none rounded-none shadow-sm ${className}`}
             data-testid="export-pdf-button"
             aria-label="Download academic study plan PDF"
         >
             {({ loading }) => (
                 <>
-                    <Download className={`w-3.5 h-3.5 shrink-0 ${loading ? 'animate-bounce' : ''}`} />
+                    <Download className={`w-3.5 h-3.5 shrink-0 ${loading ? 'animate-pulse' : ''}`} />
                     <span className="whitespace-nowrap">
                         {loading ? 'Preparing PDF...' : 'Download Plan PDF'}
                     </span>
