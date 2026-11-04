@@ -89,6 +89,14 @@ export function CurriculumCanvas({
         setEdges(updatedEdges);
     }, [activeCourseId, layout, setNodes, setEdges]);
 
+    // Adjust local selection state during render when courses dataset changes
+    const [prevCourses, setPrevCourses] = useState(courses);
+    if (prevCourses !== courses) {
+        setPrevCourses(courses);
+        setSelectedCourseId(null);
+        setHoveredCourseId(null);
+    }
+
     // 4. Hover handlers
     const handleNodeMouseEnter: NodeMouseHandler<CourseLayoutNode> = useCallback((_, node) => {
         setHoveredCourseId(node.id);

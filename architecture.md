@@ -282,11 +282,11 @@ export interface DegreeProgram {
 * **Official Ownership Domains:** React Flow canvas visualizer, custom Tailwind CourseNode cards, 8-semester swimlane headers, module details drawer, client-side PDF export, Jira board management, Confluence/Markdown documentation.
 * **Tech Stack:** React 18, TypeScript, Tailwind CSS v4, @xyflow/react, Zustand, @react-pdf/renderer.
 * **Sprint 1 Jira Tickets:**
-  * `CF-111`: Interactive React Flow Canvas Setup (5 SP)
-  * `CF-112`: Custom CourseNode Component with Tailwind CSS v4 (5 SP)
-  * `CF-113`: Semester Swimlane Column Headers & Credit Meters (5 SP)
-  * `CF-114`: Slide-Over Module Details Drawer (5 SP)
-  * `CF-115`: Degree Switcher Navigation Bar (3 SP)
+  * [x] `CF-111`: Interactive React Flow Canvas Setup (5 SP)
+  * [x] `CF-112`: Custom CourseNode Component with Tailwind CSS v4 (5 SP)
+  * [x] `CF-113`: Semester Swimlane Column Headers & Credit Meters (5 SP)
+  * [x] `CF-114`: Slide-Over Module Details Drawer (5 SP)
+  * [x] `CF-115`: Degree Switcher Navigation Bar (3 SP)
   * `CF-116`: Client-Side PDF Study Plan Exporter (5 SP)
   * `CF-117`: Project Documentation & Jira Board Initialization (3 SP)
 
