@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach } from 'vitest';
+import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -8,6 +8,14 @@ import { TopNav } from '../TopNav';
 
 // Configure act environment for React 19 testing in jsdom
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+
+// Mock PDFDownloadLink to prevent asynchronous PDF blob compilation outside act()
+vi.mock('@react-pdf/renderer', () => ({
+    PDFDownloadLink: ({ children }: { children: (props: { loading: boolean }) => React.ReactNode }) =>
+        children({ loading: false }),
+    Font: { register: vi.fn() },
+    StyleSheet: { create: (styles: unknown) => styles },
+}));
 
 describe('TopNav Component (CF-115)', () => {
     beforeEach(() => {
@@ -65,30 +73,94 @@ describe('TopNav Component (CF-115)', () => {
         container.remove();
     });
 
-    it('reflects eligibility when planned credits meet or exceed required credits', () => {
+    it('updates graduation total dynamically in real time when electives are toggled without page refresh or remount', () => {
         const container = document.createElement('div');
         document.body.appendChild(container);
         const root = createRoot(container);
 
-        // Select all electives so planned credits reach 150
-        const allElectiveIds = mockCourses
-            .filter((c) => c.type === 'ELECTIVE')
-            .map((c) => c.id);
+        // Mount TopNav once
+        act(() => {
+            root.render(
+                <TopNav
+                    courses={mockCourses}
+                    program={mockComputerEngineeringProgram}
+                    totalCreditsRequired={150}
+                />
+            );
+        });
 
-        usePlannerStore.setState({ selectedElectiveIds: allElectiveIds });
+        const plannedDisplay = container.querySelector('[data-testid="planned-credits-display"]');
+        expect(plannedDisplay).not.toBeNull();
+
+        // 1. Initially, no electives are selected (only mandatory core modules count = 120 cr)
+        const initialCredits = Number(plannedDisplay?.textContent);
+        expect(initialCredits).toBe(120);
+
+        // 2. Toggle elective IS3322 (3 credits) in Zustand store - DO NOT re-render manually
+        act(() => {
+            usePlannerStore.getState().toggleElective('IS3322');
+        });
+
+        // Assert that TopNav reactively updated in the DOM immediately
+        expect(plannedDisplay?.textContent).toBe(String(initialCredits + 3));
+
+        // 3. Toggle another elective (IS4224, 2 credits)
+        act(() => {
+            usePlannerStore.getState().toggleElective('IS4224');
+        });
+        expect(plannedDisplay?.textContent).toBe(String(initialCredits + 5));
+
+        // 4. Untoggle elective IS3322 -> immediately decrements without refresh
+        act(() => {
+            usePlannerStore.getState().toggleElective('IS3322');
+        });
+        expect(plannedDisplay?.textContent).toBe(String(initialCredits + 2));
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
+
+    it('reflects eligibility in real time when planned credits reach required threshold via live store updates', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
 
         act(() => {
             root.render(
                 <TopNav
                     courses={mockCourses}
+                    program={mockComputerEngineeringProgram}
                     totalCreditsRequired={150}
                 />
             );
         });
 
         const counter = container.querySelector('[data-testid="graduation-credit-counter"]');
+        expect(counter?.className).not.toContain('bg-emerald-950/40');
+
+        // Select all electives dynamically while mounted
+        const allElectives = mockCourses.filter((c) => c.type === 'ELECTIVE');
+        const allElectiveIds = allElectives.map((c) => c.id);
+        const expectedTotalPlanned = 120 + allElectives.reduce((sum, c) => sum + c.totalCredits, 0);
+
+        act(() => {
+            usePlannerStore.getState().setSelectedElectives(allElectiveIds);
+        });
+
+        // Verify the DOM updated to eligible status reactively without remounting
         expect(counter?.className).toContain('bg-emerald-950/40');
-        expect(counter?.textContent).toContain('150');
+        expect(container.querySelector('[data-testid="planned-credits-display"]')?.textContent).toBe(
+            String(expectedTotalPlanned)
+        );
+
+        // Reset planner -> immediately reverts to non-eligible
+        act(() => {
+            usePlannerStore.getState().resetPlanner();
+        });
+        expect(counter?.className).not.toContain('bg-emerald-950/40');
+        expect(container.querySelector('[data-testid="planned-credits-display"]')?.textContent).toBe('120');
 
         act(() => {
             root.unmount();
