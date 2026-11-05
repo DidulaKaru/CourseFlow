@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import type { NodeProps } from '@xyflow/react';
-import { AlertTriangle, Check, CheckCircle2, Plus } from 'lucide-react';
+import { AlertTriangle, Check, CheckCircle2, Plus, XCircle } from 'lucide-react';
 
 import {
     calculateEarnedCredits,
@@ -9,7 +9,7 @@ import {
 } from '@/core/algorithms/ast_evaluator';
 import type { CourseLayoutNode } from '@/core/layout';
 import { usePlannerStore } from '@/core/store';
-import { mockCourses } from '@/data/mockCourses';
+import { getProgramCourses } from '@/data/mockCourses';
 import type { CourseType } from '@/types/curriculum';
 
 export type NodeHighlightStatus = 'normal' | 'active' | 'upstream' | 'downstream' | 'dimmed';
@@ -51,16 +51,21 @@ export const CourseNode = memo(function CourseNode({
     const highlightStatus = (data as unknown as ExtendedCourseNodeData).highlightStatus ?? 'normal';
 
     // Zustand store reactive hooks
+    const activeProgramId = usePlannerStore((state) => state.activeProgramId);
     const isCompleted = usePlannerStore((state) => state.isCourseCompleted(course.id));
+    const isFailed = usePlannerStore((state) => state.isCourseFailed(course.id));
     const isSelectedElective = usePlannerStore((state) => state.isElectiveSelected(course.id));
     const toggleElective = usePlannerStore((state) => state.toggleElective);
     const toggleCompletedCourse = usePlannerStore((state) => state.toggleCompletedCourse);
     const completedCourseIds = usePlannerStore((state) => state.completedCourseIds);
 
+    // Dynamic catalog resolution based on active degree program
+    const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
+
     // Compute student's cumulative earned credits across catalog
     const earnedCredits = useMemo(() => {
-        return calculateEarnedCredits(completedCourseIds, mockCourses);
-    }, [completedCourseIds]);
+        return calculateEarnedCredits(completedCourseIds, activeCourses);
+    }, [completedCourseIds, activeCourses]);
 
     // Evaluate prerequisite AST satisfiability with diagnostics
     const prereqEval = useMemo(() => {
@@ -72,7 +77,7 @@ export const CourseNode = memo(function CourseNode({
     }, [course.prerequisiteRule, completedCourseIds, earnedCredits]);
 
     const hasPrerequisites = course.prerequisiteRule !== null;
-    const isPrereqUnmet = hasPrerequisites && !prereqEval.isSatisfied && !isCompleted;
+    const isPrereqUnmet = hasPrerequisites && !prereqEval.isSatisfied && !isCompleted && !isFailed;
 
     const typeConfig = TYPE_STYLES[course.type] ?? TYPE_STYLES.CORE;
 
@@ -91,6 +96,9 @@ export const CourseNode = memo(function CourseNode({
     } else if (highlightStatus === 'downstream') {
         // Downstream unlocked elective/dependent illuminated
         cardStyle = 'bg-[#0A0F18]/95 border-[#10B981] ring-1 ring-[#10B981]/50 shadow-[0_0_12px_rgba(16,185,129,0.25)] text-white';
+    } else if (isFailed) {
+        // Failed course: glowing rose border
+        cardStyle = 'bg-[#070B12]/90 border-rose-500/50 ring-1 ring-rose-500/30 text-rose-200 shadow-[0_0_10px_rgba(244,63,94,0.2)]';
     } else if (isCompleted) {
         // Completed course: golden flared star core with subtle metallic ring
         cardStyle = 'bg-[#070B12]/90 border-amber-500/40 ring-1 ring-amber-500/20 text-slate-100 shadow-[0_0_10px_rgba(245,158,11,0.15)]';
@@ -104,6 +112,9 @@ export const CourseNode = memo(function CourseNode({
 
     return (
         <div
+            role="article"
+            tabIndex={0}
+            aria-label={`${course.code}: ${course.title}, ${course.totalCredits} credits, ${typeConfig.label}`}
             className={`relative rounded-sm border p-3 transition-all duration-200 select-none cursor-pointer flex flex-col justify-between backdrop-blur-sm ${cardStyle}`}
             style={{
                 width: spanWidth ?? 240,
@@ -119,6 +130,8 @@ export const CourseNode = memo(function CourseNode({
                 className={`!w-2.5 !h-2.5 !rotate-45 !rounded-none !border !border-white/40 !-top-1.5 transition-transform hover:!scale-125 ${
                     isCompleted
                         ? '!bg-[#F59E0B] !shadow-[0_0_8px_#F59E0B]'
+                        : isFailed
+                        ? '!bg-rose-500 !shadow-[0_0_8px_rgba(244,63,94,0.6)]'
                         : '!bg-[var(--star-pip)] !shadow-[0_0_6px_var(--constellation-beam-glow)]'
                 }`}
             />
@@ -214,13 +227,18 @@ export const CourseNode = memo(function CourseNode({
                 </button>
             )}
 
-            {/* 3. Footer: Dynamic Status Badge (Completed, Warning / Unmet, Prerequisites Satisfied) */}
+            {/* 3. Footer: Dynamic Status Badge (Completed, Failed, Warning / Unmet, Prerequisites Satisfied) */}
             <div className="mt-1 flex items-center justify-between gap-1 text-[10px]">
                 <span className="text-slate-500 font-mono text-[9px] uppercase tracking-wider">
                     Sem {data.semesterIndex}
                 </span>
 
-                {isCompleted ? (
+                {isFailed ? (
+                    <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-rose-950/30 text-rose-400 border border-rose-500/40">
+                        <XCircle className="w-3 h-3 text-rose-400" />
+                        <span>Failed</span>
+                    </span>
+                ) : isCompleted ? (
                     <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-amber-500/10 text-amber-300 border border-amber-500/30">
                         <CheckCircle2 className="w-3 h-3 text-amber-400" />
                         <span>Completed</span>

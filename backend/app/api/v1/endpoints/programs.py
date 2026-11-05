@@ -1,6 +1,8 @@
 """Degree Program curriculum metadata endpoints."""
 
 import json
+import logging
+import re
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, status
@@ -14,6 +16,9 @@ from app.schemas.curriculum import (
     DegreeProgramSummary,
     SemesterTerm,
 )
+
+logger = logging.getLogger(__name__)
+SAFE_ID_REGEX = re.compile(r"^[a-zA-Z0-9_-]+$")
 
 router = APIRouter()
 
@@ -264,7 +269,9 @@ def _get_fallback_electrical_eng() -> DegreeProgram:
 
 def load_program_by_id(program_id: str) -> DegreeProgram | None:
     """Load a degree program by ID from disk if available, or return fallback mock."""
-    # Check disk storage in data/programs/
+    if not SAFE_ID_REGEX.match(program_id):
+        return None
+
     variants = [
         f"{program_id}.json",
         f"{program_id.replace('-', '_')}.json",
@@ -275,12 +282,13 @@ def load_program_by_id(program_id: str) -> DegreeProgram | None:
             try:
                 with open(target_path, encoding="utf-8") as f:
                     return DegreeProgram.model_validate(json.load(f))
-            except (OSError, json.JSONDecodeError, ValueError):
+            except (OSError, json.JSONDecodeError, ValueError) as e:
+                logger.warning(f"Failed to load program {program_id} from {target_path}: {e}")
                 continue
 
-    if program_id == "computer-eng":
+    if program_id in ("computer-eng", "computer_engineering"):
         return _get_fallback_computer_eng()
-    if program_id == "electrical-eng":
+    if program_id in ("electrical-eng", "electrical_engineering"):
         return _get_fallback_electrical_eng()
 
     return None
@@ -293,23 +301,51 @@ def load_program_by_id(program_id: str) -> DegreeProgram | None:
     description="Retrieve high-level summaries for all available engineering degree programs.",
 )
 def list_programs() -> list[DegreeProgramSummary]:
-    """Retrieve all degree program summaries."""
-    programs = [
-        _get_fallback_computer_eng(),
-        _get_fallback_electrical_eng(),
-    ]
-    return [
-        DegreeProgramSummary(
-            id=p.id,
-            name=p.name,
-            department=p.department,
-            total_credits_required=p.total_credits_required,
-            min_credits_per_semester=p.min_credits_per_semester,
-            max_credits_per_semester=p.max_credits_per_semester,
-            semesters_count=p.semesters_count,
-        )
-        for p in programs
-    ]
+    """Retrieve all degree program summaries, prioritizing verified disk programs."""
+    summaries: list[DegreeProgramSummary] = []
+    seen_ids: set[str] = set()
+
+    if settings.DATA_PROGRAMS_DIR.exists():
+        for path in sorted(settings.DATA_PROGRAMS_DIR.glob("*.json")):
+            try:
+                with open(path, encoding="utf-8") as f:
+                    prog = DegreeProgram.model_validate(json.load(f))
+                    if prog.id not in seen_ids:
+                        seen_ids.add(prog.id)
+                        summaries.append(
+                            DegreeProgramSummary(
+                                id=prog.id,
+                                name=prog.name,
+                                department=prog.department,
+                                total_credits_required=prog.total_credits_required,
+                                min_credits_per_semester=prog.min_credits_per_semester,
+                                max_credits_per_semester=prog.max_credits_per_semester,
+                                semesters_count=prog.semesters_count,
+                            )
+                        )
+            except (OSError, json.JSONDecodeError, ValueError) as e:
+                logger.warning(f"Failed to parse program file {path}: {e}")
+
+    # Fallback to in-memory programs if disk has no programs
+    if not summaries:
+        fallbacks = [
+            _get_fallback_computer_eng(),
+            _get_fallback_electrical_eng(),
+        ]
+        for p in fallbacks:
+            summaries.append(
+                DegreeProgramSummary(
+                    id=p.id,
+                    name=p.name,
+                    department=p.department,
+                    total_credits_required=p.total_credits_required,
+                    min_credits_per_semester=p.min_credits_per_semester,
+                    max_credits_per_semester=p.max_credits_per_semester,
+                    semesters_count=p.semesters_count,
+                )
+            )
+
+    return summaries
 
 
 @router.get(

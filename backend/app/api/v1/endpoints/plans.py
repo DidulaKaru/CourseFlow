@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.api.v1.endpoints.programs import load_program_by_id
 from app.core.ast_evaluator import evaluate_prerequisite_with_diagnostics
+from app.schemas.curriculum import Course, CourseType
 from app.schemas.plans import (
     PlanValidationRequest,
     PlanValidationResponse,
@@ -33,9 +34,9 @@ def validate_plan(request: PlanValidationRequest) -> PlanValidationResponse:
     completed_courses_set = set(request.completed_course_ids)
 
     # 1. Identify all planned courses
-    planned_courses: list = []
+    planned_courses: list[Course] = []
     for course in program.courses:
-        if course.type == "ELECTIVE":
+        if course.type == CourseType.ELECTIVE:
             if course.id in selected_electives_set:
                 planned_courses.append(course)
         else:
@@ -78,6 +79,7 @@ def validate_plan(request: PlanValidationRequest) -> PlanValidationResponse:
             )
             warnings.append(term_warning)
         elif credits_in_sem > program.max_credits_per_semester:
+            term_valid = False
             term_warning = (
                 f"Semester {sem} load ({credits_in_sem} cr) exceeds term cap of "
                 f"{program.max_credits_per_semester} credits."
@@ -94,7 +96,7 @@ def validate_plan(request: PlanValidationRequest) -> PlanValidationResponse:
             )
         )
 
-    # 4. Validate prerequisite AST satisfiability
+    # 4. Validate prerequisite AST satisfiability & co-requisite rules
     prereq_details: list[PrerequisiteValidationDetail] = []
 
     # Track courses completed prior to each semester
@@ -106,6 +108,16 @@ def validate_plan(request: PlanValidationRequest) -> PlanValidationResponse:
         sem_courses = [c for c in planned_courses if c.id in sem_course_ids]
 
         for course in sem_courses:
+            # Check mandatory co-requisites (must be registered in same term or prior term)
+            if course.corequisites:
+                for coreq_id in course.corequisites:
+                    if coreq_id not in sem_course_ids and coreq_id not in courses_prior_to_sem:
+                        coreq_warning = (
+                            f"Mandatory co-requisite '{coreq_id}' for {course.code} is missing "
+                            f"in Semester {sem} and was not completed previously."
+                        )
+                        warnings.append(coreq_warning)
+
             if course.prerequisite_rule:
                 diag = evaluate_prerequisite_with_diagnostics(
                     course.prerequisite_rule,

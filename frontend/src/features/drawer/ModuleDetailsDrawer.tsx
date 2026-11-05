@@ -9,8 +9,10 @@ import {
     CheckCircle2,
     Clock,
     Layers,
+    ListChecks,
     Plus,
     X,
+    XCircle,
 } from 'lucide-react';
 
 import {
@@ -20,7 +22,7 @@ import {
 } from '@/core/algorithms/ast_evaluator';
 import { extractPrerequisiteCourseIds } from '@/core/layout';
 import { usePlannerStore } from '@/core/store';
-import { mockCourses } from '@/data/mockCourses';
+import { getProgramCourses } from '@/data/mockCourses';
 import type { CourseType } from '@/types/curriculum';
 
 const TYPE_CONFIG: Record<
@@ -55,10 +57,13 @@ export function ModuleDetailsDrawer() {
     const closeCourseDrawer = usePlannerStore((state) => state.closeCourseDrawer);
 
     // Planner state & actions
+    const activeProgramId = usePlannerStore((state) => state.activeProgramId);
     const selectedElectiveIds = usePlannerStore((state) => state.selectedElectiveIds);
     const completedCourseIds = usePlannerStore((state) => state.completedCourseIds);
+    const failedCourseIds = usePlannerStore((state) => state.failedCourseIds);
     const toggleElective = usePlannerStore((state) => state.toggleElective);
     const toggleCompletedCourse = usePlannerStore((state) => state.toggleCompletedCourse);
+    const toggleFailedCourse = usePlannerStore((state) => state.toggleFailedCourse);
 
     // Dismiss drawer on Escape keypress
     useEffect(() => {
@@ -71,10 +76,13 @@ export function ModuleDetailsDrawer() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isDrawerOpen, closeCourseDrawer]);
 
+    // Dynamic catalog resolution based on active degree program
+    const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
+
     // Student cumulative credits
     const earnedCredits = useMemo(() => {
-        return calculateEarnedCredits(completedCourseIds, mockCourses);
-    }, [completedCourseIds]);
+        return calculateEarnedCredits(completedCourseIds, activeCourses);
+    }, [completedCourseIds, activeCourses]);
 
     // Prerequisite evaluation diagnostics for inspected course
     const prereqEval = useMemo(() => {
@@ -97,6 +105,7 @@ export function ModuleDetailsDrawer() {
     }
 
     const isCompleted = completedCourseIds.includes(inspectedCourse.id);
+    const isFailed = failedCourseIds.includes(inspectedCourse.id);
     const isSelectedElective = selectedElectiveIds.includes(inspectedCourse.id);
     const isElective = inspectedCourse.type === 'ELECTIVE';
     const isMultiSemester = (inspectedCourse.durationSemesters ?? 1) > 1;
@@ -182,6 +191,20 @@ export function ModuleDetailsDrawer() {
                             {inspectedCourse.description ||
                                 'Comprehensive theoretical foundations and practical laboratory applications designed for engineering students.'}
                         </p>
+
+                        {inspectedCourse.syllabusObjectives && inspectedCourse.syllabusObjectives.length > 0 && (
+                            <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10 space-y-2">
+                                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                    <ListChecks className="w-3.5 h-3.5 text-cyan-300" />
+                                    Learning Objectives
+                                </span>
+                                <ul className="space-y-1.5 text-xs text-slate-300 pl-4 list-disc marker:text-cyan-400">
+                                    {inspectedCourse.syllabusObjectives.map((obj, i) => (
+                                        <li key={i}>{obj}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </section>
 
                     {/* Prerequisite AST Breakdown */}
@@ -328,20 +351,30 @@ export function ModuleDetailsDrawer() {
                             <div className="bg-[#030508] p-2 rounded-none border border-white/10">
                                 <span className="block text-[10px] text-slate-400 uppercase font-mono">Lectures</span>
                                 <span className="text-sm font-semibold text-slate-200 font-mono">
-                                    {inspectedCourse.type === 'LAB' ? '1 hr/wk' : `${inspectedCourse.totalCredits} hrs/wk`}
+                                    {inspectedCourse.contactHours
+                                        ? `${inspectedCourse.contactHours.lecture} hrs/wk`
+                                        : inspectedCourse.type === 'LAB'
+                                        ? '1 hr/wk'
+                                        : `${inspectedCourse.totalCredits} hrs/wk`}
                                 </span>
                             </div>
                             <div className="bg-[#030508] p-2 rounded-none border border-white/10">
                                 <span className="block text-[10px] text-slate-400 uppercase font-mono">Labs</span>
                                 <span className="text-sm font-semibold text-slate-200 font-mono">
-                                    {inspectedCourse.type === 'LAB' || inspectedCourse.type === 'CAPSTONE'
+                                    {inspectedCourse.contactHours
+                                        ? `${inspectedCourse.contactHours.lab} hrs/wk`
+                                        : inspectedCourse.type === 'LAB' || inspectedCourse.type === 'CAPSTONE'
                                         ? '3 hrs/wk'
                                         : '0 hrs/wk'}
                                 </span>
                             </div>
                             <div className="bg-[#030508] p-2 rounded-none border border-white/10">
                                 <span className="block text-[10px] text-slate-400 uppercase font-mono">Tutorials</span>
-                                <span className="text-sm font-semibold text-slate-200 font-mono">1 hr/wk</span>
+                                <span className="text-sm font-semibold text-slate-200 font-mono">
+                                    {inspectedCourse.contactHours
+                                        ? `${inspectedCourse.contactHours.tutorial} hrs/wk`
+                                        : '1 hr/wk'}
+                                </span>
                             </div>
                         </div>
                     </section>
@@ -375,29 +408,47 @@ export function ModuleDetailsDrawer() {
                         </button>
                     )}
 
-                    {/* Mark Course as Completed Toggle */}
-                    <button
-                        type="button"
-                        onClick={() => toggleCompletedCourse(inspectedCourse.id)}
-                        className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-none text-xs font-mono uppercase tracking-wider transition-all border ${
-                            isCompleted
-                                ? 'bg-white/5 text-slate-300 border-white/15 hover:bg-white/10'
-                                : 'bg-[var(--accent-primary)]/15 text-slate-100 border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/25'
-                        }`}
-                        data-testid="drawer-completion-toggle"
-                    >
-                        {isCompleted ? (
-                            <>
-                                <X className="w-4 h-4 text-slate-400" />
-                                <span>Mark Course as Incomplete</span>
-                            </>
-                        ) : (
-                            <>
-                                <Check className="w-4 h-4 stroke-[2.5]" />
-                                <span>Mark as Completed ({inspectedCourse.totalCredits} cr)</span>
-                            </>
-                        )}
-                    </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {/* Mark Course as Completed Toggle */}
+                        <button
+                            type="button"
+                            onClick={() => toggleCompletedCourse(inspectedCourse.id)}
+                            className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-none text-xs font-mono uppercase tracking-wider transition-all border ${
+                                isCompleted
+                                    ? 'bg-amber-500/20 text-amber-200 border-amber-500/50 hover:bg-amber-500/30'
+                                    : 'bg-[var(--accent-primary)]/15 text-slate-100 border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/25'
+                            }`}
+                            data-testid="drawer-completion-toggle"
+                        >
+                            {isCompleted ? (
+                                <>
+                                    <X className="w-3.5 h-3.5 text-amber-300" />
+                                    <span>Unmark Completed</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                                    <span>Completed ({inspectedCourse.totalCredits} cr)</span>
+                                </>
+                            )}
+                        </button>
+
+                        {/* Simulate Failed Module Toggle */}
+                        <button
+                            type="button"
+                            onClick={() => toggleFailedCourse(inspectedCourse.id)}
+                            className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-none text-xs font-mono uppercase tracking-wider transition-all border ${
+                                isFailed
+                                    ? 'bg-rose-500/25 text-rose-200 border-rose-500 hover:bg-rose-500/35'
+                                    : 'bg-white/5 text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 border-white/10 hover:border-rose-500/30'
+                            }`}
+                            title="Simulate failing this course to observe cascading prerequisite ripple effects"
+                            data-testid="drawer-failed-toggle"
+                        >
+                            <XCircle className="w-3.5 h-3.5 text-rose-400" />
+                            <span>{isFailed ? 'Clear Failed' : 'Mark Failed'}</span>
+                        </button>
+                    </div>
                 </div>
             </aside>
         </>

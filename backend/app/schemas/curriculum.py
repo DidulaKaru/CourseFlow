@@ -85,6 +85,14 @@ class SemesterTerm(str, Enum):
     BOTH = "BOTH"
 
 
+class ContactHours(CamelModel):
+    """Contact hours breakdown for lecture, lab, and tutorial."""
+
+    lecture: int = Field(default=0, ge=0, description="Weekly lecture hours")
+    lab: int = Field(default=0, ge=0, description="Weekly practical lab hours")
+    tutorial: int = Field(default=0, ge=0, description="Weekly tutorial hours")
+
+
 class CreditDistribution(CamelModel):
     """Credit allocation for a specific semester in multi-semester courses."""
 
@@ -105,8 +113,8 @@ class Course(CamelModel):
     duration_semesters: int = Field(
         default=1,
         ge=1,
-        le=2,
-        description="Duration in semesters (1 standard, 2 capstone)",
+        le=8,
+        description="Duration in semesters (1 standard, 2+ capstone/spanning)",
     )
     recommended_semester: int = Field(
         ..., ge=1, le=8, description="Recommended semester: 1 through 8"
@@ -127,6 +135,14 @@ class Course(CamelModel):
     offered_semesters: list[SemesterTerm] = Field(
         default_factory=list,
         description="Semester terms when course is offered",
+    )
+    syllabus_objectives: list[str] = Field(
+        default_factory=list,
+        description="Official learning objectives from syllabus",
+    )
+    contact_hours: ContactHours | None = Field(
+        default=None,
+        description="Weekly lecture, lab, and tutorial contact hours",
     )
 
 
