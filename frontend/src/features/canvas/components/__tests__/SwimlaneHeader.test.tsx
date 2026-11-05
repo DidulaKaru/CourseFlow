@@ -149,18 +149,9 @@ describe('SwimlaneHeaders Integration & Real-Time Elective Updates (CF-113)', ()
         expect(s1Header.textContent).toContain('15 / 18 cr');
         expect(s1Header.textContent).toContain('Load < 18 cr');
 
-        // Toggle elective E1_A in store
+        // Toggle elective E1_A in store - component must update reactively without manual re-render
         act(() => {
             usePlannerStore.getState().toggleElective('E1_A');
-        });
-
-        // Re-render to observe real-time reaction
-        act(() => {
-            root.render(
-                <ReactFlowProvider>
-                    <SwimlaneHeaders courses={testCourses} />
-                </ReactFlowProvider>
-            );
         });
 
         // Now S1 credits = 15 + 3 = 18 cr -> Valid Load!

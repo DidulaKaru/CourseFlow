@@ -1,10 +1,10 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import type { NodeProps } from '@xyflow/react';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 import type { SwimlaneHeaderLayoutNode } from '@/core/layout';
-import { usePlannerStore } from '@/core/store';
-import { mockCourses } from '@/data/mockCourses';
+import { usePlannerStore, calculateSemesterCredits } from '@/core/store';
+import { getProgramCourses } from '@/data/mockCourses';
 import type { Course } from '@/types/curriculum';
 
 export interface SwimlaneHeaderProps {
@@ -54,68 +54,63 @@ export const SwimlaneHeader = memo(function SwimlaneHeader({
             style={style}
             data-testid={`swimlane-header-${semesterIndex}`}
         >
-            {/* Atmospheric Celestial Roman Numeral Watermark */}
+            {/* Roman Numeral Atmospheric Watermark */}
             <span
-                className="absolute left-3 top-1/2 -translate-y-1/2 font-serif font-black text-4xl sm:text-5xl text-white opacity-[0.04] pointer-events-none select-none tracking-widest"
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-serif text-5xl font-bold tracking-widest text-white/[0.04] select-none"
                 aria-hidden="true"
             >
                 {roman}
             </span>
 
-            {/* 1. Left Section: Celestial Star Pip, Semester Title & Course Count */}
-            <div className="flex items-center gap-3 shrink-0 relative z-10">
-                <div className="w-2 h-2 rotate-45 border border-white/60 bg-[var(--star-pip)] shadow-[0_0_6px_var(--constellation-beam)]" />
-                <span className="font-serif uppercase font-bold text-xs tracking-[0.15em] text-slate-200">
+            {/* 1. Left Section: Semester Title & Course Count Tag */}
+            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 relative z-10">
+                <div
+                    className={`w-2 h-2 rotate-45 border shrink-0 transition-colors ${
+                        isValid
+                            ? 'border-emerald-400 bg-emerald-400/80 shadow-[0_0_6px_rgba(16,185,129,0.8)]'
+                            : isUnderload
+                            ? 'border-rose-400 bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.8)]'
+                            : 'border-amber-400 bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.8)]'
+                    }`}
+                />
+                <h3 className="font-serif uppercase font-semibold text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] text-slate-100 whitespace-nowrap">
                     Semester {semesterIndex}
-                </span>
+                </h3>
                 {typeof courseCount === 'number' && (
-                    <span className="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded-none border border-white/10 uppercase tracking-wider">
-                        {courseCount} courses
+                    <span className="hidden sm:inline font-mono text-[10px] text-slate-400 bg-white/5 border border-white/10 px-1.5 py-0.2 rounded-none uppercase tracking-wider">
+                        [{courseCount} {courseCount === 1 ? 'course' : 'courses'}]
                     </span>
                 )}
             </div>
 
-            {/* 2. Middle Section: Credit Meter Horizon Bar */}
-            <div className="flex-1 max-w-xs mx-4 hidden sm:block relative z-10">
-                <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1 font-mono uppercase tracking-wider">
-                    <span>Target: {minCredits} cr</span>
-                    <span>Max: {maxCredits} cr</span>
-                </div>
-                <div className="relative w-full h-[3px] bg-white/10 border-x border-white/30">
-                    {/* Minimum 18 credit threshold marker */}
-                    <div
-                        className="absolute -top-1 -bottom-1 w-[1px] bg-white/40 z-10"
-                        style={{ left: `${(minCredits / maxCredits) * 100}%` }}
-                        title={`Minimum credit threshold (${minCredits} cr)`}
-                    />
+            {/* 2. Center Section: Skyrim Real-Time Workload Horizon */}
+            <div className="flex-1 max-w-xs hidden sm:flex flex-col gap-1 mx-2 relative z-10">
+                <div className="relative w-full h-[3px] bg-white/10 border-x border-white/30 overflow-hidden">
                     <div
                         className={`h-full transition-all duration-300 ${
                             isValid
-                                ? 'bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.6)]'
+                                ? 'bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.7)]'
                                 : isUnderload
-                                ? 'bg-rose-400 shadow-[0_0_6px_rgba(244,63,94,0.6)]'
-                                : 'bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.6)]'
+                                ? 'bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.7)]'
+                                : 'bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.7)]'
                         }`}
                         style={{ width: `${meterPercentage}%` }}
                     />
                 </div>
             </div>
 
-            {/* 3. Right Section: Status Pill & Real-Time Credit Badge */}
-            <div className="flex items-center gap-3 shrink-0 relative z-10">
+            {/* 3. Right Section: Credit Readout & Compliance Status Pill */}
+            <div className="flex items-center gap-2 shrink-0 relative z-10">
                 {isValid ? (
-                    <span
-                        className="inline-flex items-center gap-1.5 text-xs font-mono font-medium px-2.5 py-1 rounded-none bg-emerald-950/30 text-emerald-300 border border-emerald-500/30"
-                        title={`Semester load is valid (between ${minCredits} and ${maxCredits} credits)`}
-                    >
+                    <span className="inline-flex items-center gap-1.5 font-mono text-xs text-emerald-300 bg-emerald-950/30 border border-emerald-500/30 px-2 py-0.5 rounded-none tracking-wider">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>{credits} cr</span>
+                        <span className="font-semibold">{credits} cr</span>
                         <span className="text-[10px] text-emerald-400/80 hidden md:inline">• Valid Load</span>
                     </span>
                 ) : isUnderload ? (
                     <span
-                        className="inline-flex items-center gap-1.5 text-xs font-mono font-medium px-2.5 py-1 rounded-none bg-rose-950/30 text-rose-300 border border-rose-500/40"
-                        title={`Workload underload warning: ${credits} credits planned. Minimum required is ${minCredits} credits.`}
+                        className="inline-flex items-center gap-1.5 font-mono text-xs text-rose-300 bg-rose-950/30 border border-rose-500/40 px-2 py-0.5 rounded-none tracking-wider"
+                        title={`Semester load (${credits} cr) is below minimum of ${minCredits} credits`}
                     >
                         <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                         <span>{credits} / {minCredits} cr</span>
@@ -123,8 +118,8 @@ export const SwimlaneHeader = memo(function SwimlaneHeader({
                     </span>
                 ) : (
                     <span
-                        className="inline-flex items-center gap-1.5 text-xs font-mono font-medium px-2.5 py-1 rounded-none bg-amber-950/30 text-amber-300 border border-amber-500/40"
-                        title={`Workload overload warning: ${credits} credits planned. Maximum recommended is ${maxCredits} credits.`}
+                        className="inline-flex items-center gap-1.5 font-mono text-xs text-amber-300 bg-amber-950/30 border border-amber-500/40 px-2 py-0.5 rounded-none tracking-wider"
+                        title={`Semester load (${credits} cr) exceeds recommended maximum of ${maxCredits} credits`}
                     >
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                         <span>{credits} / {maxCredits} cr</span>
@@ -138,15 +133,21 @@ export const SwimlaneHeader = memo(function SwimlaneHeader({
 
 /**
  * React Flow Custom Node for rendering Swimlane Headers directly in the canvas.
+ * Reactively recalculates active semester credits whenever electives are toggled.
  */
 export const SwimlaneHeaderNode = memo(function SwimlaneHeaderNode({
     data,
 }: NodeProps<SwimlaneHeaderLayoutNode>) {
     const { semesterIndex, courseCount, width } = data;
-    const getSemesterCredits = usePlannerStore((state) => state.getSemesterCredits);
+    const activeProgramId = usePlannerStore((state) => state.activeProgramId);
+    const selectedElectiveIds = usePlannerStore((state) => state.selectedElectiveIds);
 
-    // Compute active credits reactively from store
-    const credits = getSemesterCredits(semesterIndex, mockCourses);
+    const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
+
+    // Compute active credits reactively from store whenever selectedElectiveIds or active program change
+    const credits = useMemo(() => {
+        return calculateSemesterCredits(semesterIndex, activeCourses, selectedElectiveIds);
+    }, [semesterIndex, activeCourses, selectedElectiveIds]);
 
     return (
         <div style={{ width: width ?? 1280 }} className="pointer-events-auto">
@@ -169,6 +170,7 @@ export interface SwimlaneHeadersProps {
 
 /**
  * SwimlaneHeaders container component for testing and standalone layout rendering.
+ * Reactively recalculates all semester credit sums whenever selected electives change.
  */
 export function SwimlaneHeaders({
     courses,
@@ -177,16 +179,18 @@ export function SwimlaneHeaders({
     maxCredits = 24,
     className = '',
 }: SwimlaneHeadersProps) {
-    const getSemesterCredits = usePlannerStore((state) => state.getSemesterCredits);
+    const selectedElectiveIds = usePlannerStore((state) => state.selectedElectiveIds);
 
-    const semesterData = Array.from({ length: semestersCount }, (_, idx) => {
-        const sem = idx + 1;
-        const credits = getSemesterCredits(sem, courses);
-        return {
-            semesterIndex: sem,
-            credits,
-        };
-    });
+    const semesterData = useMemo(() => {
+        return Array.from({ length: semestersCount }, (_, idx) => {
+            const sem = idx + 1;
+            const credits = calculateSemesterCredits(sem, courses, selectedElectiveIds);
+            return {
+                semesterIndex: sem,
+                credits,
+            };
+        });
+    }, [semestersCount, courses, selectedElectiveIds]);
 
     return (
         <div

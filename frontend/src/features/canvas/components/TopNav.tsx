@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { usePlannerStore } from '@/core/store';
+import { memo, useMemo } from 'react';
+import { usePlannerStore, calculateTotalPlannedCredits } from '@/core/store';
 import { getProgram, getProgramCourses } from '@/data/mockCourses';
 import { ExportPdfButton } from '@/features/planner/components/ExportPdfButton';
 import type { Course, DegreeProgram } from '@/types/curriculum';
@@ -18,6 +18,9 @@ export interface TopNavProps {
  * Austere dark slate HUD with heavy backdrop blur, tracked-out classical 'Cinzel' logomark,
  * flush translucent department switcher, and a Skyrim-modeled metallic skill progression bar.
  * Responsively tuned for seamless layout compliance across mobile, tablet, and desktop viewports.
+ *
+ * Reactively recalculates graduation progress and credit meters whenever electives or
+ * course completions are toggled in the store.
  */
 export const TopNav = memo(function TopNav({
     courses,
@@ -27,19 +30,38 @@ export const TopNav = memo(function TopNav({
     children,
 }: TopNavProps) {
     const activeProgramId = usePlannerStore((state) => state.activeProgramId);
-    const getGraduationProgress = usePlannerStore((state) => state.getGraduationProgress);
+    const selectedElectiveIds = usePlannerStore((state) => state.selectedElectiveIds);
+    const completedCourseIds = usePlannerStore((state) => state.completedCourseIds);
 
     // Resolve active program and course dataset if not explicitly injected
     const currentProgram = program ?? getProgram(activeProgramId);
     const activeCourses = courses ?? getProgramCourses(activeProgramId);
     const targetCredits = totalCreditsRequired ?? currentProgram.totalCreditsRequired ?? 150;
 
-    // Calculate real-time graduation compliance
-    const progress = getGraduationProgress(activeCourses, targetCredits);
-    const percentage = Math.min(
-        100,
-        Math.max(0, Math.round((progress.plannedCredits / targetCredits) * 100))
-    );
+    // Calculate real-time graduation compliance reactively whenever electives or completions change
+    const progress = useMemo(() => {
+        const plannedCredits = calculateTotalPlannedCredits(activeCourses, selectedElectiveIds);
+        const completedSet = new Set(completedCourseIds);
+        let earnedCredits = 0;
+        for (const course of activeCourses) {
+            if (completedSet.has(course.id)) {
+                earnedCredits += course.totalCredits;
+            }
+        }
+        return {
+            earnedCredits,
+            plannedCredits,
+            requiredCredits: targetCredits,
+            isEligible: plannedCredits >= targetCredits,
+        };
+    }, [activeCourses, targetCredits, selectedElectiveIds, completedCourseIds]);
+
+    const percentage = useMemo(() => {
+        return Math.min(
+            100,
+            Math.max(0, Math.round((progress.plannedCredits / targetCredits) * 100))
+        );
+    }, [progress.plannedCredits, targetCredits]);
 
     return (
         <header
@@ -92,7 +114,10 @@ export const TopNav = memo(function TopNav({
                         <span className="hidden md:inline font-mono text-[11px] uppercase tracking-wider text-slate-400">
                             Graduation:
                         </span>
-                        <span className="font-mono font-semibold text-slate-100 text-xs tracking-wider">
+                        <span
+                            className="font-mono font-semibold text-slate-100 text-xs tracking-wider"
+                            data-testid="planned-credits-display"
+                        >
                             {progress.plannedCredits}
                         </span>
                         <span className="font-mono text-slate-400 text-xs tracking-wider">
