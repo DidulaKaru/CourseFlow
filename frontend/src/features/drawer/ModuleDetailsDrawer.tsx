@@ -23,27 +23,23 @@ import type { CourseType } from '@/types/curriculum';
 
 const TYPE_CONFIG: Record<
     CourseType,
-    { badge: string; label: string; text: string }
+    { badge: string; label: string }
 > = {
     CORE: {
         badge: 'border-white/15 text-slate-300 bg-white/5',
-        label: 'Core Module',
-        text: 'Mandatory core requirement for degree completion.',
+        label: 'Mandatory Core',
     },
     ELECTIVE: {
         badge: 'border-white/15 text-slate-400 bg-white/5',
         label: 'Elective Specialization',
-        text: 'Specialization elective chosen by the student.',
     },
     CAPSTONE: {
         badge: 'border-amber-500/30 text-amber-300 bg-amber-950/20',
         label: 'Capstone Project',
-        text: 'Multi-semester comprehensive engineering design project.',
     },
     LAB: {
         badge: 'border-cyan-500/30 text-cyan-300 bg-cyan-950/20',
         label: 'Practical Lab',
-        text: 'Hands-on practical laboratory and technical design.',
     },
 };
 
@@ -97,6 +93,7 @@ export function ModuleDetailsDrawer() {
 
     const typeDetails = TYPE_CONFIG[inspectedCourse.type] ?? TYPE_CONFIG.CORE;
     const formattedRule = formatPrerequisiteRule(inspectedCourse.prerequisiteRule);
+    const hasComplexLogic = formattedRule.includes('AND') || formattedRule.includes('OR') || formattedRule.includes('Credits');
 
     return (
         <>
@@ -128,6 +125,7 @@ export function ModuleDetailsDrawer() {
                                 {inspectedCourse.code}
                             </span>
                             <span
+                                data-testid="drawer-mandatory-badge"
                                 className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-none border tracking-wider ${typeDetails.badge}`}
                             >
                                 {typeDetails.label}
@@ -146,16 +144,13 @@ export function ModuleDetailsDrawer() {
 
                         <p className="text-xs text-slate-400 font-mono">
                             Recommended: <span className="text-slate-200">Semester {inspectedCourse.recommendedSemester}</span>
-                            {inspectedCourse.offeredSemesters.length > 0 && (
-                                <> • Offered: <span className="text-slate-200">{inspectedCourse.offeredSemesters.join(', ')}</span></>
-                            )}
                         </p>
                     </div>
 
                     <button
                         type="button"
                         onClick={closeCourseDrawer}
-                        className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-none transition-colors border border-transparent hover:border-white/15"
+                        className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-none transition-colors border border-transparent hover:border-white/15 cursor-pointer"
                         title="Close drawer (Esc)"
                         aria-label="Close module details"
                         data-testid="drawer-close-button"
@@ -166,20 +161,16 @@ export function ModuleDetailsDrawer() {
 
                 {/* 2. Scrollable Body Content */}
                 <div className="flex-1 overflow-y-auto p-5 space-y-6 text-slate-300">
-                    {/* Module Description & Type Notes */}
+                    {/* Module Description & Objectives */}
                     <section className="space-y-2">
                         <h3 className="text-xs font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                             <BookOpen className="w-4 h-4 text-[var(--accent-primary)]" />
                             Module Description & Objectives
                         </h3>
-                        <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10 space-y-2.5">
+                        <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10">
                             <p className="text-sm leading-relaxed text-slate-200">
                                 {inspectedCourse.description}
                             </p>
-                            <div className="pt-2 border-t border-white/5 flex items-center gap-2 text-xs text-slate-400">
-                                <span className="w-1.5 h-1.5 rotate-45 bg-[var(--star-pip)]" />
-                                <span>{typeDetails.text}</span>
-                            </div>
                         </div>
                     </section>
 
@@ -207,68 +198,73 @@ export function ModuleDetailsDrawer() {
                             )}
                         </div>
 
-                        <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10 space-y-3">
-                            <div>
-                                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-1">
-                                    Required Foundation Modules
-                                </span>
-                                <div className="p-2.5 bg-[#030508] border border-white/10 rounded-none font-mono text-xs text-slate-200">
-                                    {formattedRule}
-                                </div>
-                            </div>
-
-                            {/* Clickable Course Code Pills */}
-                            {prereqCourseIds.length > 0 && (
-                                <div>
-                                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-1.5">
-                                        Foundation Dependencies (Click to Inspect)
-                                    </span>
-                                    <div className="flex flex-wrap gap-2">
-                                        {prereqCourseIds.map((cid) => {
-                                            const isMissing = prereqEval?.missingCourseIds.includes(cid);
-                                            const isSatisfied = !isMissing;
-                                            const prereqCourse = activeCourses.find(
-                                                (c) => c.id === cid || c.code === cid
-                                            );
-
-                                            return (
-                                                <button
-                                                    key={cid}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        if (prereqCourse) openCourseDrawer(prereqCourse);
-                                                    }}
-                                                    title={`Inspect foundation course ${cid}`}
-                                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none border text-xs font-mono transition-colors cursor-pointer hover:border-white/40 ${
-                                                        isSatisfied
-                                                            ? 'bg-emerald-950/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-950/40'
-                                                            : 'bg-rose-950/20 text-rose-300 border-rose-500/30 hover:bg-rose-950/40'
-                                                    }`}
-                                                >
-                                                    {isSatisfied ? (
-                                                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                                    ) : (
-                                                        <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-                                                    )}
-                                                    <span className="font-semibold">{cid}</span>
-                                                    <span className="text-[10px] text-slate-400">
-                                                        ({isSatisfied ? 'In Plan' : 'Missing'})
-                                                    </span>
-                                                </button>
-                                            );
-                                        })}
+                        {inspectedCourse.prerequisiteRule !== null && (
+                            <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10 space-y-3">
+                                {/* Only display raw rule text if complex logic exists to avoid duplicating single course code */}
+                                {hasComplexLogic && (
+                                    <div>
+                                        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-1">
+                                            Logical Rule Expression
+                                        </span>
+                                        <div className="p-2.5 bg-[#030508] border border-white/10 rounded-none font-mono text-xs text-slate-200">
+                                            {formattedRule}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {/* Diagnostic feedback if unmet */}
-                            {prereqEval && !prereqEval.isSatisfied && (
-                                <p className="text-xs text-rose-400 font-mono pt-1 flex items-center gap-1.5">
-                                    <AlertTriangle className="w-4 h-4 shrink-0" />
-                                    <span>{prereqEval.summary}</span>
-                                </p>
-                            )}
-                        </div>
+                                {/* Interactive Course Code Chips */}
+                                {prereqCourseIds.length > 0 && (
+                                    <div>
+                                        <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-1.5">
+                                            Foundation Dependencies (Click to Inspect)
+                                        </span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {prereqCourseIds.map((cid) => {
+                                                const isMissing = prereqEval?.missingCourseIds.includes(cid);
+                                                const isSatisfied = !isMissing;
+                                                const prereqCourse = activeCourses.find(
+                                                    (c) => c.id === cid || c.code === cid
+                                                );
+
+                                                return (
+                                                    <button
+                                                        key={cid}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (prereqCourse) openCourseDrawer(prereqCourse);
+                                                        }}
+                                                        title={`Inspect foundation course ${cid}`}
+                                                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none border text-xs font-mono transition-colors cursor-pointer hover:border-white/40 ${
+                                                            isSatisfied
+                                                                ? 'bg-emerald-950/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-950/40'
+                                                                : 'bg-rose-950/20 text-rose-300 border-rose-500/30 hover:bg-rose-950/40'
+                                                        }`}
+                                                    >
+                                                        {isSatisfied ? (
+                                                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                                        ) : (
+                                                            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                                                        )}
+                                                        <span className="font-semibold">{cid}</span>
+                                                        <span className="text-[10px] text-slate-400">
+                                                            ({isSatisfied ? 'In Plan' : 'Missing'})
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Diagnostic feedback if unmet */}
+                                {prereqEval && !prereqEval.isSatisfied && (
+                                    <p className="text-xs text-rose-400 font-mono pt-1 flex items-center gap-1.5">
+                                        <AlertTriangle className="w-4 h-4 shrink-0" />
+                                        <span>{prereqEval.summary}</span>
+                                    </p>
+                                )}
+                            </div>
+                        )}
                     </section>
 
                     {/* Co-requisites Section */}
@@ -354,14 +350,13 @@ export function ModuleDetailsDrawer() {
                     </section>
                 </div>
 
-                {/* 3. Action Buttons & Study Plan Toggles */}
-                <div className="p-5 border-t border-white/10 bg-[#070B12]/95 space-y-2.5 sticky bottom-0">
-                    {/* Add / Remove from Study Plan (Electives only) */}
-                    {isElective ? (
+                {/* 3. Action Buttons & Study Plan Toggles (Only render for electives with plan actions) */}
+                {isElective && (
+                    <div className="p-4 border-t border-white/10 bg-[#070B12]/95 sticky bottom-0">
                         <button
                             type="button"
                             onClick={() => toggleElective(inspectedCourse.id)}
-                            className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-none text-xs font-mono uppercase tracking-wider transition-all border ${
+                            className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-none text-xs font-mono uppercase tracking-wider transition-all border cursor-pointer ${
                                 isSelectedElective
                                     ? 'bg-rose-950/20 text-rose-300 border-rose-500/40 hover:bg-rose-950/30'
                                     : 'bg-emerald-950/30 text-emerald-200 border-emerald-500/40 hover:bg-emerald-950/40'
@@ -380,15 +375,8 @@ export function ModuleDetailsDrawer() {
                                 </>
                             )}
                         </button>
-                    ) : (
-                        <div
-                            data-testid="drawer-mandatory-badge"
-                            className="w-full py-2 px-3 border border-white/10 bg-white/5 text-center text-xs font-mono text-slate-400 uppercase tracking-widest"
-                        >
-                            Mandatory Core Requirement
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </aside>
         </>
     );
