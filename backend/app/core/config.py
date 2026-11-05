@@ -18,12 +18,18 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "CourseFlow API"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
+    ENVIRONMENT: str = "development"
+    SECRET_KEY: str = "dev-secret-key-change-in-production"
 
     # Database Configuration
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/courseflow"
 
     # CORS Configuration
-    CORS_ORIGINS: list[str] = ["*"]
+    CORS_ORIGINS: list[str] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+    ]
 
     # Curriculum & Academic Constants
     MIN_CREDITS_PER_SEMESTER: int = 18

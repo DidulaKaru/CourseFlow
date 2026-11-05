@@ -25,6 +25,8 @@ function normalizeCompletedSet(completed: Set<string> | readonly string[]): Set<
     return new Set(completed);
 }
 
+const MAX_AST_RECURSION_DEPTH = 20;
+
 /**
  * Evaluates a recursive boolean Prerequisite AST against a student's completed courses
  * and total earned credits.
@@ -32,17 +34,23 @@ function normalizeCompletedSet(completed: Set<string> | readonly string[]): Set<
  * Rules:
  * - null: Unconditional pass (returns true).
  * - COURSE: true if completedCourses contains rule.courseId.
- * - CREDIT_THRESHOLD: true if earnedCredits >= rule.minCredits.
+ * - CREDIT_THRESHOLD: true if minCredits >= 0 and earnedCredits >= rule.minCredits.
  * - AND: true if every child rule evaluates to true (vacuously true for empty children).
  * - OR: true if at least one child rule evaluates to true (false for empty children).
+ * - depth > 20: terminates recursion and returns false (defensive guard against cyclic/malformed trees).
  */
 export function evaluatePrerequisite(
     rule: PrerequisiteRule | null,
     completedCourses: Set<string> | readonly string[],
-    earnedCredits: number
+    earnedCredits: number,
+    depth = 0
 ): boolean {
     if (!rule) {
         return true;
+    }
+
+    if (depth > MAX_AST_RECURSION_DEPTH) {
+        return false;
     }
 
     const completedSet = normalizeCompletedSet(completedCourses);
@@ -52,14 +60,14 @@ export function evaluatePrerequisite(
             return completedSet.has(rule.courseId);
 
         case 'CREDIT_THRESHOLD':
-            return earnedCredits >= rule.minCredits;
+            return rule.minCredits >= 0 && earnedCredits >= rule.minCredits;
 
         case 'AND':
             if (rule.children.length === 0) {
                 return true;
             }
             return rule.children.every((child) =>
-                evaluatePrerequisite(child, completedSet, earnedCredits)
+                evaluatePrerequisite(child, completedSet, earnedCredits, depth + 1)
             );
 
         case 'OR':
@@ -67,7 +75,7 @@ export function evaluatePrerequisite(
                 return false;
             }
             return rule.children.some((child) =>
-                evaluatePrerequisite(child, completedSet, earnedCredits)
+                evaluatePrerequisite(child, completedSet, earnedCredits, depth + 1)
             );
 
         default:
@@ -103,7 +111,11 @@ export function evaluatePrerequisiteWithDiagnostics(
     const missingCourseIds: string[] = [];
     let creditDeficit = 0;
 
-    function collectUnmetNodes(node: PrerequisiteRule): void {
+    function collectUnmetNodes(node: PrerequisiteRule, depth = 0): void {
+        if (depth > MAX_AST_RECURSION_DEPTH) {
+            return;
+        }
+
         switch (node.type) {
             case 'COURSE':
                 if (!completedSet.has(node.courseId)) {
@@ -112,24 +124,25 @@ export function evaluatePrerequisiteWithDiagnostics(
                 break;
 
             case 'CREDIT_THRESHOLD':
-                if (earnedCredits < node.minCredits) {
-                    const deficit = node.minCredits - earnedCredits;
+                if (node.minCredits < 0 || earnedCredits < node.minCredits) {
+                    const target = Math.max(0, node.minCredits);
+                    const deficit = target - earnedCredits;
                     creditDeficit = Math.max(creditDeficit, deficit);
                 }
                 break;
 
             case 'AND':
                 for (const child of node.children) {
-                    collectUnmetNodes(child);
+                    collectUnmetNodes(child, depth + 1);
                 }
                 break;
 
             case 'OR':
                 // In an OR branch, if the branch as a whole is not satisfied,
                 // we report alternatives from unsatisfied children
-                if (!evaluatePrerequisite(node, completedSet, earnedCredits)) {
+                if (!evaluatePrerequisite(node, completedSet, earnedCredits, depth)) {
                     for (const child of node.children) {
-                        collectUnmetNodes(child);
+                        collectUnmetNodes(child, depth + 1);
                     }
                 }
                 break;

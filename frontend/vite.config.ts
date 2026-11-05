@@ -15,6 +15,29 @@ export default defineConfig({
       '@': path.resolve(import.meta.dirname, './src'),
     },
   },
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('@react-pdf') || id.includes('yoga-layout') || id.includes('pdfkit')) {
+            return 'pdf-renderer';
+          }
+          if (id.includes('@xyflow')) {
+            return 'xyflow';
+          }
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     alias: {

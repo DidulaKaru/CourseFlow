@@ -11,6 +11,7 @@ export interface StudyPlanExport {
     activeProgramId: string;
     selectedElectiveIds: string[];
     completedCourseIds: string[];
+    failedCourseIds?: string[];
     exportedAt: string;
 }
 
@@ -29,12 +30,16 @@ export interface PlannerState {
     // Student Selections (Guest Mode)
     selectedElectiveIds: string[];
     completedCourseIds: string[];
+    failedCourseIds: string[];
     toggleElective: (courseId: string) => void;
     setSelectedElectives: (courseIds: string[]) => void;
     toggleCompletedCourse: (courseId: string) => void;
     setCompletedCourses: (courseIds: string[]) => void;
+    toggleFailedCourse: (courseId: string) => void;
+    setFailedCourses: (courseIds: string[]) => void;
     isElectiveSelected: (courseId: string) => boolean;
     isCourseCompleted: (courseId: string) => boolean;
+    isCourseFailed: (courseId: string) => boolean;
 
     // Slide-over Drawer UI State (Transient, not persisted)
     inspectedCourse: Course | null;
@@ -135,6 +140,7 @@ export const usePlannerStore = create<PlannerState>()(
                         activeProgramId: programId,
                         selectedElectiveIds: [],
                         completedCourseIds: [],
+                        failedCourseIds: [],
                         inspectedCourse: null,
                         isDrawerOpen: false,
                     };
@@ -142,6 +148,7 @@ export const usePlannerStore = create<PlannerState>()(
 
             selectedElectiveIds: [],
             completedCourseIds: [],
+            failedCourseIds: [],
 
             toggleElective: (courseId) =>
                 set((state) => ({
@@ -158,16 +165,39 @@ export const usePlannerStore = create<PlannerState>()(
                     completedCourseIds: state.completedCourseIds.includes(courseId)
                         ? state.completedCourseIds.filter((id) => id !== courseId)
                         : [...state.completedCourseIds, courseId],
+                    // A completed course cannot simultaneously be failed
+                    failedCourseIds: state.failedCourseIds.filter((id) => id !== courseId),
                 })),
 
             setCompletedCourses: (courseIds) =>
-                set({ completedCourseIds: Array.from(new Set(courseIds)) }),
+                set((state) => ({
+                    completedCourseIds: Array.from(new Set(courseIds)),
+                    failedCourseIds: state.failedCourseIds.filter((id) => !courseIds.includes(id)),
+                })),
+
+            toggleFailedCourse: (courseId) =>
+                set((state) => ({
+                    failedCourseIds: state.failedCourseIds.includes(courseId)
+                        ? state.failedCourseIds.filter((id) => id !== courseId)
+                        : [...state.failedCourseIds, courseId],
+                    // A failed course cannot simultaneously be completed
+                    completedCourseIds: state.completedCourseIds.filter((id) => id !== courseId),
+                })),
+
+            setFailedCourses: (courseIds) =>
+                set((state) => ({
+                    failedCourseIds: Array.from(new Set(courseIds)),
+                    completedCourseIds: state.completedCourseIds.filter((id) => !courseIds.includes(id)),
+                })),
 
             isElectiveSelected: (courseId) =>
                 get().selectedElectiveIds.includes(courseId),
 
             isCourseCompleted: (courseId) =>
                 get().completedCourseIds.includes(courseId),
+
+            isCourseFailed: (courseId) =>
+                get().failedCourseIds.includes(courseId),
 
             // Transient Slide-over Drawer State
             inspectedCourse: null,
@@ -215,6 +245,7 @@ export const usePlannerStore = create<PlannerState>()(
                 set({
                     selectedElectiveIds: [],
                     completedCourseIds: [],
+                    failedCourseIds: [],
                     inspectedCourse: null,
                     isDrawerOpen: false,
                 }),
@@ -226,6 +257,7 @@ export const usePlannerStore = create<PlannerState>()(
                     activeProgramId: state.activeProgramId,
                     selectedElectiveIds: state.selectedElectiveIds,
                     completedCourseIds: state.completedCourseIds,
+                    failedCourseIds: state.failedCourseIds,
                     exportedAt: new Date().toISOString(),
                 };
                 return JSON.stringify(exportData, null, 2);
@@ -252,10 +284,17 @@ export const usePlannerStore = create<PlannerState>()(
                               )
                             : [];
 
+                        const failedCourseIds = Array.isArray(data.failedCourseIds)
+                            ? data.failedCourseIds.filter(
+                                  (id: unknown): id is string => typeof id === 'string'
+                              )
+                            : [];
+
                         set({
                             activeProgramId,
                             selectedElectiveIds: Array.from(new Set(selectedElectiveIds)),
                             completedCourseIds: Array.from(new Set(completedCourseIds)),
+                            failedCourseIds: Array.from(new Set(failedCourseIds)),
                             inspectedCourse: null,
                             isDrawerOpen: false,
                         });
@@ -269,11 +308,20 @@ export const usePlannerStore = create<PlannerState>()(
         }),
         {
             name: 'courseflow-local-planner',
+            version: 1,
+            migrate: (persistedState: unknown) => {
+                const state = (persistedState ?? {}) as Record<string, unknown>;
+                return {
+                    ...state,
+                    failedCourseIds: Array.isArray(state.failedCourseIds) ? state.failedCourseIds : [],
+                } as unknown as PlannerState;
+            },
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
                 activeProgramId: state.activeProgramId,
                 selectedElectiveIds: state.selectedElectiveIds,
                 completedCourseIds: state.completedCourseIds,
+                failedCourseIds: state.failedCourseIds,
             }),
         }
     )

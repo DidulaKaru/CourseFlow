@@ -31,6 +31,12 @@ export type PrerequisiteRule =
 export type CourseType = 'CORE' | 'ELECTIVE' | 'LAB' | 'CAPSTONE';
 export type SemesterTerm = 'FALL' | 'SPRING' | 'BOTH';
 
+export interface ContactHours {
+    lecture: number;
+    lab: number;
+    tutorial: number;
+}
+
 export interface CreditDistribution {
     semesterIndex: number; // Discrete term: 1 to 8
     creditsAllocated: number; // Credits counted toward this semester's load
@@ -49,6 +55,8 @@ export interface Course {
     prerequisiteRule: PrerequisiteRule | null;
     corequisites: string[]; // Course IDs required concurrently
     offeredSemesters: SemesterTerm[];
+    syllabusObjectives?: string[];
+    contactHours?: ContactHours;
 }
 
 // ==========================================

@@ -13,6 +13,8 @@ from app.schemas.curriculum import (
     PrerequisiteRule,
 )
 
+MAX_AST_RECURSION_DEPTH = 20
+
 
 @dataclass(frozen=True)
 class PrerequisiteEvaluationResult:
@@ -35,10 +37,14 @@ def evaluate_prerequisite(
     rule: PrerequisiteRule | None,
     completed_courses: Collection[str],
     earned_credits: int,
+    depth: int = 0,
 ) -> bool:
     """Recursively evaluates a boolean prerequisite AST against completed courses and credits."""
     if rule is None:
         return True
+
+    if depth > MAX_AST_RECURSION_DEPTH:
+        return False
 
     completed_set = _normalize_completed_set(completed_courses)
 
@@ -46,21 +52,21 @@ def evaluate_prerequisite(
         return rule.course_id in completed_set
 
     if isinstance(rule, CreditThresholdRuleNode):
-        return earned_credits >= rule.min_credits
+        return rule.min_credits >= 0 and earned_credits >= rule.min_credits
 
     if isinstance(rule, LogicalRuleNode):
         if rule.type == "AND":
             if not rule.children:
                 return True
             return all(
-                evaluate_prerequisite(child, completed_set, earned_credits)
+                evaluate_prerequisite(child, completed_set, earned_credits, depth + 1)
                 for child in rule.children
             )
         if rule.type == "OR":
             if not rule.children:
                 return False
             return any(
-                evaluate_prerequisite(child, completed_set, earned_credits)
+                evaluate_prerequisite(child, completed_set, earned_credits, depth + 1)
                 for child in rule.children
             )
 
@@ -87,23 +93,27 @@ def evaluate_prerequisite_with_diagnostics(
     missing_courses: list[str] = []
     credit_deficit = 0
 
-    def collect_unmet(node: PrerequisiteRule) -> None:
+    def collect_unmet(node: PrerequisiteRule, depth: int = 0) -> None:
         nonlocal credit_deficit
+        if depth > MAX_AST_RECURSION_DEPTH:
+            return
+
         if isinstance(node, CourseRuleNode):
             if node.course_id not in completed_set:
                 missing_courses.append(node.course_id)
         elif isinstance(node, CreditThresholdRuleNode):
-            if earned_credits < node.min_credits:
-                credit_deficit = max(credit_deficit, node.min_credits - earned_credits)
+            if node.min_credits < 0 or earned_credits < node.min_credits:
+                target = max(0, node.min_credits)
+                credit_deficit = max(credit_deficit, target - earned_credits)
         elif isinstance(node, LogicalRuleNode) and (
             node.type == "AND"
             or (
                 node.type == "OR"
-                and not evaluate_prerequisite(node, completed_set, earned_credits)
+                and not evaluate_prerequisite(node, completed_set, earned_credits, depth)
             )
         ):
             for child in node.children:
-                collect_unmet(child)
+                collect_unmet(child, depth + 1)
 
     if not is_satisfied:
         collect_unmet(rule)
