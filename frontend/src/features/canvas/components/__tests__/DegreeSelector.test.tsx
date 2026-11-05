@@ -127,4 +127,37 @@ describe('DegreeSelector Component (CF-115)', () => {
         });
         container.remove();
     });
+
+    it('applies xl:max-w-none to desktop label and expanded width classes to dropdown menu', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<DegreeSelector />);
+        });
+
+        // Verify desktop label class includes xl:max-w-none to avoid truncation
+        const desktopLabel = container.querySelector('button[data-testid="degree-selector-button"] span.hidden.sm\\:inline') as HTMLSpanElement;
+        expect(desktopLabel).not.toBeNull();
+        expect(desktopLabel.className).toContain('xl:max-w-none');
+
+        // Open custom dropdown
+        const triggerBtn = container.querySelector('[data-testid="degree-selector-button"]') as HTMLButtonElement;
+        act(() => {
+            triggerBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        });
+
+        // Verify custom dropdown panel has expanded width classes (w-72 sm:w-84)
+        const dropdownMenu = container.querySelector('div.absolute.top-full') as HTMLDivElement;
+        expect(dropdownMenu).not.toBeNull();
+        expect(dropdownMenu.className).toContain('w-72');
+        expect(dropdownMenu.className).toContain('sm:w-84');
+        expect(dropdownMenu.className).toContain('max-w-[calc(100vw-24px)]');
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
 });

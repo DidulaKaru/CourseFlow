@@ -78,7 +78,7 @@ export function DegreeSelector({
                 </span>
 
                 {/* Tablet / Desktop full label */}
-                <span className="hidden sm:inline font-medium text-slate-100 max-w-[210px] truncate">
+                <span className="hidden sm:inline font-medium text-slate-100 max-w-[210px] xl:max-w-none truncate">
                     {activeProgram.name}
                 </span>
 
@@ -103,7 +103,7 @@ export function DegreeSelector({
 
             {/* Custom Skyrim Celestial Dropdown Menu */}
             {isOpen && (
-                <div className="absolute top-full left-0 mt-1 w-64 sm:w-72 bg-[#070B12]/95 backdrop-blur-md border border-white/15 shadow-2xl z-50 py-1 font-sans text-xs max-w-[calc(100vw-24px)]">
+                <div className="absolute top-full left-0 mt-1 w-72 sm:w-84 bg-[#070B12]/95 backdrop-blur-md border border-white/15 shadow-2xl z-50 py-1 font-sans text-xs max-w-[calc(100vw-24px)]">
                     <div className="px-3 py-1.5 border-b border-white/10 text-[10px] font-mono uppercase tracking-widest text-slate-400">
                         Academic Degree Program
                     </div>

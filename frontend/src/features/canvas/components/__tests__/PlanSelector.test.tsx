@@ -88,4 +88,26 @@ describe('PlanSelector Component', () => {
         });
         container.remove();
     });
+
+    it('applies responsive width classes to prevent premature truncation of plan names', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<PlanSelector />);
+        });
+
+        const toggleBtn = container.querySelector('[data-testid="plan-selector-button"]') as HTMLButtonElement;
+        expect(toggleBtn).not.toBeNull();
+        expect(toggleBtn.className).toContain('w-auto');
+        expect(toggleBtn.className).toContain('min-w-[90px]');
+        expect(toggleBtn.className).toContain('sm:min-w-[130px]');
+        expect(toggleBtn.className).toContain('max-w-[200px]');
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
 });
