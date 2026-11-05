@@ -15,9 +15,11 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+# CORS Middleware supporting both explicit origin list and Cloudflare Pages domains
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
+    allow_origin_regex=r"^https:\/\/.*\.pages\.dev$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

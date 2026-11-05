@@ -1,0 +1,2700 @@
+{
+  "id": "computer-eng",
+  "name": "Computer Engineering",
+  "department": "Department of Computer Engineering",
+  "totalCreditsRequired": 150,
+  "minCreditsPerSemester": 18,
+  "maxCreditsPerSemester": 24,
+  "semestersCount": 8,
+  "courses": [
+    {
+      "id": "CE1101",
+      "code": "CE1101",
+      "title": "Basic Concepts in Environmental Engineering",
+      "description": "Ecology, water quality, air pollution, and sustainable waste management principles.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Basic Concepts in Environmental Engineering.",
+        "Apply analytical engineering methods to solve problems in Basic Concepts in Environmental Engineering.",
+        "Conduct design, laboratory or computational exercises relevant to Basic Concepts in Environmental Engineering."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "CE1202",
+      "code": "CE1202",
+      "title": "Introduction to Infrastructure Planning",
+      "description": "Transportation systems, urban growth, environmental impact assessments, and public infrastructure.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Introduction to Infrastructure Planning.",
+        "Apply analytical engineering methods to solve problems in Introduction to Infrastructure Planning.",
+        "Conduct design, laboratory or computational exercises relevant to Introduction to Infrastructure Planning."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EE1102",
+      "code": "EE1102",
+      "title": "Programming Fundamentals",
+      "description": "Algorithmic problem-solving, C/C++ control structures, pointers, and memory manipulation.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Programming Fundamentals.",
+        "Apply analytical engineering methods to solve problems in Programming Fundamentals.",
+        "Conduct design, laboratory or computational exercises relevant to Programming Fundamentals."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EE1301",
+      "code": "EE1301",
+      "title": "Fundamentals of Electricity",
+      "description": "DC/AC circuit theory, Kirchhoffs laws, network theorems, transient analysis, and sinusoidal steady-state.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Fundamentals of Electricity.",
+        "Apply analytical engineering methods to solve problems in Fundamentals of Electricity.",
+        "Conduct design, laboratory or computational exercises relevant to Fundamentals of Electricity."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "ME1201",
+      "code": "ME1201",
+      "title": "Engineering Drawing",
+      "description": "Orthographic projection, isometric views, sectioning, CAD modeling, and engineering tolerance standards.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Engineering Drawing.",
+        "Apply analytical engineering methods to solve problems in Engineering Drawing.",
+        "Conduct design, laboratory or computational exercises relevant to Engineering Drawing."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "ME1202",
+      "code": "ME1202",
+      "title": "Fundamentals of Thermodynamics",
+      "description": "Thermodynamic laws, property diagrams, ideal gas mixtures, and energy conversion cycles.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Fundamentals of Thermodynamics.",
+        "Apply analytical engineering methods to solve problems in Fundamentals of Thermodynamics.",
+        "Conduct design, laboratory or computational exercises relevant to Fundamentals of Thermodynamics."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS1301",
+      "code": "IS1301",
+      "title": "Communication for Engineers",
+      "description": "Technical writing, professional presentation skills, report drafting, and collaborative oral discourse.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Communication for Engineers.",
+        "Apply analytical engineering methods to solve problems in Communication for Engineers.",
+        "Conduct design, laboratory or computational exercises relevant to Communication for Engineers."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS1402",
+      "code": "IS1402",
+      "title": "Mathematical Fundamentals for Engineers",
+      "description": "Differential and integral calculus, limits, continuity, series expansions, and multi-variable analysis.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 1,
+      "creditDistribution": [
+        {
+          "semesterIndex": 1,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Mathematical Fundamentals for Engineers.",
+        "Apply analytical engineering methods to solve problems in Mathematical Fundamentals for Engineers.",
+        "Conduct design, laboratory or computational exercises relevant to Mathematical Fundamentals for Engineers."
+      ],
+      "contactHours": {
+        "lecture": 56,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "CE2201",
+      "code": "CE2201",
+      "title": "Fundamentals of Fluid Mechanics",
+      "description": "Fluid statics, Bernoulli equation, momentum conservation, and laminar/turbulent pipe flows.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "ME1202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Fundamentals of Fluid Mechanics.",
+        "Apply analytical engineering methods to solve problems in Fundamentals of Fluid Mechanics.",
+        "Conduct design, laboratory or computational exercises relevant to Fundamentals of Fluid Mechanics."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "CE2302",
+      "code": "CE2302",
+      "title": "Mechanics of Materials",
+      "description": "Stress and strain tensors, axial loading, torsion, bending moments, and deflection of beams.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "IS1402"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Mechanics of Materials.",
+        "Apply analytical engineering methods to solve problems in Mechanics of Materials.",
+        "Conduct design, laboratory or computational exercises relevant to Mechanics of Materials."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EE2201",
+      "code": "EE2201",
+      "title": "Fundamentals of Electronics",
+      "description": "Semiconductor physics, pn-junction diodes, BJT and MOSFET characteristics, and basic amplification.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE1301"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Fundamentals of Electronics.",
+        "Apply analytical engineering methods to solve problems in Fundamentals of Electronics.",
+        "Conduct design, laboratory or computational exercises relevant to Fundamentals of Electronics."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EE2202",
+      "code": "EE2202",
+      "title": "Object-Oriented Programming",
+      "description": "Classes, inheritance, polymorphism, encapsulation, exception handling, and standard template libraries.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE1102"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Object-Oriented Programming.",
+        "Apply analytical engineering methods to solve problems in Object-Oriented Programming.",
+        "Conduct design, laboratory or computational exercises relevant to Object-Oriented Programming."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "ME2201",
+      "code": "ME2201",
+      "title": "Engineering Mechanics",
+      "description": "Particle and rigid body statics, friction, kinematics, and planar dynamics of mechanical systems.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "IS1402"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Engineering Mechanics.",
+        "Apply analytical engineering methods to solve problems in Engineering Mechanics.",
+        "Conduct design, laboratory or computational exercises relevant to Engineering Mechanics."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "ME2302",
+      "code": "ME2302",
+      "title": "Fundamentals of Materials and Manufacturing Engineering",
+      "description": "Crystal structures, phase diagrams, heat treatments, polymers, casting, forming, and machining processes.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Fundamentals of Materials and Manufacturing Engineering.",
+        "Apply analytical engineering methods to solve problems in Fundamentals of Materials and Manufacturing Engineering.",
+        "Conduct design, laboratory or computational exercises relevant to Fundamentals of Materials and Manufacturing Engineering."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS2401",
+      "code": "IS2401",
+      "title": "Linear Algebra and Differential Equations",
+      "description": "Vector spaces, matrices, eigenvalues, linear differential equations, Laplace transforms, and system solutions.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 2,
+      "creditDistribution": [
+        {
+          "semesterIndex": 2,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "IS1402"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Linear Algebra and Differential Equations.",
+        "Apply analytical engineering methods to solve problems in Linear Algebra and Differential Equations.",
+        "Conduct design, laboratory or computational exercises relevant to Linear Algebra and Differential Equations."
+      ],
+      "contactHours": {
+        "lecture": 56,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC3301",
+      "code": "EC3301",
+      "title": "Analog Electronics",
+      "description": "Small-signal amplifiers, operational amplifiers, frequency response, and active filters.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2201"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Analog Electronics.",
+        "Apply analytical engineering methods to solve problems in Analog Electronics.",
+        "Conduct design, laboratory or computational exercises relevant to Analog Electronics."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC3202",
+      "code": "EC3202",
+      "title": "Data Structures and Algorithms",
+      "description": "Linked lists, stacks, queues, balanced trees, graph algorithms, and asymptotic complexity analysis.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Data Structures and Algorithms.",
+        "Apply analytical engineering methods to solve problems in Data Structures and Algorithms.",
+        "Conduct design, laboratory or computational exercises relevant to Data Structures and Algorithms."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC3203",
+      "code": "EC3203",
+      "title": "Electrical and Electronic Measurements",
+      "description": "Instrumentation error analysis, digital oscilloscopes, bridges, transducers, and signal conditioning.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2201"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Electrical and Electronic Measurements.",
+        "Apply analytical engineering methods to solve problems in Electrical and Electronic Measurements.",
+        "Conduct design, laboratory or computational exercises relevant to Electrical and Electronic Measurements."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC3404",
+      "code": "EC3404",
+      "title": "GUI Programming",
+      "description": "Event-driven programming, graphical widget toolkits, model-view-controller (MVC) architecture, and interactive desktop application design.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of GUI Programming.",
+        "Apply analytical engineering methods to solve problems in GUI Programming.",
+        "Conduct design, laboratory or computational exercises relevant to GUI Programming."
+      ],
+      "contactHours": {
+        "lecture": 56,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC3305",
+      "code": "EC3305",
+      "title": "Signals and Systems",
+      "description": "Continuous and discrete-time signals, linear time-invariant systems, Fourier series, Fourier transforms, and z-transforms.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "IS2401"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Signals and Systems.",
+        "Apply analytical engineering methods to solve problems in Signals and Systems.",
+        "Conduct design, laboratory or computational exercises relevant to Signals and Systems."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS3301",
+      "code": "IS3301",
+      "title": "Complex Analysis and Mathematical Transforms",
+      "description": "Analytic functions, Cauchy-Riemann equations, contour integration, residue calculus, and conformal mapping.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "IS2401"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Complex Analysis and Mathematical Transforms.",
+        "Apply analytical engineering methods to solve problems in Complex Analysis and Mathematical Transforms.",
+        "Conduct design, laboratory or computational exercises relevant to Complex Analysis and Mathematical Transforms."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS3321",
+      "code": "IS3321",
+      "title": "Fundamentals of Management for Engineers",
+      "description": "Principles of engineering management, organizational structures, strategic planning, and leadership.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Fundamentals of Management for Engineers.",
+        "Apply analytical engineering methods to solve problems in Fundamentals of Management for Engineers.",
+        "Conduct design, laboratory or computational exercises relevant to Fundamentals of Management for Engineers."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS3322",
+      "code": "IS3322",
+      "title": "Society and Engineer",
+      "description": "Social responsibilities of professional engineers, technology impacts on societal growth, and engineering ethics.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 3,
+      "creditDistribution": [
+        {
+          "semesterIndex": 3,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Society and Engineer.",
+        "Apply analytical engineering methods to solve problems in Society and Engineer.",
+        "Conduct design, laboratory or computational exercises relevant to Society and Engineer."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC4201",
+      "code": "EC4201",
+      "title": "Advanced Data Structures and Algorithm",
+      "description": "Dynamic programming, greedy algorithms, network flow, amortized analysis, and NP-completeness.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Advanced Data Structures and Algorithm.",
+        "Apply analytical engineering methods to solve problems in Advanced Data Structures and Algorithm.",
+        "Conduct design, laboratory or computational exercises relevant to Advanced Data Structures and Algorithm."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC4202",
+      "code": "EC4202",
+      "title": "Computer Architecture and Operating System",
+      "description": "Instruction set architectures, CPU pipelining, cache memory, process scheduling, virtual memory, and concurrency.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Computer Architecture and Operating System.",
+        "Apply analytical engineering methods to solve problems in Computer Architecture and Operating System.",
+        "Conduct design, laboratory or computational exercises relevant to Computer Architecture and Operating System."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC4203",
+      "code": "EC4203",
+      "title": "Database Systems",
+      "description": "Relational modeling, SQL queries, normalization, indexing, transaction processing, and ACID guarantees.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Database Systems.",
+        "Apply analytical engineering methods to solve problems in Database Systems.",
+        "Conduct design, laboratory or computational exercises relevant to Database Systems."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC4304",
+      "code": "EC4304",
+      "title": "Digital Logic Design",
+      "description": "Combinational logic minimization, sequential circuits, finite state machines, and FPGA hardware synthesis.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2201"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Digital Logic Design.",
+        "Apply analytical engineering methods to solve problems in Digital Logic Design.",
+        "Conduct design, laboratory or computational exercises relevant to Digital Logic Design."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC4205",
+      "code": "EC4205",
+      "title": "Software Engineering Principles",
+      "description": "Software lifecycles, requirements elicitation, architectural design, UML modeling, and agile software development.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Software Engineering Principles.",
+        "Apply analytical engineering methods to solve problems in Software Engineering Principles.",
+        "Conduct design, laboratory or computational exercises relevant to Software Engineering Principles."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC4206",
+      "code": "EC4206",
+      "title": "Software Testing and Quality Assurance",
+      "description": "Unit testing, integration testing, test automation frameworks, continuous testing, and software quality metrics.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Software Testing and Quality Assurance.",
+        "Apply analytical engineering methods to solve problems in Software Testing and Quality Assurance.",
+        "Conduct design, laboratory or computational exercises relevant to Software Testing and Quality Assurance."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC4307",
+      "code": "EC4307",
+      "title": "Web Application Development",
+      "description": "Modern full-stack web architectures, REST APIs, client-side frameworks, server-side runtimes, and web security.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Web Application Development.",
+        "Apply analytical engineering methods to solve problems in Web Application Development.",
+        "Conduct design, laboratory or computational exercises relevant to Web Application Development."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS4301",
+      "code": "IS4301",
+      "title": "Probability and Statistics",
+      "description": "Probability distributions, random variables, hypothesis testing, ANOVA, and statistical regression modeling.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "IS2401"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Probability and Statistics.",
+        "Apply analytical engineering methods to solve problems in Probability and Statistics.",
+        "Conduct design, laboratory or computational exercises relevant to Probability and Statistics."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS4322",
+      "code": "IS4322",
+      "title": "Basic Economics",
+      "description": "Principles of micro and macroeconomics, market dynamics, cost estimation, and engineering financial feasibility.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Basic Economics.",
+        "Apply analytical engineering methods to solve problems in Basic Economics.",
+        "Conduct design, laboratory or computational exercises relevant to Basic Economics."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS4224",
+      "code": "IS4224",
+      "title": "Financial Management",
+      "description": "Corporate finance, financial statement analysis, capital budgeting, and cash flow forecasting.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Financial Management.",
+        "Apply analytical engineering methods to solve problems in Financial Management.",
+        "Conduct design, laboratory or computational exercises relevant to Financial Management."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS4225",
+      "code": "IS4225",
+      "title": "Innovation Management & Entrepreneurship",
+      "description": "Product discovery, startup incubation, patent strategies, and venture capital financing.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Innovation Management & Entrepreneurship.",
+        "Apply analytical engineering methods to solve problems in Innovation Management & Entrepreneurship.",
+        "Conduct design, laboratory or computational exercises relevant to Innovation Management & Entrepreneurship."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS4121",
+      "code": "IS4121",
+      "title": "Appreciation of Music",
+      "description": "Musical structures, acoustics, auditory perception, and historical musical genres.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Appreciation of Music.",
+        "Apply analytical engineering methods to solve problems in Appreciation of Music.",
+        "Conduct design, laboratory or computational exercises relevant to Appreciation of Music."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS4123",
+      "code": "IS4123",
+      "title": "Digital Modeling and Animation",
+      "description": "3D polygon modeling, texturing, rigging, keyframe animation, and rendering techniques.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Digital Modeling and Animation.",
+        "Apply analytical engineering methods to solve problems in Digital Modeling and Animation.",
+        "Conduct design, laboratory or computational exercises relevant to Digital Modeling and Animation."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS4126",
+      "code": "IS4126",
+      "title": "Mindfulness",
+      "description": "Mindfulness practices, stress management, mental focus, and cognitive resilience for engineers.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Mindfulness.",
+        "Apply analytical engineering methods to solve problems in Mindfulness.",
+        "Conduct design, laboratory or computational exercises relevant to Mindfulness."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS4128",
+      "code": "IS4128",
+      "title": "Industrial Sociology",
+      "description": "Sociology of work organizations, industrial relations, labor dynamics, and technological change.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 4,
+      "creditDistribution": [
+        {
+          "semesterIndex": 4,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Industrial Sociology.",
+        "Apply analytical engineering methods to solve problems in Industrial Sociology.",
+        "Conduct design, laboratory or computational exercises relevant to Industrial Sociology."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC5301",
+      "code": "EC5301",
+      "title": "Control System Design",
+      "description": "Feedback control systems, root locus, Bode plots, state-space representations, and PID controller tuning.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3305"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Control System Design.",
+        "Apply analytical engineering methods to solve problems in Control System Design.",
+        "Conduct design, laboratory or computational exercises relevant to Control System Design."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC5202",
+      "code": "EC5202",
+      "title": "Electronic Circuit Design",
+      "description": "Printed circuit board (PCB) design, schematic capture, signal integrity, and surface-mount prototyping.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "AND",
+        "children": [
+          {
+            "type": "COURSE",
+            "courseId": "EC3301"
+          },
+          {
+            "type": "COURSE",
+            "courseId": "EC4304"
+          }
+        ]
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Electronic Circuit Design.",
+        "Apply analytical engineering methods to solve problems in Electronic Circuit Design.",
+        "Conduct design, laboratory or computational exercises relevant to Electronic Circuit Design."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC5203",
+      "code": "EC5203",
+      "title": "Machine Learning",
+      "description": "Supervised and unsupervised learning, regression, classification, clustering, neural networks, and model validation.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "AND",
+        "children": [
+          {
+            "type": "COURSE",
+            "courseId": "IS4301"
+          },
+          {
+            "type": "COURSE",
+            "courseId": "EC3202"
+          }
+        ]
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Machine Learning.",
+        "Apply analytical engineering methods to solve problems in Machine Learning.",
+        "Conduct design, laboratory or computational exercises relevant to Machine Learning."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC5204",
+      "code": "EC5204",
+      "title": "Object Oriented Design Patterns and Principles",
+      "description": "SOLID design principles, creational, structural, and behavioral design patterns, and software refactoring.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EE2202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Object Oriented Design Patterns and Principles.",
+        "Apply analytical engineering methods to solve problems in Object Oriented Design Patterns and Principles.",
+        "Conduct design, laboratory or computational exercises relevant to Object Oriented Design Patterns and Principles."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC5405",
+      "code": "EC5405",
+      "title": "Software Group Project",
+      "description": "Team-based software engineering project delivering a complete production software system with CI/CD and automated tests.",
+      "totalCredits": 4,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "AND",
+        "children": [
+          {
+            "type": "COURSE",
+            "courseId": "EC4203"
+          },
+          {
+            "type": "COURSE",
+            "courseId": "EC4205"
+          },
+          {
+            "type": "COURSE",
+            "courseId": "EC4307"
+          }
+        ]
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Software Group Project.",
+        "Apply analytical engineering methods to solve problems in Software Group Project.",
+        "Conduct design, laboratory or computational exercises relevant to Software Group Project."
+      ],
+      "contactHours": {
+        "lecture": 56,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC5311",
+      "code": "EC5311",
+      "title": "Discrete Mathematics",
+      "description": "Propositional and predicate logic, set theory, combinatorics, relations, graph theory, and proof techniques.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "IS1402"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Discrete Mathematics.",
+        "Apply analytical engineering methods to solve problems in Discrete Mathematics.",
+        "Conduct design, laboratory or computational exercises relevant to Discrete Mathematics."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC5211",
+      "code": "EC5211",
+      "title": "DevOps Engineering",
+      "description": "Containerization, Kubernetes, infrastructure-as-code, and continuous integration/continuous delivery pipelines.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC4307"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of DevOps Engineering.",
+        "Apply analytical engineering methods to solve problems in DevOps Engineering.",
+        "Conduct design, laboratory or computational exercises relevant to DevOps Engineering."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC5212",
+      "code": "EC5212",
+      "title": "Hardware Description Language",
+      "description": "VHDL/Verilog digital circuit modeling, testbenches, timing analysis, and FPGA synthesis.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC4304"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Hardware Description Language.",
+        "Apply analytical engineering methods to solve problems in Hardware Description Language.",
+        "Conduct design, laboratory or computational exercises relevant to Hardware Description Language."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC5213",
+      "code": "EC5213",
+      "title": "Mobile Application Development",
+      "description": "Native and cross-platform mobile application development, UI layouts, local storage, and mobile device APIs.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3404"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Mobile Application Development.",
+        "Apply analytical engineering methods to solve problems in Mobile Application Development.",
+        "Conduct design, laboratory or computational exercises relevant to Mobile Application Development."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS5221",
+      "code": "IS5221",
+      "title": "Industrial Management",
+      "description": "Operations management, supply chain networks, capacity planning, and Total Quality Management (TQM).",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Industrial Management.",
+        "Apply analytical engineering methods to solve problems in Industrial Management.",
+        "Conduct design, laboratory or computational exercises relevant to Industrial Management."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS5222",
+      "code": "IS5222",
+      "title": "Organizational Behaviour and Human Resource Management",
+      "description": "Workplace psychology, leadership dynamics, team performance, and human resource management.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Organizational Behaviour and Human Resource Management.",
+        "Apply analytical engineering methods to solve problems in Organizational Behaviour and Human Resource Management.",
+        "Conduct design, laboratory or computational exercises relevant to Organizational Behaviour and Human Resource Management."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS5123",
+      "code": "IS5123",
+      "title": "Project Management",
+      "description": "Critical path method, Gantt scheduling, earned value management, and risk mitigation.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 5,
+      "creditDistribution": [
+        {
+          "semesterIndex": 5,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Project Management.",
+        "Apply analytical engineering methods to solve problems in Project Management.",
+        "Conduct design, laboratory or computational exercises relevant to Project Management."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC6301",
+      "code": "EC6301",
+      "title": "Artificial Intelligence",
+      "description": "Informed heuristic search, game playing, constraint satisfaction, probabilistic reasoning, and knowledge graphs.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC5203"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Artificial Intelligence.",
+        "Apply analytical engineering methods to solve problems in Artificial Intelligence.",
+        "Conduct design, laboratory or computational exercises relevant to Artificial Intelligence."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC6302",
+      "code": "EC6302",
+      "title": "Computer Networks",
+      "description": "OSI reference model, TCP/IP stack, sliding window protocols, routing algorithms, and socket programming.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC4202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Computer Networks.",
+        "Apply analytical engineering methods to solve problems in Computer Networks.",
+        "Conduct design, laboratory or computational exercises relevant to Computer Networks."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC6303",
+      "code": "EC6303",
+      "title": "Embedded Systems Design",
+      "description": "Microcontroller architecture, peripheral interfacing, real-time operating systems (RTOS), and embedded firmware.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "AND",
+        "children": [
+          {
+            "type": "COURSE",
+            "courseId": "EC4202"
+          },
+          {
+            "type": "COURSE",
+            "courseId": "EC4304"
+          }
+        ]
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Embedded Systems Design.",
+        "Apply analytical engineering methods to solve problems in Embedded Systems Design.",
+        "Conduct design, laboratory or computational exercises relevant to Embedded Systems Design."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC6204",
+      "code": "EC6204",
+      "title": "Operating Systems and Network Programming",
+      "description": "Kernel architecture, inter-process communication (IPC), thread synchronization, and network socket services.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC4202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Operating Systems and Network Programming.",
+        "Apply analytical engineering methods to solve problems in Operating Systems and Network Programming.",
+        "Conduct design, laboratory or computational exercises relevant to Operating Systems and Network Programming."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC6105",
+      "code": "EC6105",
+      "title": "Research Methodologies",
+      "description": "Scientific research design, literature search strategies, experimental analysis, and academic writing standards.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Research Methodologies.",
+        "Apply analytical engineering methods to solve problems in Research Methodologies.",
+        "Conduct design, laboratory or computational exercises relevant to Research Methodologies."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS5101",
+      "code": "IS5101",
+      "title": "Engineering Ethics",
+      "description": "Professional codes of ethics, engineering liability, whistleblower policies, and technological safety.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Engineering Ethics.",
+        "Apply analytical engineering methods to solve problems in Engineering Ethics.",
+        "Conduct design, laboratory or computational exercises relevant to Engineering Ethics."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS5302",
+      "code": "IS5302",
+      "title": "Numerical Methods",
+      "description": "Numerical solutions of nonlinear equations, linear systems, numerical interpolation, differentiation, and integration.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "IS2401"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Numerical Methods.",
+        "Apply analytical engineering methods to solve problems in Numerical Methods.",
+        "Conduct design, laboratory or computational exercises relevant to Numerical Methods."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC6211",
+      "code": "EC6211",
+      "title": "Digital Signal Processing",
+      "description": "Discrete-time signals, DFT, FFT algorithms, digital FIR/IIR filter design, and spectral analysis.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3305"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Digital Signal Processing.",
+        "Apply analytical engineering methods to solve problems in Digital Signal Processing.",
+        "Conduct design, laboratory or computational exercises relevant to Digital Signal Processing."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC6214",
+      "code": "EC6214",
+      "title": "Software Architecture",
+      "description": "Enterprise architecture patterns, microservices, event-driven architectures, and system scalability.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC5405"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Software Architecture.",
+        "Apply analytical engineering methods to solve problems in Software Architecture.",
+        "Conduct design, laboratory or computational exercises relevant to Software Architecture."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC6215",
+      "code": "EC6215",
+      "title": "Wireless Communications",
+      "description": "Cellular system design, wireless propagation channels, modulation techniques, and 5G cellular architectures.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3305"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Wireless Communications.",
+        "Apply analytical engineering methods to solve problems in Wireless Communications.",
+        "Conduct design, laboratory or computational exercises relevant to Wireless Communications."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS6121",
+      "code": "IS6121",
+      "title": "Industrial Law",
+      "description": "Employment law, occupational safety regulations, contract law, and dispute arbitration.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 6,
+      "creditDistribution": [
+        {
+          "semesterIndex": 6,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Industrial Law.",
+        "Apply analytical engineering methods to solve problems in Industrial Law.",
+        "Conduct design, laboratory or computational exercises relevant to Industrial Law."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC7201",
+      "code": "EC7201",
+      "title": "Information Security",
+      "description": "Applied cryptography, public key infrastructure (PKI), authentication protocols, and network threat defense.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "CORE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC6302"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Information Security.",
+        "Apply analytical engineering methods to solve problems in Information Security.",
+        "Conduct design, laboratory or computational exercises relevant to Information Security."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 14,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC7802",
+      "code": "EC7802",
+      "title": "Undergraduate Project",
+      "description": "Independent undergraduate engineering research, hardware/software realization, and oral dissertation spanning Semesters 7 and 8.",
+      "totalCredits": 8,
+      "durationSemesters": 2,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 4
+        },
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 4
+        }
+      ],
+      "type": "CAPSTONE",
+      "prerequisiteRule": {
+        "type": "AND",
+        "children": [
+          {
+            "type": "COURSE",
+            "courseId": "EC6105"
+          },
+          {
+            "type": "CREDIT_THRESHOLD",
+            "minCredits": 90
+          }
+        ]
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Undergraduate Project.",
+        "Apply analytical engineering methods to solve problems in Undergraduate Project.",
+        "Conduct design, laboratory or computational exercises relevant to Undergraduate Project."
+      ],
+      "contactHours": {
+        "lecture": 112,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC7211",
+      "code": "EC7211",
+      "title": "Advanced Artificial Intelligence",
+      "description": "Deep reinforcement learning, generative models, transformer architectures, and explainable AI.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC6301"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Advanced Artificial Intelligence.",
+        "Apply analytical engineering methods to solve problems in Advanced Artificial Intelligence.",
+        "Conduct design, laboratory or computational exercises relevant to Advanced Artificial Intelligence."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC7212",
+      "code": "EC7212",
+      "title": "Computer Vision and Image Processing",
+      "description": "Image transformations, feature extraction, object detection, convolutional neural networks, and visual tracking.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC6301"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Computer Vision and Image Processing.",
+        "Apply analytical engineering methods to solve problems in Computer Vision and Image Processing.",
+        "Conduct design, laboratory or computational exercises relevant to Computer Vision and Image Processing."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC7213",
+      "code": "EC7213",
+      "title": "Human Computer Interaction",
+      "description": "User-centered design methodologies, cognitive psychology, usability evaluation, and interaction prototyping.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3404"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Human Computer Interaction.",
+        "Apply analytical engineering methods to solve problems in Human Computer Interaction.",
+        "Conduct design, laboratory or computational exercises relevant to Human Computer Interaction."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC7214",
+      "code": "EC7214",
+      "title": "Introduction to Robotics and Automation",
+      "description": "Robotic kinematics, dynamics, trajectory planning, sensor fusion, and robotic operating systems (ROS).",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC5301"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Introduction to Robotics and Automation.",
+        "Apply analytical engineering methods to solve problems in Introduction to Robotics and Automation.",
+        "Conduct design, laboratory or computational exercises relevant to Introduction to Robotics and Automation."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC7215",
+      "code": "EC7215",
+      "title": "Optimization Techniques for Engineers",
+      "description": "Linear programming, simplex method, nonlinear optimization, convex analysis, and metaheuristics.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "IS5302"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Optimization Techniques for Engineers.",
+        "Apply analytical engineering methods to solve problems in Optimization Techniques for Engineers.",
+        "Conduct design, laboratory or computational exercises relevant to Optimization Techniques for Engineers."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC7216",
+      "code": "EC7216",
+      "title": "Parallel and Distributed Computing",
+      "description": "Multicore computing, GPU programming with CUDA, MPI, OpenMP, and distributed consensus algorithms.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC4202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Parallel and Distributed Computing.",
+        "Apply analytical engineering methods to solve problems in Parallel and Distributed Computing.",
+        "Conduct design, laboratory or computational exercises relevant to Parallel and Distributed Computing."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC7220",
+      "code": "EC7220",
+      "title": "Planning and Management and Career Pathways",
+      "description": "Professional career planning, executive leadership, corporate mentoring, and technology management.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Planning and Management and Career Pathways.",
+        "Apply analytical engineering methods to solve problems in Planning and Management and Career Pathways.",
+        "Conduct design, laboratory or computational exercises relevant to Planning and Management and Career Pathways."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS7221",
+      "code": "IS7221",
+      "title": "Academic English",
+      "description": "Advanced academic communication, journal writing, thesis formatting, and conference presentation.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Academic English.",
+        "Apply analytical engineering methods to solve problems in Academic English.",
+        "Conduct design, laboratory or computational exercises relevant to Academic English."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS7122",
+      "code": "IS7122",
+      "title": "Business Communication for Engineers",
+      "description": "Business report writing, client communications, technical proposals, and executive negotiations.",
+      "totalCredits": 1,
+      "durationSemesters": 1,
+      "recommendedSemester": 7,
+      "creditDistribution": [
+        {
+          "semesterIndex": 7,
+          "creditsAllocated": 1
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "FALL"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Business Communication for Engineers.",
+        "Apply analytical engineering methods to solve problems in Business Communication for Engineers.",
+        "Conduct design, laboratory or computational exercises relevant to Business Communication for Engineers."
+      ],
+      "contactHours": {
+        "lecture": 14,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC8211",
+      "code": "EC8211",
+      "title": "Bioinformatics",
+      "description": "Computational genomics, sequence alignment algorithms, phylogenetics, and protein structural modeling.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Bioinformatics.",
+        "Apply analytical engineering methods to solve problems in Bioinformatics.",
+        "Conduct design, laboratory or computational exercises relevant to Bioinformatics."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC8212",
+      "code": "EC8212",
+      "title": "Big Data and Analytics",
+      "description": "Distributed data processing frameworks (Hadoop, Spark), data lakes, streaming analytics, and NoSQL databases.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC4203"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Big Data and Analytics.",
+        "Apply analytical engineering methods to solve problems in Big Data and Analytics.",
+        "Conduct design, laboratory or computational exercises relevant to Big Data and Analytics."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC8213",
+      "code": "EC8213",
+      "title": "Blockchain and Cyber Security",
+      "description": "Cryptographic distributed ledgers, consensus mechanisms, smart contract engineering, and decentralized protocols.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC7201"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Blockchain and Cyber Security.",
+        "Apply analytical engineering methods to solve problems in Blockchain and Cyber Security.",
+        "Conduct design, laboratory or computational exercises relevant to Blockchain and Cyber Security."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC8314",
+      "code": "EC8314",
+      "title": "Design and Management of Networks",
+      "description": "Enterprise network architecture, SDN/NFV, QoS management, network automation, and telemetry.",
+      "totalCredits": 3,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 3
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC6302"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Design and Management of Networks.",
+        "Apply analytical engineering methods to solve problems in Design and Management of Networks.",
+        "Conduct design, laboratory or computational exercises relevant to Design and Management of Networks."
+      ],
+      "contactHours": {
+        "lecture": 42,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC8215",
+      "code": "EC8215",
+      "title": "Functional Programming",
+      "description": "Lambda calculus, immutable data structures, higher-order functions, monads, and typed functional languages (Haskell/Scala).",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Functional Programming.",
+        "Apply analytical engineering methods to solve problems in Functional Programming.",
+        "Conduct design, laboratory or computational exercises relevant to Functional Programming."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC8216",
+      "code": "EC8216",
+      "title": "IC Design",
+      "description": "CMOS integrated circuit design, VLSI physical layout, timing closure, parasitic extraction, and silicon verification.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC5202"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of IC Design.",
+        "Apply analytical engineering methods to solve problems in IC Design.",
+        "Conduct design, laboratory or computational exercises relevant to IC Design."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "EC8217",
+      "code": "EC8217",
+      "title": "Virtual and Augmented Reality",
+      "description": "Spatial computing, 3D graphics rendering pipelines, tracking algorithms, and immersive UX design.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": {
+        "type": "COURSE",
+        "courseId": "EC3404"
+      },
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of Virtual and Augmented Reality.",
+        "Apply analytical engineering methods to solve problems in Virtual and Augmented Reality.",
+        "Conduct design, laboratory or computational exercises relevant to Virtual and Augmented Reality."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    },
+    {
+      "id": "IS8221",
+      "code": "IS8221",
+      "title": "English for the Professional World",
+      "description": "Global workplace communication, cross-cultural leadership, technical diplomacy, and corporate discourse.",
+      "totalCredits": 2,
+      "durationSemesters": 1,
+      "recommendedSemester": 8,
+      "creditDistribution": [
+        {
+          "semesterIndex": 8,
+          "creditsAllocated": 2
+        }
+      ],
+      "type": "ELECTIVE",
+      "prerequisiteRule": null,
+      "corequisites": [],
+      "offeredSemesters": [
+        "SPRING"
+      ],
+      "syllabusObjectives": [
+        "Understand foundational principles of English for the Professional World.",
+        "Apply analytical engineering methods to solve problems in English for the Professional World.",
+        "Conduct design, laboratory or computational exercises relevant to English for the Professional World."
+      ],
+      "contactHours": {
+        "lecture": 28,
+        "lab": 0,
+        "tutorial": 7
+      }
+    }
+  ]
+}
