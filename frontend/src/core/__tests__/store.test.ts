@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { Course } from '@/types/curriculum';
 import {
+    calculateGraduationProgress,
     calculateSemesterCredits,
     calculateTotalPlannedCredits,
     usePlannerStore,
@@ -30,48 +31,124 @@ function createCourse(
     };
 }
 
-describe('Local-First Zustand Store (CF-104)', () => {
+describe('Local-First Multi-Plan Zustand Store (Step 1 & Step 2)', () => {
     beforeEach(() => {
         localStorage.clear();
         usePlannerStore.getState().resetPlanner();
-        usePlannerStore.getState().setActiveProgram('computer-eng');
     });
 
-    describe('Default Guest Mode State', () => {
-        it('initializes with default zero-login guest-mode values', () => {
+    describe('Default Guest Mode & Plan Initialization', () => {
+        it('initializes with default zero-login guest-mode values and default study plan', () => {
             const state = usePlannerStore.getState();
             expect(state.activeProgramId).toBe('computer-eng');
+            expect(state.activePlanId).toBeDefined();
+
+            const programPlans = state.plans['computer-eng'];
+            expect(programPlans).toBeDefined();
+            expect(programPlans.length).toBeGreaterThanOrEqual(1);
+
+            const activePlan = state.getActivePlan();
+            expect(activePlan).toBeDefined();
+            expect(activePlan?.programId).toBe('computer-eng');
+            expect(activePlan?.selectedElectiveIds).toEqual([]);
+
             expect(state.selectedElectiveIds).toEqual([]);
-            expect(state.completedCourseIds).toEqual([]);
             expect(state.isDrawerOpen).toBe(false);
             expect(state.inspectedCourse).toBeNull();
+            expect(state.mobileViewMode).toBe('canvas');
+            expect(state.searchQuery).toBe('');
+            expect(state.filterType).toBe('ALL');
         });
     });
 
-    describe('Program Selection & Reset', () => {
-        it('updates active degree program', () => {
-            usePlannerStore.getState().setActiveProgram('electrical-eng');
-            expect(usePlannerStore.getState().activeProgramId).toBe('electrical-eng');
-        });
+    describe('Multi-Plan Management Actions', () => {
+        it('creates a new study plan and sets it as the active plan', () => {
+            const initialPlanId = usePlannerStore.getState().activePlanId;
 
-        it('resets selections while preserving active degree program', () => {
-            const store = usePlannerStore.getState();
-            store.setActiveProgram('electrical-eng');
-            store.toggleElective('EE301');
-            store.toggleCompletedCourse('EE101');
+            const newPlan = usePlannerStore.getState().createPlan('AI Track Specialization');
+            expect(newPlan.id).toBeDefined();
+            expect(newPlan.name).toBe('AI Track Specialization');
+            expect(newPlan.programId).toBe('computer-eng');
+            expect(newPlan.selectedElectiveIds).toEqual([]);
 
-            usePlannerStore.getState().resetPlanner();
             const state = usePlannerStore.getState();
-            expect(state.activeProgramId).toBe('electrical-eng');
+            expect(state.activePlanId).toBe(newPlan.id);
+            expect(state.activePlanId).not.toBe(initialPlanId);
+            expect(state.plans['computer-eng']).toHaveLength(2);
             expect(state.selectedElectiveIds).toEqual([]);
-            expect(state.completedCourseIds).toEqual([]);
-            expect(state.isDrawerOpen).toBe(false);
-            expect(state.inspectedCourse).toBeNull();
+        });
+
+        it('duplicates an existing plan with all selected electives preserved', () => {
+            // Select electives on the base plan
+            usePlannerStore.getState().toggleElective('CO544');
+            usePlannerStore.getState().toggleElective('CO542');
+            const basePlanId = usePlannerStore.getState().activePlanId;
+
+            const duplicatedPlan = usePlannerStore.getState().duplicatePlan(basePlanId, 'AI Track (Draft B)');
+            expect(duplicatedPlan).toBeDefined();
+            expect(duplicatedPlan?.id).not.toBe(basePlanId);
+            expect(duplicatedPlan?.name).toBe('AI Track (Draft B)');
+            expect(duplicatedPlan?.selectedElectiveIds).toEqual(['CO544', 'CO542']);
+
+            const state = usePlannerStore.getState();
+            expect(state.activePlanId).toBe(duplicatedPlan?.id);
+            expect(state.selectedElectiveIds).toEqual(['CO544', 'CO542']);
+        });
+
+        it('renames an existing study plan', () => {
+            const plan = usePlannerStore.getState().createPlan('Initial Draft');
+            usePlannerStore.getState().renamePlan(plan.id, 'Production Semester Plan');
+
+            const state = usePlannerStore.getState();
+            const updated = state.plans['computer-eng'].find((p) => p.id === plan.id);
+            expect(updated?.name).toBe('Production Semester Plan');
+        });
+
+        it('deletes a study plan and switches active plan cleanly', () => {
+            const plan1 = usePlannerStore.getState().activePlanId;
+            const plan2 = usePlannerStore.getState().createPlan('Secondary Plan');
+
+            expect(usePlannerStore.getState().activePlanId).toBe(plan2.id);
+
+            // Delete plan2: activePlanId should fall back to plan1
+            usePlannerStore.getState().deletePlan(plan2.id);
+            expect(usePlannerStore.getState().activePlanId).toBe(plan1);
+            expect(usePlannerStore.getState().plans['computer-eng'].find((p) => p.id === plan2.id)).toBeUndefined();
+        });
+
+        it('creates a fresh fallback plan if the student deletes all plans', () => {
+            const state = usePlannerStore.getState();
+            const planIds = state.plans['computer-eng'].map((p) => p.id);
+
+            for (const pid of planIds) {
+                usePlannerStore.getState().deletePlan(pid);
+            }
+
+            const refreshedState = usePlannerStore.getState();
+            expect(refreshedState.plans['computer-eng']).toHaveLength(1);
+            expect(refreshedState.activePlanId).toBe(refreshedState.plans['computer-eng'][0].id);
+            expect(refreshedState.selectedElectiveIds).toEqual([]);
+        });
+
+        it('switches active plan via setActivePlan', () => {
+            const plan1Id = usePlannerStore.getState().activePlanId;
+            usePlannerStore.getState().toggleElective('CO544');
+
+            const plan2 = usePlannerStore.getState().createPlan('Second Plan');
+            expect(plan2.id).toBeDefined();
+            usePlannerStore.getState().toggleElective('CO501');
+
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['CO501']);
+
+            // Switch back to plan 1
+            usePlannerStore.getState().setActivePlan(plan1Id);
+            expect(usePlannerStore.getState().activePlanId).toBe(plan1Id);
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['CO544']);
         });
     });
 
-    describe('Elective & Completed Course Toggles', () => {
-        it('toggles elective selections idempotently', () => {
+    describe('Elective Toggling & Plan Isolation', () => {
+        it('toggles elective selections idempotently in active plan', () => {
             const store = usePlannerStore.getState();
             expect(store.isElectiveSelected('CO544')).toBe(false);
 
@@ -84,27 +161,76 @@ describe('Local-First Zustand Store (CF-104)', () => {
             expect(usePlannerStore.getState().isElectiveSelected('CO544')).toBe(false);
         });
 
-        it('supports bulk setting of electives with deduplication', () => {
+        it('supports bulk setting of electives with deduplication in active plan', () => {
             usePlannerStore.getState().setSelectedElectives(['CO544', 'CO545', 'CO544']);
             expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['CO544', 'CO545']);
+            expect(usePlannerStore.getState().getActivePlan()?.selectedElectiveIds).toEqual(['CO544', 'CO545']);
         });
 
-        it('toggles completed course status idempotently', () => {
-            const store = usePlannerStore.getState();
-            expect(store.isCourseCompleted('CO221')).toBe(false);
+        it('maintains elective isolation between multiple plans of the same department', () => {
+            const planA = usePlannerStore.getState().createPlan('Plan A: AI Focus');
+            usePlannerStore.getState().toggleElective('CO544');
 
-            store.toggleCompletedCourse('CO221');
-            expect(usePlannerStore.getState().completedCourseIds).toContain('CO221');
-            expect(usePlannerStore.getState().isCourseCompleted('CO221')).toBe(true);
+            const planB = usePlannerStore.getState().createPlan('Plan B: Systems Focus');
+            usePlannerStore.getState().toggleElective('CO501');
 
-            usePlannerStore.getState().toggleCompletedCourse('CO221');
-            expect(usePlannerStore.getState().completedCourseIds).not.toContain('CO221');
-            expect(usePlannerStore.getState().isCourseCompleted('CO221')).toBe(false);
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['CO501']);
+
+            usePlannerStore.getState().setActivePlan(planA.id);
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['CO544']);
+
+            usePlannerStore.getState().setActivePlan(planB.id);
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['CO501']);
+        });
+    });
+
+    describe('Department Switching with Plan Isolation (Zero Data Loss)', () => {
+        it('preserves study plans and electives across departments without data loss', () => {
+            // Configure Computer Engineering with specific electives
+            usePlannerStore.getState().setActiveProgram('computer-eng');
+            usePlannerStore.getState().toggleElective('CO544');
+            usePlannerStore.getState().toggleElective('CO542');
+            const ceActivePlanId = usePlannerStore.getState().activePlanId;
+
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['CO544', 'CO542']);
+
+            // Switch to Electrical Engineering
+            usePlannerStore.getState().setActiveProgram('electrical-eng');
+            expect(usePlannerStore.getState().activeProgramId).toBe('electrical-eng');
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual([]); // Fresh default plan for EE
+
+            // Select EE electives
+            usePlannerStore.getState().toggleElective('EE501');
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['EE501']);
+
+            // Switch back to Computer Engineering: CE plans must be completely intact!
+            usePlannerStore.getState().setActiveProgram('computer-eng');
+            expect(usePlannerStore.getState().activeProgramId).toBe('computer-eng');
+            expect(usePlannerStore.getState().activePlanId).toBe(ceActivePlanId);
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['CO544', 'CO542']);
+
+            // Switch back to Electrical Engineering: EE plans must be completely intact!
+            usePlannerStore.getState().setActiveProgram('electrical-eng');
+            expect(usePlannerStore.getState().activeProgramId).toBe('electrical-eng');
+            expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['EE501']);
+        });
+    });
+
+    describe('Mobile View Mode & Search/Filter State', () => {
+        it('updates mobile view mode between list and canvas', () => {
+            expect(usePlannerStore.getState().mobileViewMode).toBe('canvas');
+            usePlannerStore.getState().setMobileViewMode('list');
+            expect(usePlannerStore.getState().mobileViewMode).toBe('list');
+            usePlannerStore.getState().setMobileViewMode('canvas');
+            expect(usePlannerStore.getState().mobileViewMode).toBe('canvas');
         });
 
-        it('supports bulk setting of completed courses with deduplication', () => {
-            usePlannerStore.getState().setCompletedCourses(['CO101', 'CO102', 'CO101']);
-            expect(usePlannerStore.getState().completedCourseIds).toEqual(['CO101', 'CO102']);
+        it('updates search query and filter course type', () => {
+            usePlannerStore.getState().setSearchQuery('Deep Learning');
+            expect(usePlannerStore.getState().searchQuery).toBe('Deep Learning');
+
+            usePlannerStore.getState().setFilterType('ELECTIVE');
+            expect(usePlannerStore.getState().filterType).toBe('ELECTIVE');
         });
     });
 
@@ -124,30 +250,7 @@ describe('Local-First Zustand Store (CF-104)', () => {
         });
     });
 
-    describe('LocalStorage Persistence (Zero-Login Client State)', () => {
-        it('persists activeProgramId, selectedElectiveIds, and completedCourseIds to localStorage', () => {
-            const store = usePlannerStore.getState();
-            store.setActiveProgram('electrical-eng');
-            store.toggleElective('EE501');
-            store.toggleCompletedCourse('EE101');
-
-            // Inspect localStorage partition
-            const rawStorage = localStorage.getItem('courseflow-local-planner');
-            expect(rawStorage).toBeDefined();
-            expect(rawStorage).not.toBeNull();
-
-            const parsed = JSON.parse(rawStorage!);
-            expect(parsed.state.activeProgramId).toBe('electrical-eng');
-            expect(parsed.state.selectedElectiveIds).toContain('EE501');
-            expect(parsed.state.completedCourseIds).toContain('EE101');
-
-            // Drawer transient UI state must NOT be in localStorage
-            expect(parsed.state.isDrawerOpen).toBeUndefined();
-            expect(parsed.state.inspectedCourse).toBeUndefined();
-        });
-    });
-
-    describe('Credit Summation & Multi-Semester Capstone Splits', () => {
+    describe('Credit Summation & Graduation Progress Calculations', () => {
         const sampleCourses: Course[] = [
             createCourse('CORE1', 1, { totalCredits: 3 }),
             createCourse('CORE2', 1, { totalCredits: 4 }),
@@ -179,7 +282,6 @@ describe('Local-First Zustand Store (CF-104)', () => {
         });
 
         it('correctly allocates split credits for multi-semester capstone modules', () => {
-            // Capstone allocates 3 credits to S7 and 3 credits to S8
             expect(calculateSemesterCredits(7, sampleCourses, [])).toBe(3);
             expect(calculateSemesterCredits(8, sampleCourses, [])).toBe(3);
         });
@@ -192,38 +294,70 @@ describe('Local-First Zustand Store (CF-104)', () => {
             expect(calculateTotalPlannedCredits(sampleCourses, ['ELEC1'])).toBe(19);
         });
 
-        it('evaluates graduation progress against 150-credit requirement', () => {
+        it('evaluates graduation progress with core, elective, percentage, and eligibility details', () => {
             const store = usePlannerStore.getState();
-            store.toggleCompletedCourse('CORE1');
             store.toggleElective('ELEC1');
 
-            const progress = store.getGraduationProgress(sampleCourses, 150);
-            expect(progress.earnedCredits).toBe(3); // CORE1
+            const progress = store.getGraduationProgress(sampleCourses, 20);
+            // Core credits: CORE1 (3) + CORE2 (4) + CORE_S2 (3) + CAPSTONE (6) = 16
+            expect(progress.coreCredits).toBe(16);
+            // Elective credits: ELEC1 (3) = 3
+            expect(progress.electiveCredits).toBe(3);
+            // Total planned: 19
             expect(progress.plannedCredits).toBe(19);
-            expect(progress.requiredCredits).toBe(150);
+            expect(progress.requiredCredits).toBe(20);
             expect(progress.isEligible).toBe(false);
+            // Percentage: Math.round((19 / 20) * 100) = 95%
+            expect(progress.percentage).toBe(95);
+
+            // Meets or exceeds required credits
+            const compliantProgress = calculateGraduationProgress(sampleCourses, ['ELEC1'], 19);
+            expect(compliantProgress.isEligible).toBe(true);
+            expect(compliantProgress.percentage).toBe(100);
+        });
+    });
+
+    describe('LocalStorage Persistence & Migration Cleanliness', () => {
+        it('persists activeProgramId, activePlanId, plans, and selectedElectiveIds to localStorage', () => {
+            const store = usePlannerStore.getState();
+            store.setActiveProgram('electrical-eng');
+            store.toggleElective('EE501');
+
+            const rawStorage = localStorage.getItem('courseflow-local-planner');
+            expect(rawStorage).toBeDefined();
+            expect(rawStorage).not.toBeNull();
+
+            const parsed = JSON.parse(rawStorage!);
+            expect(parsed.state.activeProgramId).toBe('electrical-eng');
+            expect(parsed.state.activePlanId).toBeDefined();
+            expect(parsed.state.plans['electrical-eng']).toBeDefined();
+            expect(parsed.state.selectedElectiveIds).toContain('EE501');
+
+            // Drawer transient UI state must NOT be persisted
+            expect(parsed.state.isDrawerOpen).toBeUndefined();
+            expect(parsed.state.inspectedCourse).toBeUndefined();
         });
     });
 
     describe('Study Plan JSON Portability (ADR-001)', () => {
-        it('exports plan with schema version and timestamps', () => {
+        it('exports plan with schema version 2.0 and plan dictionary', () => {
             const store = usePlannerStore.getState();
             store.setActiveProgram('computer-eng');
             store.toggleElective('CO544');
-            store.toggleCompletedCourse('CO221');
 
             const exportedJson = store.exportPlan();
             const data = JSON.parse(exportedJson);
 
-            expect(data.version).toBe('1.0');
+            expect(data.version).toBe('2.0');
             expect(data.activeProgramId).toBe('computer-eng');
             expect(data.selectedElectiveIds).toEqual(['CO544']);
-            expect(data.completedCourseIds).toEqual(['CO221']);
+            expect(data.plans).toBeDefined();
             expect(data.exportedAt).toBeDefined();
         });
 
-        it('imports study plan and rehydrates state correctly', () => {
-            const validPlan = JSON.stringify({
+        it('imports study plan and rehydrates state correctly (including legacy format migration)', () => {
+            // Import legacy 1.0 JSON format
+            const legacyPlan = JSON.stringify({
                 version: '1.0',
                 activeProgramId: 'electrical-eng',
                 selectedElectiveIds: ['EE401', 'EE402'],
@@ -231,13 +365,13 @@ describe('Local-First Zustand Store (CF-104)', () => {
                 exportedAt: new Date().toISOString(),
             });
 
-            const success = usePlannerStore.getState().importPlan(validPlan);
+            const success = usePlannerStore.getState().importPlan(legacyPlan);
             expect(success).toBe(true);
 
             const state = usePlannerStore.getState();
             expect(state.activeProgramId).toBe('electrical-eng');
             expect(state.selectedElectiveIds).toEqual(['EE401', 'EE402']);
-            expect(state.completedCourseIds).toEqual(['EE101', 'EE102']);
+            expect(state.getActivePlan()?.selectedElectiveIds).toEqual(['EE401', 'EE402']);
         });
 
         it('rejects invalid or corrupted JSON inputs without mutating state', () => {
@@ -245,14 +379,10 @@ describe('Local-First Zustand Store (CF-104)', () => {
             store.setActiveProgram('computer-eng');
             store.setSelectedElectives(['CO501']);
 
-            // Invalid JSON
             expect(store.importPlan('not-json')).toBe(false);
             expect(usePlannerStore.getState().selectedElectiveIds).toEqual(['CO501']);
 
-            // Array instead of object
             expect(store.importPlan('[1, 2, 3]')).toBe(false);
-
-            // Null or primitive
             expect(store.importPlan('null')).toBe(false);
             expect(store.importPlan('123')).toBe(false);
         });

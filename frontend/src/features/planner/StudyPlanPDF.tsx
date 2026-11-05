@@ -5,6 +5,7 @@ export interface StudyPlanPDFProps {
     program?: DegreeProgram;
     programName?: string;
     department?: string;
+    planName?: string;
     courses?: Course[];
     selectedElectiveIds?: string[];
     completedCourseIds?: string[];
@@ -286,6 +287,7 @@ export function StudyPlanPDF({
     program,
     programName,
     department,
+    planName,
     courses: injectedCourses,
     selectedElectiveIds = [],
     completedCourseIds = [],
@@ -356,11 +358,8 @@ export function StudyPlanPDF({
         };
     });
 
-    // Calculate total planned and completed credits
+    // Calculate total planned credits
     const totalPlannedCredits = semesterGroups.reduce((acc, g) => acc + g.credits, 0);
-    const totalEarnedCredits = allCourses.reduce((acc, c) => {
-        return completedSet.has(c.id) ? acc + c.totalCredits : acc;
-    }, 0);
 
     const isGraduationEligible = totalPlannedCredits >= totalCreditsRequired;
     const allSemestersValid = semesterGroups.every((g) => g.isValid);
@@ -447,8 +446,7 @@ export function StudyPlanPDF({
 
                     <View style={styles.metaBox}>
                         <Text style={styles.metaText}>Generated: {dateFormatted}</Text>
-                        <Text style={styles.metaText}>Status: Local Student Plan</Text>
-                        <Text style={styles.metaText}>Earned: {totalEarnedCredits} Credits</Text>
+                        <Text style={styles.metaText}>Study Plan: {planName || 'Default Plan'}</Text>
                         <View
                             style={[
                                 styles.progressBadge,

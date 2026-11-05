@@ -131,12 +131,13 @@ describe('CourseNode Component (CF-112)', () => {
         cleanup();
     });
 
-    it('renders warning alert badge when prerequisite rules are unmet', () => {
+    it('renders warning alert badge when prerequisite rules are unmet in plan', () => {
         const { container, cleanup } = setupNodeContainer({
             id: 'MA1002',
             code: 'MA1002',
             type: 'CORE',
-            prerequisiteRule: { type: 'COURSE', courseId: 'MA1001' },
+            recommendedSemester: 2,
+            prerequisiteRule: { type: 'COURSE', courseId: 'NON_EXISTENT_PREREQ' },
         });
 
         expect(container.textContent).toContain('Warning: Unmet');
@@ -144,7 +145,7 @@ describe('CourseNode Component (CF-112)', () => {
         cleanup();
     });
 
-    it('renders completed badge and updates when completed course button is clicked', () => {
+    it('renders no prereqs badge when course has no prerequisite requirements', () => {
         const { container, cleanup } = setupNodeContainer({
             id: 'CO1001',
             code: 'CO1001',
@@ -152,14 +153,7 @@ describe('CourseNode Component (CF-112)', () => {
             prerequisiteRule: null,
         });
 
-        const completeBtn = container.querySelector('button[aria-label="Toggle completion for CO1001"]') as HTMLButtonElement;
-        expect(completeBtn).toBeDefined();
-
-        act(() => {
-            completeBtn.click();
-        });
-
-        expect(usePlannerStore.getState().isCourseCompleted('CO1001')).toBe(true);
+        expect(container.textContent).toContain('No Prereqs');
 
         cleanup();
     });

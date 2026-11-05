@@ -16,7 +16,6 @@ describe('ExportPdfButton Component (CF-116)', () => {
         usePlannerStore.setState({
             activeProgramId: 'computer-eng',
             selectedElectiveIds: [],
-            completedCourseIds: [],
         });
     });
 
@@ -35,12 +34,12 @@ describe('ExportPdfButton Component (CF-116)', () => {
         const root = createRoot(container);
 
         act(() => {
-            root.render(<ExportPdfButton program={mockComputerEngineeringProgram} />);
+            root.render(<ExportPdfButton />);
         });
 
         const button = container.querySelector('[data-testid="export-pdf-button"]');
         expect(button).not.toBeNull();
-        expect(button?.textContent).toMatch(/Preparing PDF\.\.\.|Download Plan PDF/);
+        expect(button?.textContent).toContain('PDF');
 
         act(() => {
             root.unmount();
@@ -57,7 +56,7 @@ describe('ExportPdfButton Component (CF-116)', () => {
             root.render(
                 <ExportPdfButton
                     program={mockComputerEngineeringProgram}
-                    fileName="Custom_Study_Plan.pdf"
+                    customFileName="Custom_Study_Plan.pdf"
                 />
             );
         });

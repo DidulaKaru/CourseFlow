@@ -1,31 +1,32 @@
-import { useMemo, useSyncExternalStore } from 'react';
+import { memo, useMemo, useSyncExternalStore } from 'react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { Download } from 'lucide-react';
 
 import { usePlannerStore } from '@/core/store';
 import { getProgram, getProgramCourses } from '@/data/mockCourses';
+import { StudyPlanPDF } from '@/features/planner/StudyPlanPDF';
+import { getPdfFileName } from '@/features/planner/utils/pdfFilename';
 import type { DegreeProgram } from '@/types/curriculum';
-import { StudyPlanPDF } from '../StudyPlanPDF';
-import { getPdfFileName } from '../utils/pdfFilename';
 
 export interface ExportPdfButtonProps {
     program?: DegreeProgram;
-    fileName?: string;
+    customFileName?: string;
     className?: string;
 }
 
 const emptySubscribe = () => () => {};
 
 /**
- * Client-Side PDF Study Plan Exporter Button (CF-116).
- * Styled with an austere, razor-sharp rectangular plate aesthetic matching Skyrim HUD specifications.
- * Responsive layout ensures full mobile screen compliance without horizontal overflow.
+ * Skyrim Aesthetic PDF Exporter Action Button (CF-116).
+ * Renders an accessible download button linking to the client-compiled StudyPlanPDF document.
+ * Safely guards against SSR hydration mismatch using useSyncExternalStore.
  */
-export function ExportPdfButton({
+export const ExportPdfButton = memo(function ExportPdfButton({
     program: injectedProgram,
-    fileName: customFileName,
+    customFileName,
     className = '',
 }: ExportPdfButtonProps) {
+    // Client-side hydration guard
     const isClient = useSyncExternalStore(
         emptySubscribe,
         () => true,
@@ -34,7 +35,9 @@ export function ExportPdfButton({
 
     const activeProgramId = usePlannerStore((state) => state.activeProgramId);
     const selectedElectiveIds = usePlannerStore((state) => state.selectedElectiveIds);
-    const completedCourseIds = usePlannerStore((state) => state.completedCourseIds);
+    const activePlanId = usePlannerStore((state) => state.activePlanId);
+    const plans = usePlannerStore((state) => state.plans);
+    const activePlan = plans[activeProgramId]?.find((p) => p.id === activePlanId);
 
     const activeProgram = injectedProgram ?? getProgram(activeProgramId);
     const activeCourses = getProgramCourses(activeProgram.id);
@@ -67,8 +70,8 @@ export function ExportPdfButton({
                     program={activeProgram}
                     courses={activeCourses}
                     selectedElectiveIds={selectedElectiveIds}
-                    completedCourseIds={completedCourseIds}
                     totalCreditsRequired={activeProgram.totalCreditsRequired}
+                    planName={activePlan?.name}
                 />
             }
             fileName={dynamicFileName}
@@ -78,12 +81,12 @@ export function ExportPdfButton({
         >
             {({ loading }) => (
                 <>
-                    <Download className={`w-3.5 h-3.5 shrink-0 ${loading ? 'animate-pulse' : ''}`} />
-                    <span className="whitespace-nowrap">
+                    <Download className="w-3.5 h-3.5 shrink-0 text-slate-300" />
+                    <span className="font-medium">
                         {loading ? 'Preparing PDF...' : <><span className="hidden sm:inline">Download Plan </span>PDF</>}
                     </span>
                 </>
             )}
         </PDFDownloadLink>
     );
-}
+});

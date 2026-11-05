@@ -18,18 +18,31 @@
     - `CREDIT_THRESHOLD`: Total earned credits $\ge \text{minCredits}$.
     - `AND`: Every child sub-rule evaluates to `true`.
     - `OR`: At least one child sub-rule evaluates to `true`.
+  - **Prospective Degree Planning Evaluator (`evaluatePlannedPrerequisite`):**
+    - Satisfies mandatory core/lab/capstone modules from strictly earlier semesters.
+    - Satisfies elective modules if selected in planned electives in earlier semesters.
+    - Evaluates `CREDIT_THRESHOLD` strictly against planned credits accumulated prior to the target semester.
+    - Returns diagnostic satisfaction status, missing prerequisite course codes, credit deficit, and student-facing summaries.
   - Diagnostics: `evaluatePrerequisiteWithDiagnostics` returns satisfaction state, missing course IDs, credit deficits, and human summaries.
   - Formatting: `formatPrerequisiteRule` converts recursive AST into mathematical boolean logic strings (e.g. `(EC101 AND EC102) OR (EC105 AND ≥ 30 Credits)`).
   - Progression helpers: `isCourseUnlocked` and `calculateEarnedCredits`.
 
-- **Local-First State Store (`store.ts` - CF-104):**
+- **Local-First Multi-Plan State Store (`store.ts` - CF-104):**
   - Manages global Zustand store with `persist` middleware caching in browser `localStorage` under key `courseflow-local-planner`.
-  - Partitioned Persistence: Only `activeProgramId`, `selectedElectiveIds`, and `completedCourseIds` persist; UI drawer state remains transient.
+  - Multi-Plan Architecture (`StudyPlan`):
+    - Stores study plans partitioned by degree program (`plans: Record<string, StudyPlan[]>`), with `activeProgramId` and `activePlanId`.
+    - Actions: `createPlan`, `duplicatePlan`, `renamePlan`, `deletePlan`, `setActivePlan`.
+    - Elective actions: `toggleElective`, `setSelectedElectives`, `isElectiveSelected`.
+    - Program switching with plan isolation (zero data loss across departments).
+  - UI View & Filter State:
+    - `mobileViewMode: 'list' | 'canvas'`
+    - `searchQuery: string`
+    - `filterType: 'ALL' | 'CORE' | 'ELECTIVE' | 'LAB' | 'CAPSTONE'`
   - Credit Constraints Engine:
     - `calculateSemesterCredits`: Computes per-semester credit totals accounting for core, selected electives, and multi-semester capstone credit splits across terms.
     - `calculateTotalPlannedCredits`: Evaluates cumulative planned credits across the full curriculum.
-    - `getGraduationProgress`: Compares cumulative planned credits against the 150-credit degree threshold.
-  - Study Plan Portability (ADR-001): `exportPlan` generates formatted JSON with schema version and timestamps; `importPlan` safely rehydrates state with structural validation.
+    - `calculateGraduationProgress` / `getGraduationProgress`: Returns planned credits, core credits, elective credits, required threshold, eligibility, and completion percentage.
+  - Study Plan Portability (ADR-001): `exportPlan` generates formatted JSON with schema version and timestamps; `importPlan` safely rehydrates state with schema migration support.
 
 - **Algorithms Roadmap (`algorithms/`):**
   - `ast_evaluator.ts`: Recursive boolean prerequisite AST engine (CF-103 - Implemented).

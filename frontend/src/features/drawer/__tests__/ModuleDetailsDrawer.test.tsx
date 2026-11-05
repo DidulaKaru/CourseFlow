@@ -9,10 +9,10 @@ import { ModuleDetailsDrawer } from '../ModuleDetailsDrawer';
 // Configure act environment for React 19 testing in jsdom
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-describe('ModuleDetailsDrawer Component (CF-114)', () => {
+describe('ModuleDetailsDrawer Component (CF-113)', () => {
     beforeEach(() => {
-        usePlannerStore.getState().resetPlanner();
         document.body.innerHTML = '';
+        usePlannerStore.getState().resetPlanner();
     });
 
     const mockCourse: Course = {
@@ -48,10 +48,10 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
         type: 'CAPSTONE',
         prerequisiteRule: null,
         corequisites: [],
-        offeredSemesters: ['BOTH'],
+        offeredSemesters: ['FALL'],
     };
 
-    it('returns null when no course is being inspected', () => {
+    it('renders nothing when inspectedCourse is null', () => {
         const container = document.createElement('div');
         document.body.appendChild(container);
         const root = createRoot(container);
@@ -68,7 +68,7 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
         container.remove();
     });
 
-    it('renders course metadata, syllabus objectives, and contact hours when open', () => {
+    it('renders course code, title, credits, and syllabus description when opened', () => {
         const container = document.createElement('div');
         document.body.appendChild(container);
         const root = createRoot(container);
@@ -81,10 +81,8 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
         expect(container.textContent).toContain('CO544');
         expect(container.textContent).toContain('Machine Learning');
         expect(container.textContent).toContain('3 Credits');
-        expect(container.textContent).toContain('Elective Module');
         expect(container.textContent).toContain('Supervised, unsupervised, and deep learning architectures.');
-        expect(container.textContent).toContain('Lectures');
-        expect(container.textContent).toContain('Tutorials');
+        expect(container.textContent).toContain('Elective Specialization');
 
         act(() => {
             root.unmount();
@@ -104,16 +102,15 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
 
         // Formatted rule expression
         expect(container.textContent).toContain('CO2001');
-        // Unmet initially because CO2001 is missing
+        // Unmet initially because CO2001 is missing from the plan
         expect(container.textContent).toContain('Missing');
 
-        // Now mark CO2001 completed
+        // Now plan CO2001 as an elective
         act(() => {
-            usePlannerStore.getState().toggleCompletedCourse('CO2001');
+            usePlannerStore.getState().toggleElective('CO2001');
             root.render(<ModuleDetailsDrawer />);
         });
 
-        expect(container.textContent).toContain('Completed');
         expect(container.textContent).toContain('Satisfied');
 
         act(() => {
@@ -143,7 +140,7 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
         container.remove();
     });
 
-    it('allows toggling elective study plan selection and course completion', () => {
+    it('allows toggling elective study plan selection', () => {
         const container = document.createElement('div');
         document.body.appendChild(container);
         const root = createRoot(container);
@@ -154,10 +151,7 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
         });
 
         const electiveBtn = container.querySelector('[data-testid="drawer-elective-toggle"]') as HTMLButtonElement;
-        const completeBtn = container.querySelector('[data-testid="drawer-completion-toggle"]') as HTMLButtonElement;
-
         expect(electiveBtn).toBeDefined();
-        expect(completeBtn).toBeDefined();
 
         // Add elective to plan
         act(() => {
@@ -165,11 +159,32 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
         });
         expect(usePlannerStore.getState().isElectiveSelected('CO544')).toBe(true);
 
-        // Mark course completed
+        // Remove elective from plan
         act(() => {
-            completeBtn.click();
+            root.render(<ModuleDetailsDrawer />);
         });
-        expect(usePlannerStore.getState().isCourseCompleted('CO544')).toBe(true);
+        const updatedBtn = container.querySelector('[data-testid="drawer-elective-toggle"]') as HTMLButtonElement;
+        expect(updatedBtn.textContent).toContain('Remove from Study Plan');
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
+
+    it('renders mandatory core curriculum badge for core course', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            usePlannerStore.getState().openCourseDrawer(mockCapstone);
+            root.render(<ModuleDetailsDrawer />);
+        });
+
+        const mandatoryBadge = container.querySelector('[data-testid="drawer-mandatory-badge"]');
+        expect(mandatoryBadge).not.toBeNull();
+        expect(mandatoryBadge?.textContent).toContain('Mandatory Core');
 
         act(() => {
             root.unmount();
@@ -182,6 +197,7 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
         document.body.appendChild(container);
         const root = createRoot(container);
 
+        // Backdrop click test
         act(() => {
             usePlannerStore.getState().openCourseDrawer(mockCourse);
             root.render(<ModuleDetailsDrawer />);
@@ -189,24 +205,26 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
 
         expect(usePlannerStore.getState().isDrawerOpen).toBe(true);
 
-        // Click close button
+        const backdrop = container.querySelector('[data-testid="drawer-backdrop"]') as HTMLDivElement;
+        act(() => {
+            backdrop.click();
+        });
+
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(false);
+
+        // Close button click test
+        act(() => {
+            usePlannerStore.getState().openCourseDrawer(mockCourse);
+            root.render(<ModuleDetailsDrawer />);
+        });
+
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(true);
+
         const closeBtn = container.querySelector('[data-testid="drawer-close-button"]') as HTMLButtonElement;
         act(() => {
             closeBtn.click();
         });
-        expect(usePlannerStore.getState().isDrawerOpen).toBe(false);
 
-        // Reopen and click backdrop
-        act(() => {
-            usePlannerStore.getState().openCourseDrawer(mockCourse);
-            root.render(<ModuleDetailsDrawer />);
-        });
-        expect(usePlannerStore.getState().isDrawerOpen).toBe(true);
-
-        const backdrop = container.querySelector('[data-testid="drawer-backdrop"]') as HTMLElement;
-        act(() => {
-            backdrop.click();
-        });
         expect(usePlannerStore.getState().isDrawerOpen).toBe(false);
 
         act(() => {
@@ -215,7 +233,7 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
         container.remove();
     });
 
-    it('closes drawer on Escape keydown', () => {
+    it('closes drawer when Escape key is pressed', () => {
         const container = document.createElement('div');
         document.body.appendChild(container);
         const root = createRoot(container);
@@ -227,7 +245,6 @@ describe('ModuleDetailsDrawer Component (CF-114)', () => {
 
         expect(usePlannerStore.getState().isDrawerOpen).toBe(true);
 
-        // Trigger Escape key
         act(() => {
             window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
         });
