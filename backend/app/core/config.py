@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     TOTAL_CREDITS_REQUIRED: int = 150
     DEFAULT_SEMESTERS_COUNT: int = 8
 
+    # Database (PostgreSQL + pgvector)
+    DATABASE_URL: str = "postgresql+psycopg://courseflow:courseflow@localhost:5432/courseflow"
+
     # Paths
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent.parent
     DATA_PROGRAMS_DIR: Path = BASE_DIR / "src" / "data" / "programs"
