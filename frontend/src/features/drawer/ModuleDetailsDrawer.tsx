@@ -6,18 +6,14 @@ import {
     BookOpen,
     Calendar,
     Check,
-    CheckCircle2,
     Clock,
     Layers,
-    ListChecks,
     Plus,
     X,
-    XCircle,
 } from 'lucide-react';
 
 import {
-    calculateEarnedCredits,
-    evaluatePrerequisiteWithDiagnostics,
+    evaluatePlannedPrerequisite,
     formatPrerequisiteRule,
 } from '@/core/algorithms/ast_evaluator';
 import { extractPrerequisiteCourseIds } from '@/core/layout';
@@ -36,7 +32,7 @@ const TYPE_CONFIG: Record<
     },
     ELECTIVE: {
         badge: 'border-white/15 text-slate-400 bg-white/5',
-        label: 'Elective Module',
+        label: 'Elective Specialization',
         text: 'Specialization elective chosen by the student.',
     },
     CAPSTONE: {
@@ -55,15 +51,14 @@ export function ModuleDetailsDrawer() {
     const isDrawerOpen = usePlannerStore((state) => state.isDrawerOpen);
     const inspectedCourse = usePlannerStore((state) => state.inspectedCourse);
     const closeCourseDrawer = usePlannerStore((state) => state.closeCourseDrawer);
+    const openCourseDrawer = usePlannerStore((state) => state.openCourseDrawer);
 
     // Planner state & actions
     const activeProgramId = usePlannerStore((state) => state.activeProgramId);
     const selectedElectiveIds = usePlannerStore((state) => state.selectedElectiveIds);
-    const completedCourseIds = usePlannerStore((state) => state.completedCourseIds);
-    const failedCourseIds = usePlannerStore((state) => state.failedCourseIds);
     const toggleElective = usePlannerStore((state) => state.toggleElective);
-    const toggleCompletedCourse = usePlannerStore((state) => state.toggleCompletedCourse);
-    const toggleFailedCourse = usePlannerStore((state) => state.toggleFailedCourse);
+
+    const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
 
     // Dismiss drawer on Escape keypress
     useEffect(() => {
@@ -76,23 +71,15 @@ export function ModuleDetailsDrawer() {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isDrawerOpen, closeCourseDrawer]);
 
-    // Dynamic catalog resolution based on active degree program
-    const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
-
-    // Student cumulative credits
-    const earnedCredits = useMemo(() => {
-        return calculateEarnedCredits(completedCourseIds, activeCourses);
-    }, [completedCourseIds, activeCourses]);
-
-    // Prerequisite evaluation diagnostics for inspected course
+    // Prerequisite evaluation diagnostics for inspected course in plan context
     const prereqEval = useMemo(() => {
         if (!inspectedCourse) return null;
-        return evaluatePrerequisiteWithDiagnostics(
-            inspectedCourse.prerequisiteRule,
-            completedCourseIds,
-            earnedCredits
+        return evaluatePlannedPrerequisite(
+            inspectedCourse,
+            activeCourses,
+            selectedElectiveIds
         );
-    }, [inspectedCourse, completedCourseIds, earnedCredits]);
+    }, [inspectedCourse, activeCourses, selectedElectiveIds]);
 
     // Individual prerequisite course codes extracted from AST
     const prereqCourseIds = useMemo(() => {
@@ -104,8 +91,6 @@ export function ModuleDetailsDrawer() {
         return null;
     }
 
-    const isCompleted = completedCourseIds.includes(inspectedCourse.id);
-    const isFailed = failedCourseIds.includes(inspectedCourse.id);
     const isSelectedElective = selectedElectiveIds.includes(inspectedCourse.id);
     const isElective = inspectedCourse.type === 'ELECTIVE';
     const isMultiSemester = (inspectedCourse.durationSemesters ?? 1) > 1;
@@ -115,9 +100,9 @@ export function ModuleDetailsDrawer() {
 
     return (
         <>
-            {/* Backdrop Overlay */}
+            {/* Backdrop Overlay - only active on mobile to avoid blacking out desktop constellation */}
             <div
-                className={`fixed inset-0 bg-[#030508]/80 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+                className={`fixed inset-0 bg-[#030508]/80 backdrop-blur-sm z-40 transition-opacity duration-300 lg:hidden ${
                     isDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                 }`}
                 onClick={closeCourseDrawer}
@@ -125,7 +110,7 @@ export function ModuleDetailsDrawer() {
                 aria-hidden="true"
             />
 
-            {/* Slide-over Drawer Panel */}
+            {/* Slide-over Drawer Panel (Docked side panel on large viewports) */}
             <aside
                 className={`fixed top-0 right-0 h-full w-full max-w-lg bg-[#070B12]/95 backdrop-blur-md border-l border-white/10 shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out font-sans ${
                     isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
@@ -180,97 +165,96 @@ export function ModuleDetailsDrawer() {
                 </div>
 
                 {/* 2. Scrollable Body Content */}
-                <div className="p-5 space-y-6 flex-1 overflow-y-auto text-sm text-slate-300">
-                    {/* Course Description & Syllabus Objectives */}
+                <div className="flex-1 overflow-y-auto p-5 space-y-6 text-slate-300">
+                    {/* Module Description & Type Notes */}
                     <section className="space-y-2">
                         <h3 className="text-xs font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                             <BookOpen className="w-4 h-4 text-[var(--accent-primary)]" />
                             Module Description & Objectives
                         </h3>
-                        <p className="text-xs leading-relaxed text-slate-300 bg-white/[0.02] p-3.5 rounded-sm border border-white/10">
-                            {inspectedCourse.description ||
-                                'Comprehensive theoretical foundations and practical laboratory applications designed for engineering students.'}
-                        </p>
-
-                        {inspectedCourse.syllabusObjectives && inspectedCourse.syllabusObjectives.length > 0 && (
-                            <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10 space-y-2">
-                                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                                    <ListChecks className="w-3.5 h-3.5 text-cyan-300" />
-                                    Learning Objectives
-                                </span>
-                                <ul className="space-y-1.5 text-xs text-slate-300 pl-4 list-disc marker:text-cyan-400">
-                                    {inspectedCourse.syllabusObjectives.map((obj, i) => (
-                                        <li key={i}>{obj}</li>
-                                    ))}
-                                </ul>
+                        <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10 space-y-2.5">
+                            <p className="text-sm leading-relaxed text-slate-200">
+                                {inspectedCourse.description}
+                            </p>
+                            <div className="pt-2 border-t border-white/5 flex items-center gap-2 text-xs text-slate-400">
+                                <span className="w-1.5 h-1.5 rotate-45 bg-[var(--star-pip)]" />
+                                <span>{typeDetails.text}</span>
                             </div>
-                        )}
+                        </div>
                     </section>
 
-                    {/* Prerequisite AST Breakdown */}
-                    <section className="space-y-3">
+                    {/* Prerequisite Requirements & Diagnostics */}
+                    <section className="space-y-2">
                         <div className="flex items-center justify-between">
                             <h3 className="text-xs font-mono uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                                <Layers className="w-4 h-4 text-cyan-300" />
-                                Prerequisite AST Logic
+                                <Layers className="w-4 h-4 text-cyan-400" />
+                                Prerequisite Requirements
                             </h3>
-                            {inspectedCourse.prerequisiteRule ? (
-                                prereqEval?.isSatisfied ? (
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-none bg-emerald-950/30 text-emerald-300 border border-emerald-500/30">
-                                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                                        Satisfied
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-none bg-rose-950/30 text-rose-300 border border-rose-500/40">
-                                        <AlertTriangle className="w-3 h-3 text-rose-400" />
-                                        Requirements Unmet
-                                    </span>
-                                )
-                            ) : (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-none bg-white/5 text-slate-400 border border-white/10">
+                            {inspectedCourse.prerequisiteRule === null ? (
+                                <span className="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded-none border border-white/10 uppercase">
                                     None Required
+                                </span>
+                            ) : prereqEval?.isSatisfied ? (
+                                <span className="text-[10px] font-mono text-emerald-300 bg-emerald-950/30 px-2 py-0.5 rounded-none border border-emerald-500/30 uppercase flex items-center gap-1">
+                                    <Check className="w-3 h-3 text-emerald-400" />
+                                    Satisfied in Plan
+                                </span>
+                            ) : (
+                                <span className="text-[10px] font-mono text-rose-300 bg-rose-950/30 px-2 py-0.5 rounded-none border border-rose-500/30 uppercase flex items-center gap-1">
+                                    <AlertTriangle className="w-3 h-3 text-rose-400" />
+                                    Missing Foundation
                                 </span>
                             )}
                         </div>
 
-                        <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10 space-y-2.5">
+                        <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10 space-y-3">
                             <div>
-                                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1">
-                                    Propositional Rule Expression
+                                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-1">
+                                    Required Foundation Modules
                                 </span>
-                                <code className="block text-xs font-mono bg-[#030508] px-2.5 py-1.5 rounded-none text-cyan-300 border border-white/10">
+                                <div className="p-2.5 bg-[#030508] border border-white/10 rounded-none font-mono text-xs text-slate-200">
                                     {formattedRule}
-                                </code>
+                                </div>
                             </div>
 
-                            {/* Prerequisite Course Dependency Status Chips */}
+                            {/* Clickable Course Code Pills */}
                             {prereqCourseIds.length > 0 && (
                                 <div>
-                                    <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-1.5">
-                                        Component Dependencies
+                                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest block mb-1.5">
+                                        Foundation Dependencies (Click to Inspect)
                                     </span>
                                     <div className="flex flex-wrap gap-2">
                                         {prereqCourseIds.map((cid) => {
-                                            const isPassed = completedCourseIds.includes(cid);
+                                            const isMissing = prereqEval?.missingCourseIds.includes(cid);
+                                            const isSatisfied = !isMissing;
+                                            const prereqCourse = activeCourses.find(
+                                                (c) => c.id === cid || c.code === cid
+                                            );
+
                                             return (
-                                                <div
+                                                <button
                                                     key={cid}
-                                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none border text-xs font-mono ${
-                                                        isPassed
-                                                            ? 'bg-emerald-950/20 text-emerald-300 border-emerald-500/30'
-                                                            : 'bg-rose-950/20 text-rose-300 border-rose-500/30'
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (prereqCourse) openCourseDrawer(prereqCourse);
+                                                    }}
+                                                    title={`Inspect foundation course ${cid}`}
+                                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-none border text-xs font-mono transition-colors cursor-pointer hover:border-white/40 ${
+                                                        isSatisfied
+                                                            ? 'bg-emerald-950/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-950/40'
+                                                            : 'bg-rose-950/20 text-rose-300 border-rose-500/30 hover:bg-rose-950/40'
                                                     }`}
                                                 >
-                                                    {isPassed ? (
+                                                    {isSatisfied ? (
                                                         <Check className="w-3.5 h-3.5 text-emerald-400" />
                                                     ) : (
                                                         <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
                                                     )}
-                                                    <span>{cid}</span>
+                                                    <span className="font-semibold">{cid}</span>
                                                     <span className="text-[10px] text-slate-400">
-                                                        ({isPassed ? 'Completed' : 'Missing'})
+                                                        ({isSatisfied ? 'In Plan' : 'Missing'})
                                                     </span>
-                                                </div>
+                                                </button>
                                             );
                                         })}
                                     </div>
@@ -321,7 +305,7 @@ export function ModuleDetailsDrawer() {
                             </h3>
                             <div className="bg-white/[0.02] p-3.5 rounded-sm border border-white/10 space-y-2">
                                 <p className="text-xs text-slate-400">
-                                    Spans {inspectedCourse.durationSemesters} consecutive academic terms without manual course code splitting:
+                                    Spans {inspectedCourse.durationSemesters} consecutive academic terms:
                                 </p>
                                 <div className="flex items-center gap-2 flex-wrap">
                                     {inspectedCourse.creditDistribution.map((dist, idx) => (
@@ -350,31 +334,21 @@ export function ModuleDetailsDrawer() {
                         <div className="grid grid-cols-3 gap-2 text-center bg-white/[0.02] p-3.5 rounded-sm border border-white/10">
                             <div className="bg-[#030508] p-2 rounded-none border border-white/10">
                                 <span className="block text-[10px] text-slate-400 uppercase font-mono">Lectures</span>
-                                <span className="text-sm font-semibold text-slate-200 font-mono">
-                                    {inspectedCourse.contactHours
-                                        ? `${inspectedCourse.contactHours.lecture} hrs/wk`
-                                        : inspectedCourse.type === 'LAB'
-                                        ? '1 hr/wk'
-                                        : `${inspectedCourse.totalCredits} hrs/wk`}
+                                <span className="text-xs font-semibold text-slate-200 font-mono">
+                                    {inspectedCourse.type === 'LAB' ? '1 hr/wk' : `${inspectedCourse.totalCredits} hrs/wk`}
                                 </span>
                             </div>
                             <div className="bg-[#030508] p-2 rounded-none border border-white/10">
                                 <span className="block text-[10px] text-slate-400 uppercase font-mono">Labs</span>
-                                <span className="text-sm font-semibold text-slate-200 font-mono">
-                                    {inspectedCourse.contactHours
-                                        ? `${inspectedCourse.contactHours.lab} hrs/wk`
-                                        : inspectedCourse.type === 'LAB' || inspectedCourse.type === 'CAPSTONE'
+                                <span className="text-xs font-semibold text-slate-200 font-mono">
+                                    {inspectedCourse.type === 'LAB' || inspectedCourse.type === 'CAPSTONE'
                                         ? '3 hrs/wk'
                                         : '0 hrs/wk'}
                                 </span>
                             </div>
                             <div className="bg-[#030508] p-2 rounded-none border border-white/10">
                                 <span className="block text-[10px] text-slate-400 uppercase font-mono">Tutorials</span>
-                                <span className="text-sm font-semibold text-slate-200 font-mono">
-                                    {inspectedCourse.contactHours
-                                        ? `${inspectedCourse.contactHours.tutorial} hrs/wk`
-                                        : '1 hr/wk'}
-                                </span>
+                                <span className="text-xs font-semibold text-slate-200 font-mono">1 hr/wk</span>
                             </div>
                         </div>
                     </section>
@@ -383,11 +357,11 @@ export function ModuleDetailsDrawer() {
                 {/* 3. Action Buttons & Study Plan Toggles */}
                 <div className="p-5 border-t border-white/10 bg-[#070B12]/95 space-y-2.5 sticky bottom-0">
                     {/* Add / Remove from Study Plan (Electives only) */}
-                    {isElective && (
+                    {isElective ? (
                         <button
                             type="button"
                             onClick={() => toggleElective(inspectedCourse.id)}
-                            className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-none text-xs font-mono uppercase tracking-wider transition-all border ${
+                            className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-none text-xs font-mono uppercase tracking-wider transition-all border ${
                                 isSelectedElective
                                     ? 'bg-rose-950/20 text-rose-300 border-rose-500/40 hover:bg-rose-950/30'
                                     : 'bg-emerald-950/30 text-emerald-200 border-emerald-500/40 hover:bg-emerald-950/40'
@@ -401,54 +375,19 @@ export function ModuleDetailsDrawer() {
                                 </>
                             ) : (
                                 <>
-                                    <Plus className="w-4 h-4 stroke-[2.5]" />
-                                    <span>Add to Study Plan (+{inspectedCourse.totalCredits} cr)</span>
+                                    <Plus className="w-4 h-4" />
+                                    <span>Add Elective to Study Plan</span>
                                 </>
                             )}
                         </button>
+                    ) : (
+                        <div
+                            data-testid="drawer-mandatory-badge"
+                            className="w-full py-2 px-3 border border-white/10 bg-white/5 text-center text-xs font-mono text-slate-400 uppercase tracking-widest"
+                        >
+                            Mandatory Core Requirement
+                        </div>
                     )}
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {/* Mark Course as Completed Toggle */}
-                        <button
-                            type="button"
-                            onClick={() => toggleCompletedCourse(inspectedCourse.id)}
-                            className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-none text-xs font-mono uppercase tracking-wider transition-all border ${
-                                isCompleted
-                                    ? 'bg-amber-500/20 text-amber-200 border-amber-500/50 hover:bg-amber-500/30'
-                                    : 'bg-[var(--accent-primary)]/15 text-slate-100 border-[var(--accent-primary)]/40 hover:bg-[var(--accent-primary)]/25'
-                            }`}
-                            data-testid="drawer-completion-toggle"
-                        >
-                            {isCompleted ? (
-                                <>
-                                    <X className="w-3.5 h-3.5 text-amber-300" />
-                                    <span>Unmark Completed</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                                    <span>Completed ({inspectedCourse.totalCredits} cr)</span>
-                                </>
-                            )}
-                        </button>
-
-                        {/* Simulate Failed Module Toggle */}
-                        <button
-                            type="button"
-                            onClick={() => toggleFailedCourse(inspectedCourse.id)}
-                            className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-none text-xs font-mono uppercase tracking-wider transition-all border ${
-                                isFailed
-                                    ? 'bg-rose-500/25 text-rose-200 border-rose-500 hover:bg-rose-500/35'
-                                    : 'bg-white/5 text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 border-white/10 hover:border-rose-500/30'
-                            }`}
-                            title="Simulate failing this course to observe cascading prerequisite ripple effects"
-                            data-testid="drawer-failed-toggle"
-                        >
-                            <XCircle className="w-3.5 h-3.5 text-rose-400" />
-                            <span>{isFailed ? 'Clear Failed' : 'Mark Failed'}</span>
-                        </button>
-                    </div>
                 </div>
             </aside>
         </>

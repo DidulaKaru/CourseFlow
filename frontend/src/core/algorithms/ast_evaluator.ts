@@ -11,6 +11,14 @@ export interface PrerequisiteEvaluationResult {
     summary: string;
 }
 
+export interface PlannedPrerequisiteEvaluationResult {
+    isSatisfied: boolean;
+    status: 'no_prereqs' | 'satisfied' | 'unmet';
+    missingCourseIds: string[];
+    creditDeficit: number;
+    summary: string;
+}
+
 // ==========================================
 // 2. Core AST Evaluation Engine
 // ==========================================
@@ -177,7 +185,189 @@ export function evaluatePrerequisiteWithDiagnostics(
 }
 
 // ==========================================
-// 4. Human-Readable AST Formatter
+// 4. Degree Planning Prospective Prerequisite Evaluator
+// ==========================================
+
+/**
+ * Evaluates course prerequisites within a prospective degree planning context.
+ *
+ * Rules:
+ * a) Mandatory courses (CORE, LAB, CAPSTONE) with recommendedSemester < course.recommendedSemester are satisfied.
+ * b) Elective courses in selectedElectiveIds with recommendedSemester < course.recommendedSemester are satisfied.
+ * c) If recommendedSemester is equal or undefined, checks if the course is in the planned set.
+ * d) For CREDIT_THRESHOLD rules, checks if total planned credits in semesters strictly prior to
+ *    course.recommendedSemester >= minCredits.
+ */
+export function evaluatePlannedPrerequisite(
+    course: Course,
+    allProgramCourses: readonly Course[],
+    selectedElectiveIds: readonly string[]
+): {
+    isSatisfied: boolean;
+    status: 'no_prereqs' | 'satisfied' | 'unmet';
+    missingCourseIds: string[];
+    creditDeficit: number;
+    summary: string;
+} {
+    if (!course.prerequisiteRule) {
+        return {
+            isSatisfied: true,
+            status: 'no_prereqs',
+            missingCourseIds: [],
+            creditDeficit: 0,
+            summary: 'No prerequisites required',
+        };
+    }
+
+    const selectedElectiveSet = new Set(selectedElectiveIds);
+    const courseMap = new Map<string, Course>();
+    for (const c of allProgramCourses) {
+        courseMap.set(c.id, c);
+        if (c.code) {
+            courseMap.set(c.code, c);
+        }
+    }
+
+    // Helper to evaluate if a target prerequisite course is satisfied in the plan
+    function isCoursePrereqSatisfied(targetCourseId: string): boolean {
+        const target = courseMap.get(targetCourseId);
+        if (!target) {
+            // Course not found in catalog: satisfied only if student explicitly selected it
+            return selectedElectiveSet.has(targetCourseId);
+        }
+
+        const isMandatory = target.type === 'CORE' || target.type === 'LAB' || target.type === 'CAPSTONE';
+        const isSelectedElective = selectedElectiveSet.has(target.id) || selectedElectiveSet.has(target.code);
+        const isInPlannedSet = isMandatory || isSelectedElective;
+
+        if (!isInPlannedSet) {
+            return false;
+        }
+
+        const targetSem = target.recommendedSemester;
+        const currentSem = course.recommendedSemester;
+
+        // If semester is equal or undefined, check if it is in the planned set
+        if (targetSem === undefined || currentSem === undefined || targetSem === currentSem) {
+            return true;
+        }
+
+        if (targetSem < currentSem) {
+            return true;
+        }
+
+        // targetSem > currentSem: course appears later in the curriculum
+        return false;
+    }
+
+    // Calculate total planned credits strictly prior to course.recommendedSemester
+    const currentSem = course.recommendedSemester;
+    let priorPlannedCredits = 0;
+
+    for (const c of allProgramCourses) {
+        const isMandatory = c.type === 'CORE' || c.type === 'LAB' || c.type === 'CAPSTONE';
+        const isSelected = selectedElectiveSet.has(c.id) || selectedElectiveSet.has(c.code);
+        if (!isMandatory && !isSelected) {
+            continue;
+        }
+
+        if (Array.isArray(c.creditDistribution) && c.creditDistribution.length > 0) {
+            for (const dist of c.creditDistribution) {
+                if (currentSem === undefined || dist.semesterIndex < currentSem) {
+                    priorPlannedCredits += dist.creditsAllocated;
+                }
+            }
+        } else if (currentSem === undefined || (c.recommendedSemester !== undefined && c.recommendedSemester < currentSem)) {
+            priorPlannedCredits += c.totalCredits;
+        }
+    }
+
+    // Recursive boolean rule evaluator
+    function evalRule(node: PrerequisiteRule): boolean {
+        switch (node.type) {
+            case 'COURSE':
+                return isCoursePrereqSatisfied(node.courseId);
+
+            case 'CREDIT_THRESHOLD':
+                return priorPlannedCredits >= node.minCredits;
+
+            case 'AND':
+                if (node.children.length === 0) return true;
+                return node.children.every((child) => evalRule(child));
+
+            case 'OR':
+                if (node.children.length === 0) return false;
+                return node.children.some((child) => evalRule(child));
+
+            default:
+                return false;
+        }
+    }
+
+    const isSatisfied = evalRule(course.prerequisiteRule);
+    const missingCourseIds: string[] = [];
+    let creditDeficit = 0;
+
+    function collectUnmetNodes(node: PrerequisiteRule): void {
+        switch (node.type) {
+            case 'COURSE':
+                if (!isCoursePrereqSatisfied(node.courseId)) {
+                    missingCourseIds.push(node.courseId);
+                }
+                break;
+
+            case 'CREDIT_THRESHOLD':
+                if (priorPlannedCredits < node.minCredits) {
+                    const deficit = node.minCredits - priorPlannedCredits;
+                    creditDeficit = Math.max(creditDeficit, deficit);
+                }
+                break;
+
+            case 'AND':
+                for (const child of node.children) {
+                    collectUnmetNodes(child);
+                }
+                break;
+
+            case 'OR':
+                if (!evalRule(node)) {
+                    for (const child of node.children) {
+                        collectUnmetNodes(child);
+                    }
+                }
+                break;
+        }
+    }
+
+    if (!isSatisfied) {
+        collectUnmetNodes(course.prerequisiteRule);
+    }
+
+    const uniqueMissingCourses = Array.from(new Set(missingCourseIds));
+    let summary = 'Prerequisites satisfied';
+
+    if (!isSatisfied) {
+        const issues: string[] = [];
+        if (uniqueMissingCourses.length > 0) {
+            issues.push(`Requires: ${uniqueMissingCourses.join(', ')}`);
+        }
+        if (creditDeficit > 0) {
+            issues.push(`Requires ${creditDeficit} more credit${creditDeficit === 1 ? '' : 's'}`);
+        }
+        summary = issues.length > 0 ? issues.join('; ') : 'Prerequisites unmet';
+    }
+
+    return {
+        isSatisfied,
+        status: isSatisfied ? 'satisfied' : 'unmet',
+        missingCourseIds: uniqueMissingCourses,
+        creditDeficit,
+        summary,
+    };
+}
+
+// ==========================================
+// 5. Human-Readable AST Formatter
 // ==========================================
 
 /**
@@ -224,7 +414,7 @@ export function formatPrerequisiteRule(rule: PrerequisiteRule | null): string {
 }
 
 // ==========================================
-// 5. Course Progression Helpers
+// 6. Course Progression Helpers
 // ==========================================
 
 /**

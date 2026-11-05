@@ -3,6 +3,7 @@ import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { usePlannerStore } from '@/core/store';
+import type { DegreeProgram } from '@/types/curriculum';
 import { DegreeSelector } from '../DegreeSelector';
 
 // Configure act environment for React 19 testing in jsdom
@@ -14,7 +15,6 @@ describe('DegreeSelector Component (CF-115)', () => {
         usePlannerStore.setState({
             activeProgramId: 'computer-eng',
             selectedElectiveIds: ['CS4001'],
-            completedCourseIds: ['CS1001'],
             inspectedCourse: null,
             isDrawerOpen: false,
         });
@@ -39,11 +39,15 @@ describe('DegreeSelector Component (CF-115)', () => {
         }));
 
         expect(options).toEqual([
-            { value: 'computer-eng', text: 'Computer Engineering' },
-            { value: 'electrical-eng', text: 'Electrical and Information Engineering' },
+            {
+                value: 'computer-eng',
+                text: 'Computer Engineering',
+            },
+            {
+                value: 'electrical-eng',
+                text: 'Electrical and Information Engineering',
+            },
         ]);
-
-        expect(select.value).toBe('computer-eng');
 
         act(() => {
             root.unmount();
@@ -51,12 +55,13 @@ describe('DegreeSelector Component (CF-115)', () => {
         container.remove();
     });
 
-    it('changes active program in store and resets previous selections on selection change', () => {
+    it('changes active program in store and invokes onChange callback', () => {
         const container = document.createElement('div');
         document.body.appendChild(container);
         const root = createRoot(container);
 
         let selectedId = '';
+
         act(() => {
             root.render(
                 <DegreeSelector
@@ -80,7 +85,6 @@ describe('DegreeSelector Component (CF-115)', () => {
         const state = usePlannerStore.getState();
         expect(state.activeProgramId).toBe('electrical-eng');
         expect(state.selectedElectiveIds).toEqual([]);
-        expect(state.completedCourseIds).toEqual([]);
 
         act(() => {
             root.unmount();
@@ -93,11 +97,11 @@ describe('DegreeSelector Component (CF-115)', () => {
         document.body.appendChild(container);
         const root = createRoot(container);
 
-        const customPrograms = [
+        const customPrograms: DegreeProgram[] = [
             {
-                id: 'mech-eng',
+                id: 'mechanical-eng',
                 name: 'Mechanical Engineering',
-                department: 'Mechanical',
+                department: 'Department of Mechanical Engineering',
                 totalCreditsRequired: 150,
                 minCreditsPerSemester: 18,
                 maxCreditsPerSemester: 24,
@@ -111,8 +115,12 @@ describe('DegreeSelector Component (CF-115)', () => {
         });
 
         const select = container.querySelector('select') as HTMLSelectElement;
-        expect(select.querySelectorAll('option')).toHaveLength(1);
-        expect(select.querySelector('option')?.textContent?.trim()).toBe('Mechanical Engineering');
+        expect(select).not.toBeNull();
+
+        const options = Array.from(select.querySelectorAll('option'));
+        expect(options).toHaveLength(1);
+        expect(options[0].value).toBe('mechanical-eng');
+        expect(options[0].textContent?.trim()).toBe('Mechanical Engineering');
 
         act(() => {
             root.unmount();
