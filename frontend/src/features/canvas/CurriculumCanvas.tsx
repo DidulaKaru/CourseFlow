@@ -28,6 +28,10 @@ import {
     getUpstreamCourseIds,
     type AnyCanvasNode,
 } from './utils/graphHighlight';
+import {
+    calculateCanvasTranslateExtent,
+    getResponsiveViewport,
+} from './utils/viewport';
 
 // Register node types at module level
 const nodeTypes = {
@@ -73,6 +77,11 @@ function InnerCurriculumCanvas({
     const [nodes, setNodes, onNodesChange] = useNodesState<AnyCanvasNode>(layout.nodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(layout.edges);
 
+    // 3. Camera Translate Extent (Strictly bounds scrolling so viewport cannot scroll out of graph)
+    const translateExtent = useMemo(() => {
+        return calculateCanvasTranslateExtent(layout);
+    }, [layout]);
+
     // Derived active dependency statistics for the HUD overlay
     const { upstreamCount, downstreamCount } = useMemo(() => {
         if (!activeCourseId) {
@@ -86,7 +95,7 @@ function InnerCurriculumCanvas({
         };
     }, [activeCourseId, layout.edges]);
 
-    // 3. Re-apply dependency illumination & dimming whenever active course or layout changes
+    // 4. Re-apply dependency illumination & dimming whenever active course or layout changes
     useEffect(() => {
         const { nodes: updatedNodes, edges: updatedEdges } = applyGraphHighlights(
             activeCourseId,
@@ -105,7 +114,7 @@ function InnerCurriculumCanvas({
         setHoveredCourseId(null);
     }
 
-    // 4. Hover handlers
+    // 5. Hover handlers
     const handleNodeMouseEnter: NodeMouseHandler<AnyCanvasNode> = useCallback((_, node) => {
         if (node.type === 'courseNode') {
             setHoveredCourseId(node.id);
@@ -116,7 +125,7 @@ function InnerCurriculumCanvas({
         setHoveredCourseId(null);
     }, []);
 
-    // 5. Selection handlers (click node to toggle selection, click canvas pane to deselect)
+    // 6. Selection handlers (click node to toggle selection, click canvas pane to deselect)
     const handleNodeClick: NodeMouseHandler<AnyCanvasNode> = useCallback(
         (_, node) => {
             if (node.type === 'courseNode' && 'course' in node.data) {
@@ -133,24 +142,11 @@ function InnerCurriculumCanvas({
         setHoveredCourseId(null);
     }, []);
 
-    // 6. Responsive Viewport Scaling & Auto-Centering Engine
-    const getResponsiveViewport = useCallback((windowW: number) => {
-        const targetW = 1360; // 5 columns (1280px) + horizontal breathing margin
-        // Responsive margins: phones use tight margins (16px) to maximize screen area
-        const horizontalPadding = windowW < 640 ? 16 : windowW < 1024 ? 36 : 80;
-        const calculatedZoom = Math.min(1.0, (windowW - horizontalPadding) / targetW);
-        // Allow zoom down to 0.15 so small phones never clamp to an oversized card
-        const zoom = Math.max(0.15, calculatedZoom);
-        const x = Math.max(8, (windowW - targetW * zoom) / 2);
-        const y = windowW < 640 ? 60 : 30;
-        return { x, y, zoom };
-    }, []);
-
     // Initial viewport calculation for React Flow
     const initialViewport = useMemo(() => {
         if (typeof window === 'undefined') return { x: 40, y: 30, zoom: 0.95 };
         return getResponsiveViewport(window.innerWidth);
-    }, [getResponsiveViewport]);
+    }, []);
 
     // Live auto-fit on window resize or mobile orientation change
     useEffect(() => {
@@ -167,7 +163,7 @@ function InnerCurriculumCanvas({
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [getResponsiveViewport, getViewport, setViewport]);
+    }, [getViewport, setViewport]);
 
     // Adapt viewport when courses dataset changes
     useEffect(() => {
@@ -175,14 +171,14 @@ function InnerCurriculumCanvas({
             const nextVp = getResponsiveViewport(window.innerWidth);
             setViewport(nextVp);
         }
-    }, [courses, getResponsiveViewport, setViewport]);
+    }, [courses, setViewport]);
 
     // Fit Graph Width action
     const handleFitWidth = useCallback(() => {
         if (typeof window === 'undefined') return;
         const nextVp = getResponsiveViewport(window.innerWidth);
         setViewport(nextVp, { duration: 400 });
-    }, [getResponsiveViewport, setViewport]);
+    }, [setViewport]);
 
     // 7. Smooth Jump to Semester Handler with responsive header offset
     const handleJumpToSemester = useCallback(
@@ -312,7 +308,7 @@ function InnerCurriculumCanvas({
                 </div>
             )}
 
-            {/* React Flow Viewport */}
+            {/* React Flow Viewport with Clamped Translate Extent */}
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -329,6 +325,7 @@ function InnerCurriculumCanvas({
                 zoomOnScroll={false}
                 zoomOnPinch={true}
                 panOnDrag={true}
+                translateExtent={translateExtent}
                 defaultViewport={initialViewport}
                 minZoom={0.12}
                 maxZoom={2.5}
