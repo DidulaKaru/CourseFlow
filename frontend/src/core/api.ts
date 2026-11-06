@@ -30,14 +30,25 @@ export function resolveApiUrl(path: string): string {
 
 /**
  * Checks backend health status.
+ * Fails gracefully and silently within 1000ms if backend is unreachable or offline.
  */
 export async function checkBackendHealth(): Promise<{ status: string; service: string; version: string } | null> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+        controller.abort();
+    }, 1000);
+
     try {
         const url = resolveApiUrl('/api/health');
-        const res = await fetch(url, { headers: { Accept: 'application/json' } });
+        const res = await fetch(url, {
+            headers: { Accept: 'application/json' },
+            signal: controller.signal,
+        });
         if (!res.ok) return null;
         return await res.json();
     } catch {
         return null;
+    } finally {
+        clearTimeout(timeoutId);
     }
 }

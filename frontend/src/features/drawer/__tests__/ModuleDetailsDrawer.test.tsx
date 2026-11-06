@@ -33,6 +33,21 @@ describe('ModuleDetailsDrawer Component (CF-113)', () => {
         offeredSemesters: ['FALL'],
     };
 
+    const mockCoreCourse: Course = {
+        id: 'EE6302',
+        code: 'EE6302',
+        title: 'Control Systems Design',
+        description: 'Root locus design, Bode and Nyquist stability criteria.',
+        totalCredits: 3,
+        durationSemesters: 1,
+        recommendedSemester: 6,
+        creditDistribution: [{ semesterIndex: 6, creditsAllocated: 3 }],
+        type: 'CORE',
+        prerequisiteRule: null,
+        corequisites: [],
+        offeredSemesters: [],
+    };
+
     const mockCapstone: Course = {
         id: 'CE4001',
         code: 'CE4001',
@@ -178,7 +193,7 @@ describe('ModuleDetailsDrawer Component (CF-113)', () => {
         const root = createRoot(container);
 
         act(() => {
-            usePlannerStore.getState().openCourseDrawer(mockCapstone);
+            usePlannerStore.getState().openCourseDrawer(mockCoreCourse);
             root.render(<ModuleDetailsDrawer />);
         });
 

@@ -67,7 +67,7 @@ export function PlanSelector() {
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-mono uppercase tracking-wider border border-white/10 hover:border-white/20 transition-colors select-none w-24 sm:w-32 md:w-36 text-left"
+                className="inline-flex items-center gap-1 sm:gap-1.5 w-auto min-w-[90px] sm:min-w-[130px] max-w-[200px] px-2 sm:px-2.5 py-1 bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-mono uppercase tracking-wider border border-white/10 hover:border-white/20 transition-colors select-none text-left"
                 title="Select or manage study plan drafts"
                 aria-expanded={isOpen}
                 data-testid="plan-selector-button"

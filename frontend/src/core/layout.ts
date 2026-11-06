@@ -26,7 +26,7 @@ export const DEFAULT_LAYOUT_CONFIG: LayoutConfig = {
     nodeWidth: 240,
     nodeHeight: 110,
     horizontalGap: 20,
-    verticalGap: 20,
+    verticalGap: 24,
     semesterGap: 60,
     headerHeight: 54,
     headerGap: 16,

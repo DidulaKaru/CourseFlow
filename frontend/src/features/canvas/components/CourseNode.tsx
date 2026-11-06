@@ -37,6 +37,7 @@ const TYPE_STYLES: Record<CourseType, { badge: string; label: string }> = {
 /**
  * Custom React Flow Node Component for Curriculum Visualizer.
  * Skyrim Perk Tree aesthetic: Translucent glass, hairline borders, geometric handles.
+ * All nodes maintain a strict, uniform height (110px) to guarantee clean handle and row alignment.
  */
 export const CourseNode = memo(function CourseNode({
     data,
@@ -92,10 +93,13 @@ export const CourseNode = memo(function CourseNode({
 
     return (
         <div
-            className={`relative rounded-sm border p-3 transition-all duration-200 select-none cursor-pointer flex flex-col justify-between backdrop-blur-sm ${cardStyle}`}
+            role="article"
+            tabIndex={0}
+            aria-label={`${course.code}: ${course.title}, ${course.totalCredits} credits, ${typeConfig.label}`}
+            className={`relative rounded-sm border p-2.5 transition-all duration-200 select-none cursor-pointer flex flex-col justify-between backdrop-blur-sm ${cardStyle}`}
             style={{
                 width: spanWidth ?? 240,
-                minHeight: 110,
+                height: 110,
             }}
             title={`${course.code}: ${course.title} — ${course.description || prereqEval.summary}`}
         >
@@ -115,90 +119,84 @@ export const CourseNode = memo(function CourseNode({
                 className="!w-1.5 !h-1.5 !bg-white/20 !border-0 opacity-40 hover:opacity-100"
             />
 
-            {/* 1. Header: Course Code, Credit Pill, and Type Badge */}
-            <div className="flex items-center justify-between gap-1.5 mb-1">
-                <div className="flex items-center gap-1.5 flex-wrap">
+            {/* 1. Header: Course Code, Type Badge, Multi-Sem Indicator, and Credit Pill */}
+            <div className="flex items-center justify-between gap-1 mb-0.5">
+                <div className="flex items-center gap-1.5 flex-wrap min-w-0">
                     <span className="font-mono font-semibold text-xs tracking-wider text-slate-100">
                         {course.code}
                     </span>
                     <span
-                        className={`text-[9px] font-mono uppercase px-1.5 py-0.2 rounded-none border tracking-widest ${typeConfig.badge}`}
+                        className={`text-[9px] font-mono uppercase px-1.5 py-0.2 rounded-none border tracking-wider ${typeConfig.badge}`}
                     >
                         {typeConfig.label}
                     </span>
+                    {isMultiSemester && (
+                        <span className="text-[9px] font-mono px-1 py-0.2 rounded-none bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                            {durationSemesters}-Sem Spanning
+                        </span>
+                    )}
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono text-[var(--accent-primary)] font-medium">
-                        {course.totalCredits} cr
-                    </span>
-                </div>
+                <span className="text-[10px] font-mono text-[var(--accent-primary)] font-medium shrink-0">
+                    {course.totalCredits} cr
+                </span>
             </div>
 
-            {/* 2. Body: Course Title & Spanning Banner */}
-            <div className="my-1 flex-1">
+            {/* 2. Body: Course Title (Strict 2-line clamp) */}
+            <div className="my-auto py-0.5">
                 <p
                     className="text-[12px] font-normal leading-snug line-clamp-2 text-slate-300"
                     title={`${course.code}: ${course.title}`}
                 >
                     {course.title}
                 </p>
-
-                {isMultiSemester && (
-                    <div className="mt-1 inline-flex items-center gap-1.5 text-[10px] font-mono px-1.5 py-0.5 rounded-none bg-amber-500/10 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
-                        <span className="w-1.5 h-1.5 rotate-45 bg-amber-400" />
-                        <span>{durationSemesters}-Sem Spanning</span>
-                    </div>
-                )}
             </div>
 
-            {/* Direct Toggle for Elective Modules */}
-            {course.type === 'ELECTIVE' && (
-                <button
-                    type="button"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        toggleElective(course.id);
-                    }}
-                    className={`my-1 w-full flex items-center justify-between px-2 py-0.5 rounded-none text-[10px] font-mono uppercase tracking-wider transition-all border ${
-                        isSelectedElective
-                            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/25'
-                            : 'bg-white/5 text-slate-400 border-white/10 hover:border-white/20 hover:text-slate-200'
-                    }`}
-                    title={isSelectedElective ? 'Remove elective from plan' : 'Add elective to plan'}
-                >
-                    <span className="flex items-center gap-1.5">
+            {/* 3. Footer: Direct Elective Plan Toggle & Prerequisite Status */}
+            <div className="mt-0.5 flex items-center justify-between gap-1 text-[10px]">
+                {course.type === 'ELECTIVE' ? (
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleElective(course.id);
+                        }}
+                        className={`inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none border transition-colors cursor-pointer ${
+                            isSelectedElective
+                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                                : 'bg-white/5 text-slate-400 border-white/10 hover:border-white/20 hover:text-slate-200'
+                        }`}
+                        title={isSelectedElective ? 'Remove elective from plan' : 'Add elective to plan'}
+                    >
                         {isSelectedElective ? (
-                            <Check className="w-3 h-3 text-emerald-400 stroke-[2.5]" />
+                            <>
+                                <Check className="w-2.5 h-2.5 text-emerald-400 stroke-[2.5]" />
+                                <span>In Plan</span>
+                            </>
                         ) : (
-                            <Plus className="w-3 h-3 text-slate-400" />
+                            <>
+                                <Plus className="w-2.5 h-2.5 text-slate-400" />
+                                <span>Plan</span>
+                            </>
                         )}
-                        <span>{isSelectedElective ? 'Selected Elective' : 'Select Elective'}</span>
-                    </span>
-                    <span className="text-[9px] text-slate-400">
-                        {isSelectedElective ? 'Active' : '+Elective'}
-                    </span>
-                </button>
-            )}
+                    </button>
+                ) : (
+                    <div />
+                )}
 
-            {/* 3. Footer: Dynamic Status Badge (Warning / Unmet, Prerequisites Satisfied, No Prereqs) */}
-            <div className="mt-1 flex items-center justify-between gap-1 text-[10px]">
-                <span className="text-slate-500 font-mono text-[9px] uppercase tracking-wider">
-                    Sem {data.semesterIndex}
-                </span>
-
+                {/* Prerequisite status */}
                 {isPrereqUnmet ? (
                     <span
                         className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-red-950/20 text-red-400 border border-red-500/30"
                         title={prereqEval.summary}
                     >
-                        <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
+                        <AlertTriangle className="w-2.5 h-2.5 text-red-400 shrink-0" />
                         <span className="line-clamp-1">Warning: Unmet</span>
                     </span>
                 ) : hasPrerequisites ? (
                     <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-white/5 text-slate-300 border border-white/10">
-                        <Check className="w-3 h-3 text-emerald-400" />
-                        <span>Prereqs Satisfied</span>
+                        <Check className="w-2.5 h-2.5 text-emerald-400" />
+                        <span>Prereqs Met</span>
                     </span>
                 ) : (
                     <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-white/[0.02] text-slate-500 border border-white/5">
