@@ -96,11 +96,15 @@ courseflow/
 │   ├── SYSTEM_STATE.md            # Live sprint ledger and system invariants
 │   ├── adr/                       # Architectural Decision Records (ADR-001)
 │   └── ARCHITECTURE.md            # Master architecture & technical specification
-├── plans/                         # Sprint 1 phase-by-phase implementation plans
-│   ├── Didula_Sprint1.md          # Lead Architect & Backend Developer
-│   ├── Malsha_Sprint1.md          # Frontend & Documentation Lead
-│   ├── Ishani_Sprint1.md          # QA & DevOps Lead
-│   └── Anuththara_Sprint1.md      # Database & AI Engineering Lead
+├── plans/                         # Sprint phase-by-phase implementation plans
+│   ├── Didula_Sprint1.md          # Lead Architect & Backend Developer (Sprint 1)
+│   ├── Malsha_Sprint1.md          # Frontend & Documentation Lead (Sprint 1)
+│   ├── Ishani_Sprint1.md          # QA & DevOps Lead (Sprint 1)
+│   ├── Anuththara_Sprint1.md      # Database & AI Engineering Lead (Sprint 1)
+│   ├── Didula_Sprint2.md          # Lead Architect & Backend Developer (Sprint 2)
+│   ├── Malsha_Sprint2.md          # Frontend & Documentation Lead (Sprint 2)
+│   ├── Ishani_Sprint2.md          # QA & DevOps Lead (Sprint 2)
+│   └── Anuththara_Sprint2.md      # Database & AI Engineering Lead (Sprint 2)
 ├── backend/                       # Python FastAPI Backend Service
 │   ├── CONTEXT.md
 │   ├── app/                       # FastAPI application (main, config, api, models, schemas)
@@ -210,16 +214,27 @@ python -m pytest backend/tests
 
 ## 7. Phased Agile Roadmap (6 Sprints)
 
-- **Sprint 1 (Active): Zero-Login Student Web App for 2 Degree Programs**
+- **Sprint 1 (Completed): Zero-Login Student Web App for 2 Degree Programs**
   - **Sprint Window:** October 12, 2026 – November 01, 2026 (3 Weeks)
   - **Sprint Goal:** Ship a working, zero-login Student Web App for 2 engineering degree programs (Computer Engineering & Electrical Engineering) rendering an 8-semester swimlane DAG canvas, interactive elective selection, >= 18 semester credit checks, 150 total credit validation, multi-semester split credits, and client-side PDF plan export. Complete Docker setup, database schema foundation, and CI/CD quality gates.
-  - **Backlog & Engineering Scope:** 14 User Stories (58 SP, US001–US014) | 22 Granular Jira Tasks (98 SP, CF-101–CF-135)
+  - **Backlog & Engineering Scope:** 14 User Stories (58 SP, US001–US014) | 22 Granular Jira Tasks (98 SP, CF-101–CF-135) — 100% Merged to `dev`.
   - **Target Epics:**
     - `CF-EPIC-1`: Curriculum DAG Canvas & Dependency Visualizer (Lead: Malsha & Didula)
     - `CF-EPIC-2`: Interactive Degree Planner & Constraint Engine (Lead: Didula & Malsha)
     - `CF-EPIC-3`: Study Plan Export & Local Persistence (Lead: Malsha)
     - `CF-EPIC-4`: Infrastructure, DevOps & Automated Quality Gates (Lead: Ishani)
     - `CF-EPIC-5`: Database Architecture & Curriculum Data Modeling (Lead: Anuththara)
+
+- **Sprint 2 (Active): MIS Document Extraction Engine & Admin In-App Course Editor**
+  - **Sprint Window:** November 02, 2026 – November 22, 2026 (3 Weeks)
+  - **Sprint Goal:** Deliver an automated Module Information Sheet (MIS) Ingestion & Feature Extraction Engine capable of parsing syllabus PDFs/DOCXs, extracting metadata and prerequisite ASTs using a local Small Language Model (Qwen 2.5 7B via Ollama + Instructor), surfaced via a side-by-side human review screen with 1-click database commit. Deploy authenticated admin in-app module content editor.
+  - **Backlog & Engineering Scope:** 11 User Stories (49 SP, US015–US025) | 20 Granular Jira Tasks (108 SP, CF-201–CF-235)
+  - **Target Epics:**
+    - `CF-EPIC-6`: Faculty Admin Authentication & In-App Course Editor (Lead: Didula & Malsha)
+    - `CF-EPIC-7`: MIS Document Ingestion & Text Parsing Pipeline (Lead: Anuththara & Ishani)
+    - `CF-EPIC-8`: Automated Course Feature & Prerequisite AST Extraction (Lead: Anuththara & Didula)
+    - `CF-EPIC-9`: Extraction Review Dashboard & Database Ingestion (Lead: Malsha, Didula & Anuththara)
+    - `CF-EPIC-4`: Infrastructure, DevOps & Automated Quality Gates (Lead: Ishani)
 
 ---
 
