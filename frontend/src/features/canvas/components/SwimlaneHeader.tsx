@@ -70,7 +70,7 @@ export const SwimlaneHeader = memo(function SwimlaneHeader({
                 </span>
 
                 {courseCount !== undefined && (
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-300 bg-white/5 border border-white/10 px-1.5 py-0.2 rounded-none">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-300 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-none">
                         {courseCount} Courses
                     </span>
                 )}

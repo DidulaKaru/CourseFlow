@@ -19,7 +19,7 @@ export function PlanSelector() {
 
     const activePlan = plans.find((p) => p.id === activePlanId) || plans[0];
 
-    // Close on click outside
+    // Close on click outside or Escape key
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -27,8 +27,18 @@ export function PlanSelector() {
                 setEditingPlanId(null);
             }
         };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setIsOpen(false);
+                setEditingPlanId(null);
+            }
+        };
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
     }, []);
 
     const handleCreateNew = () => {

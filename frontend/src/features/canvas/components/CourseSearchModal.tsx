@@ -136,7 +136,7 @@ export function CourseSearchModal({ isOpen, onClose, onSelectCourse }: CourseSea
                     >
                         <X className="w-3.5 h-3.5" />
                         <span className="text-[10px] uppercase tracking-wider font-medium">Close</span>
-                        <kbd className="hidden md:inline-block text-[9px] text-slate-400 font-mono ml-0.5 bg-white/5 border border-white/10 px-1 py-0.2">ESC</kbd>
+                        <kbd className="hidden md:inline-block text-[9px] text-slate-400 font-mono ml-0.5 bg-white/5 border border-white/10 px-1 py-0.5">ESC</kbd>
                     </button>
                 </div>
 
@@ -173,15 +173,23 @@ export function CourseSearchModal({ isOpen, onClose, onSelectCourse }: CourseSea
                             return (
                                 <div
                                     key={course.id}
+                                    role="button"
+                                    tabIndex={0}
                                     onClick={() => handleSelect(course)}
-                                    className="p-2.5 sm:p-3 hover:bg-white/5 cursor-pointer flex items-center justify-between gap-3 group transition-colors"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            handleSelect(course);
+                                        }
+                                    }}
+                                    className="p-2.5 sm:p-3 hover:bg-white/5 focus-visible:bg-white/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--constellation-beam)] cursor-pointer flex items-center justify-between gap-3 group transition-colors"
                                 >
                                     <div className="space-y-1 min-w-0 flex-1">
                                         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                                             <span className="font-mono font-semibold text-xs text-slate-200 group-hover:text-white">
                                                 {course.code}
                                             </span>
-                                            <span className="text-[9px] font-mono uppercase px-1.5 py-0.2 border border-white/10 text-slate-400 bg-white/5">
+                                            <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 border border-white/10 text-slate-400 bg-white/5">
                                                 {course.type}
                                             </span>
                                             <span className="text-[10px] font-mono text-[var(--accent-primary)]">
@@ -191,7 +199,7 @@ export function CourseSearchModal({ isOpen, onClose, onSelectCourse }: CourseSea
                                                 Sem {course.recommendedSemester}
                                             </span>
                                             {isSelected && (
-                                                <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-1 py-0.2">
+                                                <span className="text-[9px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-1 py-0.5">
                                                     In Plan
                                                 </span>
                                             )}

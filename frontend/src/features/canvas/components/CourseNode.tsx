@@ -50,6 +50,7 @@ export const CourseNode = memo(function CourseNode({
     const isSelectedElective = usePlannerStore((state) => state.isElectiveSelected(course.id));
     const toggleElective = usePlannerStore((state) => state.toggleElective);
     const selectedElectiveIds = usePlannerStore((state) => state.selectedElectiveIds);
+    const openCourseDrawer = usePlannerStore((state) => state.openCourseDrawer);
 
     const activeProgramId = usePlannerStore((state) => state.activeProgramId);
     const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
@@ -96,7 +97,13 @@ export const CourseNode = memo(function CourseNode({
             role="article"
             tabIndex={0}
             aria-label={`${course.code}: ${course.title}, ${course.totalCredits} credits, ${typeConfig.label}`}
-            className={`relative rounded-sm border p-2.5 transition-all duration-200 select-none cursor-pointer flex flex-col justify-between backdrop-blur-sm ${cardStyle}`}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openCourseDrawer(course);
+                }
+            }}
+            className={`relative rounded-sm border p-2.5 transition-all duration-200 select-none cursor-pointer flex flex-col justify-between backdrop-blur-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--constellation-beam)] focus-visible:border-[var(--constellation-beam)] ${cardStyle}`}
             style={{
                 width: spanWidth ?? 240,
                 height: 110,
@@ -126,18 +133,18 @@ export const CourseNode = memo(function CourseNode({
                         {course.code}
                     </span>
                     <span
-                        className={`text-[9px] font-mono uppercase px-1.5 py-0.2 rounded-none border tracking-wider ${typeConfig.badge}`}
+                        className={`text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-none border tracking-wider ${typeConfig.badge}`}
                     >
                         {typeConfig.label}
                     </span>
                     {isMultiSemester && (
-                        <span className="text-[9px] font-mono px-1 py-0.2 rounded-none bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                        <span className="text-[9px] font-mono px-1 py-0.5 rounded-none bg-amber-500/10 text-amber-300 border border-amber-500/30">
                             {durationSemesters}-Sem Spanning
                         </span>
                     )}
                 </div>
 
-                <span className="text-[10px] font-mono text-[var(--accent-primary)] font-semibold shrink-0 bg-white/5 border border-white/10 px-1.5 py-0.2 rounded-none">
+                <span className="text-[10px] font-mono text-[var(--accent-primary)] font-semibold shrink-0 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-none">
                     {course.totalCredits} cr
                 </span>
             </div>

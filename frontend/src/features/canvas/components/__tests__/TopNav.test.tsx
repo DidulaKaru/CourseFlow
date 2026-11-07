@@ -151,4 +151,36 @@ describe('TopNav Component (CF-115)', () => {
         });
         container.remove();
     });
+
+    it('applies responsive single-row layout at xl breakpoint and flexible brand container', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<TopNav />);
+        });
+
+        // Left brand container has min-w-0 flex-1
+        const brandContainer = container.querySelector('.h-14 > div:first-child') as HTMLDivElement;
+        expect(brandContainer).not.toBeNull();
+        expect(brandContainer.className).toContain('min-w-0');
+        expect(brandContainer.className).toContain('flex-1');
+
+        // Desktop graduation counter container uses xl:flex instead of 2xl:flex
+        const desktopCounterParent = container.querySelector('[data-testid="graduation-credit-counter"]')?.parentElement;
+        expect(desktopCounterParent).not.toBeNull();
+        expect(desktopCounterParent?.className).toContain('hidden');
+        expect(desktopCounterParent?.className).toContain('xl:flex');
+
+        // Sub-horizon container uses xl:hidden instead of 2xl:hidden
+        const subHorizon = container.querySelector('[data-testid="graduation-credit-counter-mobile"]')?.parentElement;
+        expect(subHorizon).not.toBeNull();
+        expect(subHorizon?.className).toContain('xl:hidden');
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
 });

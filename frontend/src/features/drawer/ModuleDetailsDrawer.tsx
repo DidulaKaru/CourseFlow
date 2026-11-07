@@ -110,11 +110,12 @@ export function ModuleDetailsDrawer() {
             {/* Slide-over Drawer Panel (Docked side panel on large viewports) */}
             <aside
                 className={`fixed top-0 right-0 h-full w-full max-w-lg bg-[#070B12]/95 backdrop-blur-md border-l border-white/10 shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out font-sans ${
-                    isDrawerOpen ? 'translate-x-0' : 'translate-x-full'
+                    isDrawerOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none invisible'
                 }`}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="drawer-course-title"
+                aria-hidden={!isDrawerOpen}
                 data-testid="module-details-drawer"
             >
                 {/* 1. Drawer Header Bar */}

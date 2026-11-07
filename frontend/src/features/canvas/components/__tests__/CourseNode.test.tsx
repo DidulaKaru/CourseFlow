@@ -188,4 +188,41 @@ describe('CourseNode Component (CF-112)', () => {
 
         cleanup();
     });
+
+    it('opens course drawer when Enter or Space key is pressed on the card', () => {
+        const { container, cleanup } = setupNodeContainer({
+            id: 'CO544',
+            code: 'CO544',
+            title: 'Machine Learning',
+            type: 'ELECTIVE',
+        });
+
+        const card = container.querySelector('[role="article"]') as HTMLDivElement;
+        expect(card).not.toBeNull();
+        expect(card.tabIndex).toBe(0);
+        expect(card.className).toContain('focus-visible:ring-1');
+
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(false);
+
+        // Press Enter
+        act(() => {
+            card.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        });
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(true);
+        expect(usePlannerStore.getState().inspectedCourse?.id).toBe('CO544');
+
+        // Close drawer and press Space
+        act(() => {
+            usePlannerStore.getState().closeCourseDrawer();
+        });
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(false);
+
+        act(() => {
+            card.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+        });
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(true);
+        expect(usePlannerStore.getState().inspectedCourse?.id).toBe('CO544');
+
+        cleanup();
+    });
 });

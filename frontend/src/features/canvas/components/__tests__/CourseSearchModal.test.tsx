@@ -125,4 +125,34 @@ describe('CourseSearchModal Component', () => {
         });
         container.remove();
     });
+
+    it('supports keyboard navigation parity on search result items', () => {
+        const handleSelectCourse = vi.fn();
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<CourseSearchModal isOpen={true} onClose={() => {}} onSelectCourse={handleSelectCourse} />);
+        });
+
+        const resultItems = container.querySelectorAll('[role="button"]');
+        expect(resultItems.length).toBeGreaterThan(0);
+
+        const firstResult = resultItems[0] as HTMLDivElement;
+        expect(firstResult.tabIndex).toBe(0);
+        expect(firstResult.className).toContain('focus-visible:ring-1');
+
+        // Press Enter
+        act(() => {
+            firstResult.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        });
+        expect(handleSelectCourse).toHaveBeenCalledTimes(1);
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(true);
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
 });

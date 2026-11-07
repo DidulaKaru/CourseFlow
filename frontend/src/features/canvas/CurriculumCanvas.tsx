@@ -200,7 +200,14 @@ function InnerCurriculumCanvas({
     const handleJumpToSemester = useCallback(
         (semesterY: number) => {
             const current = getViewport();
-            const headerOffset = typeof window !== 'undefined' && window.innerWidth < 640 ? 90 : 70;
+            const headerOffset =
+                typeof window === 'undefined'
+                    ? 85
+                    : window.innerWidth < 640
+                    ? 110
+                    : window.innerWidth < 1280
+                    ? 95
+                    : 85;
             setViewport(
                 {
                     x: current.x,

@@ -130,8 +130,17 @@ export function SemesterFeed() {
                                     <div
                                         key={course.id}
                                         id={`course-${course.id}`}
+                                        role="article"
+                                        tabIndex={0}
+                                        aria-label={`${course.code}: ${course.title}, ${course.totalCredits} credits, ${typeConfig.label}`}
                                         onClick={() => openCourseDrawer(course)}
-                                        className={`group relative p-3 bg-[#070B12]/85 border transition-all cursor-pointer flex flex-col justify-between hover:border-[var(--constellation-beam)]/50 ${
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                openCourseDrawer(course);
+                                            }
+                                        }}
+                                        className={`group relative p-3 bg-[#070B12]/85 border transition-all cursor-pointer flex flex-col justify-between hover:border-[var(--constellation-beam)]/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--constellation-beam)] focus-visible:border-[var(--constellation-beam)] ${
                                             isSelected
                                                 ? 'border-emerald-500/40 ring-1 ring-emerald-500/20 bg-[#0A1018]'
                                                 : !prereqEval.isSatisfied
@@ -146,7 +155,7 @@ export function SemesterFeed() {
                                                     <span className="font-mono font-semibold text-xs text-slate-100">
                                                         {course.code}
                                                     </span>
-                                                    <span className={`text-[9px] font-mono px-1 py-0.2 border uppercase ${typeConfig.badge}`}>
+                                                    <span className={`text-[9px] font-mono px-1 py-0.5 border uppercase ${typeConfig.badge}`}>
                                                         {typeConfig.label}
                                                     </span>
                                                 </div>
@@ -166,14 +175,14 @@ export function SemesterFeed() {
                                             {/* Prerequisite status */}
                                             <div>
                                                 {prereqEval.status === 'no_prereqs' ? (
-                                                    <span className="text-slate-400 bg-white/5 border border-white/10 px-1.5 py-0.2 rounded-none">No Prereqs</span>
+                                                    <span className="text-slate-400 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-none">No Prereqs</span>
                                                 ) : prereqEval.isSatisfied ? (
-                                                    <span className="text-emerald-300 bg-emerald-950/20 border border-emerald-500/30 px-1.5 py-0.2 rounded-none flex items-center gap-1">
+                                                    <span className="text-emerald-300 bg-emerald-950/20 border border-emerald-500/30 px-1.5 py-0.5 rounded-none flex items-center gap-1">
                                                         <Check className="w-2.5 h-2.5 text-emerald-400" />
                                                         <span>Prereqs Met</span>
                                                     </span>
                                                 ) : (
-                                                    <span className="text-red-400 bg-red-950/20 border border-red-500/30 px-1.5 py-0.2 rounded-none flex items-center gap-1" title={prereqEval.summary}>
+                                                    <span className="text-red-400 bg-red-950/20 border border-red-500/30 px-1.5 py-0.5 rounded-none flex items-center gap-1" title={prereqEval.summary}>
                                                         <AlertTriangle className="w-2.5 h-2.5 text-red-400" />
                                                         <span>Missing Prereqs</span>
                                                     </span>
