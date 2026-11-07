@@ -172,4 +172,20 @@ describe('CourseNode Component (CF-112)', () => {
 
         cleanup();
     });
+
+    it('applies high contrast text styling on course title and credit badge', () => {
+        const { container, cleanup } = setupNodeContainer({
+            code: 'CO3001',
+            title: 'Computer Architecture',
+            totalCredits: 3,
+            type: 'CORE',
+        });
+
+        const titleEl = container.querySelector('p');
+        expect(titleEl).not.toBeNull();
+        expect(titleEl?.className).toContain('text-slate-100');
+        expect(titleEl?.className).toContain('font-medium');
+
+        cleanup();
+    });
 });

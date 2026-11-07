@@ -56,7 +56,7 @@ export const SwimlaneHeader = memo(function SwimlaneHeader({
         >
             {/* Atmospheric Celestial Roman Numeral Watermark */}
             <span
-                className="absolute left-3 top-1/2 -translate-y-1/2 font-serif font-black text-4xl sm:text-5xl text-white opacity-[0.04] pointer-events-none select-none tracking-widest"
+                className="absolute left-3 top-1/2 -translate-y-1/2 font-serif font-black text-4xl sm:text-5xl text-white opacity-[0.06] pointer-events-none select-none tracking-widest"
                 aria-hidden="true"
             >
                 {roman}
@@ -65,25 +65,25 @@ export const SwimlaneHeader = memo(function SwimlaneHeader({
             {/* 1. Left Section: Celestial Star Pip, Semester Title & Course Count */}
             <div className="flex items-center gap-3 shrink-0 relative z-10">
                 <div className="w-2 h-2 rotate-45 border border-white/60 bg-[var(--star-pip)] shadow-[0_0_6px_var(--constellation-beam)]" />
-                <span className="font-serif uppercase font-bold text-xs tracking-[0.15em] text-slate-200">
+                <span className="font-serif uppercase font-bold text-xs sm:text-sm tracking-[0.15em] text-slate-100">
                     Semester {semesterIndex}
                 </span>
 
                 {courseCount !== undefined && (
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-400 bg-white/5 border border-white/10 px-1.5 py-0.2 rounded-none">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-300 bg-white/5 border border-white/10 px-1.5 py-0.2 rounded-none">
                         {courseCount} Courses
                     </span>
                 )}
             </div>
 
             {/* 2. Middle Section: Thin Workload Horizon Meter */}
-            <div className="flex-1 max-w-xs mx-4 hidden lg:block relative z-10">
-                <div className="flex justify-between items-center text-[9px] font-mono text-slate-400 uppercase tracking-widest mb-1">
+            <div className="flex-1 max-w-xs mx-4 hidden md:block relative z-10">
+                <div className="flex justify-between items-center text-[9px] font-mono text-slate-300 uppercase tracking-widest mb-1">
                     <span>Target: {minCredits} cr</span>
                     <span>Max: {maxCredits} cr</span>
                 </div>
                 {/* Skyrim-inspired hairline skill bar */}
-                <div className="h-1 w-full bg-white/5 relative overflow-hidden rounded-none border border-white/10">
+                <div className="h-1.5 w-full bg-white/5 relative overflow-hidden rounded-none border border-white/10">
                     <div
                         className={`h-full transition-all duration-300 ease-out ${
                             isValid

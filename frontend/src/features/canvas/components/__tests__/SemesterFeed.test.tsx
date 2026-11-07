@@ -59,4 +59,26 @@ describe('SemesterFeed Component (Mobile List View)', () => {
         });
         container.remove();
     });
+
+    it('renders sticky semester quick-jump navigation links for rapid mobile scrolling', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<SemesterFeed />);
+        });
+
+        // Quick jump bar has links for S1 through S8
+        for (let i = 1; i <= 8; i++) {
+            const link = container.querySelector(`a[href="#semester-${i}"]`);
+            expect(link).not.toBeNull();
+            expect(link?.textContent).toContain(`S${i}`);
+        }
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
 });

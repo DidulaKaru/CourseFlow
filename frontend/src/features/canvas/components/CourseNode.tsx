@@ -17,19 +17,19 @@ export interface ExtendedCourseNodeData {
 
 const TYPE_STYLES: Record<CourseType, { badge: string; label: string }> = {
     CORE: {
-        badge: 'border-white/15 text-slate-300 bg-white/5',
+        badge: 'border-white/20 text-slate-200 bg-white/10',
         label: 'CORE',
     },
     ELECTIVE: {
-        badge: 'border-white/15 text-slate-400 bg-white/5',
+        badge: 'border-white/15 text-slate-300 bg-white/5',
         label: 'ELECTIVE',
     },
     CAPSTONE: {
-        badge: 'border-amber-500/30 text-amber-300 bg-amber-950/20',
+        badge: 'border-amber-500/40 text-amber-300 bg-amber-950/30',
         label: 'CAPSTONE',
     },
     LAB: {
-        badge: 'border-cyan-500/30 text-cyan-300 bg-cyan-950/20',
+        badge: 'border-cyan-500/40 text-cyan-300 bg-cyan-950/30',
         label: 'LAB',
     },
 };
@@ -137,7 +137,7 @@ export const CourseNode = memo(function CourseNode({
                     )}
                 </div>
 
-                <span className="text-[10px] font-mono text-[var(--accent-primary)] font-medium shrink-0">
+                <span className="text-[10px] font-mono text-[var(--accent-primary)] font-semibold shrink-0 bg-white/5 border border-white/10 px-1.5 py-0.2 rounded-none">
                     {course.totalCredits} cr
                 </span>
             </div>
@@ -145,7 +145,7 @@ export const CourseNode = memo(function CourseNode({
             {/* 2. Body: Course Title (Strict 2-line clamp) */}
             <div className="my-auto py-0.5">
                 <p
-                    className="text-[12px] font-normal leading-snug line-clamp-2 text-slate-300"
+                    className="text-[12px] font-medium leading-snug line-clamp-2 text-slate-100"
                     title={`${course.code}: ${course.title}`}
                 >
                     {course.title}
@@ -161,12 +161,13 @@ export const CourseNode = memo(function CourseNode({
                             e.stopPropagation();
                             toggleElective(course.id);
                         }}
-                        className={`inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none border transition-colors cursor-pointer ${
+                        className={`inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-none border transition-all cursor-pointer ${
                             isSelectedElective
-                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
-                                : 'bg-white/5 text-slate-400 border-white/10 hover:border-white/20 hover:text-slate-200'
+                                ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500/50 hover:bg-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.25)]'
+                                : 'bg-white/5 text-slate-300 border-white/15 hover:border-white/30 hover:bg-white/10 hover:text-white'
                         }`}
                         title={isSelectedElective ? 'Remove elective from plan' : 'Add elective to plan'}
+                        aria-pressed={isSelectedElective}
                     >
                         {isSelectedElective ? (
                             <>
@@ -187,19 +188,19 @@ export const CourseNode = memo(function CourseNode({
                 {/* Prerequisite status */}
                 {isPrereqUnmet ? (
                     <span
-                        className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-red-950/20 text-red-400 border border-red-500/30"
+                        className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-red-950/30 text-red-400 border border-red-500/40"
                         title={prereqEval.summary}
                     >
                         <AlertTriangle className="w-2.5 h-2.5 text-red-400 shrink-0" />
                         <span className="line-clamp-1">Warning: Unmet</span>
                     </span>
                 ) : hasPrerequisites ? (
-                    <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-white/5 text-slate-300 border border-white/10">
+                    <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-emerald-950/20 text-emerald-300 border border-emerald-500/30">
                         <Check className="w-2.5 h-2.5 text-emerald-400" />
                         <span>Prereqs Met</span>
                     </span>
                 ) : (
-                    <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-white/[0.02] text-slate-500 border border-white/5">
+                    <span className="inline-flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-none bg-white/5 text-slate-400 border border-white/10">
                         <span>No Prereqs</span>
                     </span>
                 )}
