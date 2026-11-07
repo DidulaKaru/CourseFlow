@@ -59,6 +59,15 @@ def test_get_electrical_engineering_program():
     assert len(program["courses"]) > 0
 
 
+def test_program_catalog_mapping_resolution():
+    """Verify both canonical IDs and catalog filename aliases resolve correctly."""
+    for pid in ["computer-eng", "computer_engineering", "electrical-eng", "electrical_engineering"]:
+        response = client.get(f"/api/programs/{pid}")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["id"] in ("computer-eng", "electrical-eng")
+
+
 def test_get_unknown_program_returns_404():
     """Verify GET /api/programs/{unknown_id} returns 404 with error detail."""
     response = client.get("/api/programs/unknown-stream-xyz")
