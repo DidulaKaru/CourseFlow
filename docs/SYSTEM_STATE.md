@@ -1,11 +1,12 @@
 # CourseFlow: System State Ledger
 
 ## 1. Project Health & Active Milestone
-- **Active Sprint:** Sprint 1: Curriculum DAG Canvas, Interactive Planner & Infrastructure (3 Weeks)
-- **Sprint Window:** October 12, 2026 – November 01, 2026
+- **Current Milestone:** Sprint 1 Complete (100% Verified) ──► Sprint 2 Active Planning & Execution
+- **Sprint 1 Window:** October 12, 2026 – November 01, 2026 (Completed)
+- **Sprint 2 Window:** November 02, 2026 – November 22, 2026 (Active)
 - **Active Branch:** `dev`
-- **Sprint Goal:** Ship a working, zero-login Student Web App for 2 engineering degree programs (Computer Engineering & Electrical Engineering) rendering an 8-semester swimlane DAG canvas, interactive elective selection, >= 18 semester credit checks, 150 total credit validation, multi-semester split credits, and client-side PDF plan export. Complete Docker setup, database schema foundation, and CI/CD quality gates.
-- **Total Backlog Story Points:** 58 SP (14 User Stories) | **Engineering Execution:** 98 SP (22 Jira Tasks)
+- **Sprint 2 Goal:** Deliver an automated Module Information Sheet (MIS) Ingestion & Feature Extraction Engine capable of parsing syllabus PDFs/DOCXs, extracting metadata and prerequisite ASTs using a local Small Language Model (Qwen 2.5 7B via Ollama + Instructor), surfaced via a side-by-side human review screen with 1-click database commit. Deploy authenticated admin in-app module content editor.
+- **Sprint 2 Backlog Story Points:** 49 SP (11 User Stories) | **Engineering Execution:** 108 SP (20 Jira Tasks)
 
 ---
 
@@ -143,3 +144,69 @@ A story is only marked **Done** in Jira when:
 - Frontend canvas foundation mounted with custom nodes and mock dataset.
 - Layout coordinate calculator and AST evaluator implemented in TypeScript and Python with 100% test coverage.
 - PostgreSQL schema models, seed datasets, and database migrations fully operational and validated.
+
+---
+
+## 8. Sprint 2 Product Backlog & Engineering Roadmap
+
+### Product Backlog (User Stories)
+| User Story ID | User Story Narrative | Priority | Story Points | Target Epic | Lead / Assignee |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **US015** | As a faculty admin, I want to authenticate securely to access administrative course editing and document extraction tools. | Must Have | 5 | CF-EPIC-6 | Didula & Malsha |
+| **US016** | As a faculty curriculum coordinator, I want to edit course attributes (title, description, credits, contact hours, type) in an in-app modal. | Must Have | 5 | CF-EPIC-6 | Malsha & Didula |
+| **US017** | As an academic advisor, I want to modify course prerequisite rules and multi-semester credit distributions directly from the admin interface. | Must Have | 5 | CF-EPIC-6 | Didula & Malsha |
+| **US018** | As a faculty data officer, I want to drag-and-drop syllabus PDFs/DOCXs to ingest course information automatically. | Must Have | 5 | CF-EPIC-7 | Anuththara & Ishani |
+| **US019** | As a system, I want to parse structured contact hour grids, descriptions, and metadata tables from uploaded documents using `pdfplumber` with OCR fallback. | Must Have | 5 | CF-EPIC-7 | Anuththara |
+| **US020** | As a system, I want to extract structured Course entities matching Pydantic contracts from raw syllabus text using a local SLM (Qwen 2.5 7B via Ollama) and Instructor. | Must Have | 5 | CF-EPIC-8 | Anuththara |
+| **US021** | As a system, I want to automatically parse complex natural-language prerequisite clauses into recursive boolean AST JSON structures. | Must Have | 5 | CF-EPIC-8 | Anuththara & Didula |
+| **US022** | As a faculty reviewer, I want a split-screen view showing the uploaded PDF on the left and extracted editable fields with confidence scores on the right. | Must Have | 5 | CF-EPIC-9 | Malsha |
+| **US023** | As a faculty reviewer, I want to approve and commit extracted and verified course data directly to PostgreSQL with 1 click. | Must Have | 5 | CF-EPIC-9 | Didula, Malsha & Anuththara |
+| **US024** | As a QA engineer, I want comprehensive test suites and malformed document fixtures validating the ingestion API and LLM extraction pipelines. | Must Have | 5 | CF-EPIC-4 | Ishani |
+| **US025** | As a developer/DevOps, I want Ollama containerized in Docker Compose with pre-pulled Qwen 2.5 7B models for deterministic local inference. | Must Have | 5 | CF-EPIC-4 | Ishani |
+
+### Granular Sprint 2 Jira Tasks by Team Member (108 SP Total)
+
+#### Didula (Lead Architect & Backend Developer) — 23 SP
+| Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
+| :--- | :--- | :--- | :--- | :--- |
+| [ ] **CF-201** | Faculty Admin Authentication & Security Session Management | 5 | CF-EPIC-6 | JWT Bearer auth, RBAC dependencies, student routes remain 100% public. |
+| [ ] **CF-202** | In-App Course CRUD & Content Modification Endpoints | 5 | CF-EPIC-6 | PUT/PATCH endpoints persist course updates to PostgreSQL with credit validation. |
+| [ ] **CF-203** | Administrative Prerequisite & AST Persistence Service | 5 | CF-EPIC-6 | AST JSONB mutation with depth guard ($\le 20$) and no dangling references. |
+| [ ] **CF-204** | MIS Ingestion API & Extraction Review Endpoints | 5 | CF-EPIC-7 / CF-EPIC-9 | Multipart file upload, job status polling, and atomic database commit. |
+| [ ] **CF-205** | System Contract Sync & PR Merge Governance | 3 | All Epics | `npm run generate-types` syncs frontend types; zero regression quality gate enforced. |
+
+#### Malsha (Frontend & Documentation Specialist) — 31 SP
+| Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
+| :--- | :--- | :--- | :--- | :--- |
+| [ ] **CF-211** | Faculty Admin Authentication Modal & Session State | 3 | CF-EPIC-6 | Skyrim obsidian glass modal, `useAuthStore` JWT token management, TopNav admin pill. |
+| [ ] **CF-212** | In-App Course Editor Modal & Form Controls | 5 | CF-EPIC-6 | Course editing modal with optimistic UI graph updates on the canvas. |
+| [ ] **CF-213** | Prerequisite AST Visual Rule Editor | 5 | CF-EPIC-6 | Visual boolean AST composer with nested AND/OR groups and live mathematical preview. |
+| [ ] **CF-214** | MIS Document Upload Dropzone & Staging View | 5 | CF-EPIC-7 | Drag-and-drop upload zone, progress bar, and staging queue table. |
+| [ ] **CF-215** | Extraction Review Split-Screen Dashboard | 8 | CF-EPIC-9 | Dual-pane PDF viewer + editable field form with color-coded confidence badges. |
+| [ ] **CF-216** | Sprint 2 Documentation & Jira Governance | 5 | Governance | Jira Sprint 2 backlog, admin user guide, and updated architectural context files. |
+
+#### Ishani (QA & DevOps Engineer) — 23 SP
+| Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
+| :--- | :--- | :--- | :--- | :--- |
+| [ ] **CF-221** | Containerized Local SLM Runtime & Ollama Orchestration | 5 | CF-EPIC-4 | Ollama container running Qwen 2.5 7B in `docker-compose.yml` with health checks. |
+| [ ] **CF-222** | Document Upload & Extraction E2E Integration Test Suite | 5 | CF-EPIC-4 / CF-EPIC-7 | Pytest suite testing upload, job polling, and commit with mock SLM fixtures. |
+| [ ] **CF-223** | Malformed PDF & OCR Fixture Library | 5 | CF-EPIC-4 / CF-EPIC-7 | Curated PDF fixture corpus verifying clean extraction and graceful error handling. |
+| [ ] **CF-224** | Automated Admin Auth & In-App Editor Vitest Suite | 5 | CF-EPIC-4 / CF-EPIC-6 | Vitest unit tests for auth store, course editor modal, and visual AST editor. |
+| [ ] **CF-225** | CI/CD Pipeline Expansion & Security Audit Gates | 3 | CF-EPIC-4 | `bandit`, `pip-audit`, and secret scanning pre-commit checks in GitHub Actions. |
+
+#### Anuththara (Database & AI Engineer) — 23 SP
+| Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
+| :--- | :--- | :--- | :--- | :--- |
+| [ ] **CF-231** | Deterministic PDF Text & Tabular Extraction Pipeline | 5 | CF-EPIC-7 | `pdfplumber` parsing contact hour tables and body text with OCR fallback. |
+| [ ] **CF-232** | Local SLM Integration & Ollama Client Architecture | 5 | CF-EPIC-8 | Async Ollama client with optimized system prompts and telemetry logging. |
+| [ ] **CF-233** | Grammar-Guided Structured Extraction with Instructor & Pydantic | 5 | CF-EPIC-8 | Schema-constrained extraction with field-level confidence score estimation. |
+| [ ] **CF-234** | Natural-Language Prerequisite to Recursive AST Synthesizer | 5 | CF-EPIC-8 | Translates natural language prerequisite clauses into canonical boolean AST JSON. |
+| [ ] **CF-235** | Extraction Job Persistence & Database Ingestion Service | 3 | CF-EPIC-9 | SQLAlchemy `ExtractionJob` model, Alembic migration, and atomic database upsert. |
+
+### Sprint 2 Implementation Plan Documents
+Detailed individual engineering plans are preserved in:
+- [Didula_Sprint2.md](file:///c:/Users/didul/Documents/GitHub/CourseFlow/plans/Didula_Sprint2.md) (Lead Architect & Backend Developer)
+- [Malsha_Sprint2.md](file:///c:/Users/didul/Documents/GitHub/CourseFlow/plans/Malsha_Sprint2.md) (Frontend & Documentation Specialist)
+- [Ishani_Sprint2.md](file:///c:/Users/didul/Documents/GitHub/CourseFlow/plans/Ishani_Sprint2.md) (QA & DevOps Engineer)
+- [Anuththara_Sprint2.md](file:///c:/Users/didul/Documents/GitHub/CourseFlow/plans/Anuththara_Sprint2.md) (Database & AI Engineer)
+
