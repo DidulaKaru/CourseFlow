@@ -160,4 +160,32 @@ describe('DegreeSelector Component (CF-115)', () => {
         });
         container.remove();
     });
+
+    it('closes dropdown when Escape key is pressed', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<DegreeSelector />);
+        });
+
+        const triggerBtn = container.querySelector('[data-testid="degree-selector-button"]') as HTMLButtonElement;
+        act(() => {
+            triggerBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        });
+
+        expect(container.querySelector('div.absolute.top-full')).not.toBeNull();
+
+        act(() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        });
+
+        expect(container.querySelector('div.absolute.top-full')).toBeNull();
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
 });

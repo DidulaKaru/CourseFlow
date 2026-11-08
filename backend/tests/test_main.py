@@ -4,6 +4,16 @@ from app.core.config import settings
 from fastapi.testclient import TestClient
 
 
+def test_root_endpoint(client: TestClient):
+    """Verify GET / returns service information and operational status."""
+    response = client.get("/")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert data["service"] == settings.PROJECT_NAME
+    assert data["version"] == settings.VERSION
+
+
 def test_health_check_endpoint(client: TestClient):
     """Verify GET /api/health returns operational status."""
     response = client.get("/api/health")

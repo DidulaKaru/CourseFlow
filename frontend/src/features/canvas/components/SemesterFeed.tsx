@@ -51,6 +51,26 @@ export function SemesterFeed() {
 
     return (
         <div className="w-full h-full overflow-y-auto font-sans scroll-smooth">
+            {/* Sticky Semester Jump Bar */}
+            <div className="sticky top-0 z-20 w-full bg-[#030508]/90 backdrop-blur-md border-b border-white/10 py-2 px-3 sm:px-6 lg:px-10 shadow-lg">
+                <div className="w-full max-w-[1600px] mx-auto flex items-center justify-between gap-3 overflow-x-auto scrollbar-none">
+                    <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-slate-400 shrink-0 hidden sm:inline">
+                        Jump to Semester:
+                    </span>
+                    <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none w-full sm:w-auto">
+                        {Array.from({ length: 8 }, (_, i) => i + 1).map((sem) => (
+                            <a
+                                key={sem}
+                                href={`#semester-${sem}`}
+                                className="px-2 py-1 text-[10px] sm:text-xs font-mono uppercase tracking-wider text-slate-300 hover:text-white bg-white/5 hover:bg-white/15 border border-white/10 hover:border-white/20 transition-colors shrink-0"
+                            >
+                                S{sem}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             <div className="w-full max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-10 py-5 sm:py-7 space-y-8 pb-28">
                 {Array.from({ length: 8 }, (_, i) => i + 1).map((semIndex) => {
                     const coursesInSem = semesterBuckets[semIndex] ?? [];
@@ -62,7 +82,7 @@ export function SemesterFeed() {
                         <section
                             key={semIndex}
                             id={`semester-${semIndex}`}
-                            className="space-y-3 scroll-mt-20"
+                            className="space-y-3 scroll-mt-16"
                         >
                             {/* Semester Header Horizon */}
                             <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
@@ -110,8 +130,17 @@ export function SemesterFeed() {
                                     <div
                                         key={course.id}
                                         id={`course-${course.id}`}
+                                        role="article"
+                                        tabIndex={0}
+                                        aria-label={`${course.code}: ${course.title}, ${course.totalCredits} credits, ${typeConfig.label}`}
                                         onClick={() => openCourseDrawer(course)}
-                                        className={`group relative p-3 bg-[#070B12]/85 border transition-all cursor-pointer flex flex-col justify-between hover:border-[var(--constellation-beam)]/50 ${
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                openCourseDrawer(course);
+                                            }
+                                        }}
+                                        className={`group relative p-3 bg-[#070B12]/85 border transition-all cursor-pointer flex flex-col justify-between hover:border-[var(--constellation-beam)]/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--constellation-beam)] focus-visible:border-[var(--constellation-beam)] ${
                                             isSelected
                                                 ? 'border-emerald-500/40 ring-1 ring-emerald-500/20 bg-[#0A1018]'
                                                 : !prereqEval.isSatisfied
@@ -126,7 +155,7 @@ export function SemesterFeed() {
                                                     <span className="font-mono font-semibold text-xs text-slate-100">
                                                         {course.code}
                                                     </span>
-                                                    <span className={`text-[9px] font-mono px-1 py-0.2 border uppercase ${typeConfig.badge}`}>
+                                                    <span className={`text-[9px] font-mono px-1 py-0.5 border uppercase ${typeConfig.badge}`}>
                                                         {typeConfig.label}
                                                     </span>
                                                 </div>
@@ -136,7 +165,7 @@ export function SemesterFeed() {
                                             </div>
 
                                             {/* Title */}
-                                            <h3 className="text-xs font-medium text-slate-200 line-clamp-2 leading-snug group-hover:text-white">
+                                            <h3 className="text-xs font-medium text-slate-100 line-clamp-2 leading-snug group-hover:text-white">
                                                 {course.title}
                                             </h3>
                                         </div>
@@ -146,15 +175,15 @@ export function SemesterFeed() {
                                             {/* Prerequisite status */}
                                             <div>
                                                 {prereqEval.status === 'no_prereqs' ? (
-                                                    <span className="text-slate-500">No Prereqs</span>
+                                                    <span className="text-slate-400 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-none">No Prereqs</span>
                                                 ) : prereqEval.isSatisfied ? (
-                                                    <span className="text-emerald-400 flex items-center gap-1">
-                                                        <Check className="w-2.5 h-2.5" />
+                                                    <span className="text-emerald-300 bg-emerald-950/20 border border-emerald-500/30 px-1.5 py-0.5 rounded-none flex items-center gap-1">
+                                                        <Check className="w-2.5 h-2.5 text-emerald-400" />
                                                         <span>Prereqs Met</span>
                                                     </span>
                                                 ) : (
-                                                    <span className="text-red-400 flex items-center gap-1" title={prereqEval.summary}>
-                                                        <AlertTriangle className="w-2.5 h-2.5" />
+                                                    <span className="text-red-400 bg-red-950/20 border border-red-500/30 px-1.5 py-0.5 rounded-none flex items-center gap-1" title={prereqEval.summary}>
+                                                        <AlertTriangle className="w-2.5 h-2.5 text-red-400" />
                                                         <span>Missing Prereqs</span>
                                                     </span>
                                                 )}

@@ -110,4 +110,32 @@ describe('PlanSelector Component', () => {
         });
         container.remove();
     });
+
+    it('closes dropdown when Escape key is pressed', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<PlanSelector />);
+        });
+
+        const toggleBtn = container.querySelector('[data-testid="plan-selector-button"]') as HTMLButtonElement;
+        act(() => {
+            toggleBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        });
+
+        expect(container.textContent).toContain('Create New Plan');
+
+        act(() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        });
+
+        expect(container.textContent).not.toContain('Create New Plan');
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
 });

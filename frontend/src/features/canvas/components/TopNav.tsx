@@ -74,7 +74,7 @@ export const TopNav = memo(function TopNav({
                 {/* Primary HUD Row */}
                 <div className="h-14 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
                     {/* Left Section: Brand Logo, Degree Selector, and Plan Selector */}
-                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         {/* CourseFlow Brand Identity */}
                         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                             <div className="w-5 h-5 sm:w-6 sm:h-6 rotate-45 border border-white/20 bg-white/5 flex items-center justify-center shrink-0">
@@ -106,7 +106,7 @@ export const TopNav = memo(function TopNav({
                         >
                             <Search className="w-3.5 h-3.5 text-slate-400" />
                             <span className="hidden lg:inline text-[11px]">Search</span>
-                            <kbd className="hidden xl:inline-block px-1 py-0.2 text-[9px] text-slate-500 bg-white/5 border border-white/10 uppercase">
+                            <kbd className="hidden xl:inline-block px-1 py-0.5 text-[9px] text-slate-500 bg-white/5 border border-white/10 uppercase">
                                 ⌘K
                             </kbd>
                         </button>
@@ -143,8 +143,8 @@ export const TopNav = memo(function TopNav({
                             </button>
                         </div>
 
-                        {/* Desktop Graduation Bar & PDF Button (Visible on 2xl and up, >= 1536px) */}
-                        <div className="hidden 2xl:flex items-center gap-3">
+                        {/* Desktop Graduation Bar & PDF Button (Visible on xl and up, >= 1280px) */}
+                        <div className="hidden xl:flex items-center gap-3">
                             <div
                                 className={`flex items-center gap-2.5 px-3 py-1 rounded-none border text-xs transition-colors shrink-0 ${
                                     progress.isEligible
@@ -190,8 +190,8 @@ export const TopNav = memo(function TopNav({
                     </div>
                 </div>
 
-                {/* Sub-Horizon (Visible on screens < 1536px: Mobile, Tablet, Laptops): Credit Meter & PDF Button */}
-                <div className="2xl:hidden px-3 sm:px-6 py-2 border-t border-white/10 bg-white/[0.02] flex items-center justify-between gap-3">
+                {/* Sub-Horizon (Visible on screens < 1280px: Mobile, Tablet, Laptops): Credit Meter & PDF Button */}
+                <div className="xl:hidden px-3 sm:px-6 py-2 border-t border-white/10 bg-white/[0.02] flex items-center justify-between gap-3">
                     <div
                         className="flex items-center gap-2 flex-1 min-w-0"
                         data-testid="graduation-credit-counter-mobile"

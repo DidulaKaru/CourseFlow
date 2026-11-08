@@ -17,7 +17,7 @@ import { Compass } from 'lucide-react';
 
 import { calculateLayout } from '@/core/layout';
 import { usePlannerStore } from '@/core/store';
-import { mockCourses } from '@/data/mockCourses';
+import { getProgramCourses } from '@/data/mockCourses';
 import type { Course } from '@/types/curriculum';
 import { CourseNode } from './components/CourseNode';
 import type { ExtendedCourseNodeData } from './components/CourseNode';
@@ -28,6 +28,10 @@ import {
     getUpstreamCourseIds,
     type AnyCanvasNode,
 } from './utils/graphHighlight';
+import {
+    calculateCanvasTranslateExtent,
+    getResponsiveViewport,
+} from './utils/viewport';
 
 // Register node types at module level
 const nodeTypes = {
@@ -47,11 +51,20 @@ export interface CurriculumCanvasProps {
 }
 
 function InnerCurriculumCanvas({
-    courses = mockCourses,
-    programName = 'Computer Engineering',
+    courses: propCourses,
+    programName: propProgramName,
     className = '',
 }: CurriculumCanvasProps) {
     const { setViewport, getViewport, setCenter } = useReactFlow();
+
+    const activeProgramId = usePlannerStore((state) => state.activeProgramId);
+    const courses = useMemo(
+        () => propCourses ?? getProgramCourses(activeProgramId),
+        [propCourses, activeProgramId]
+    );
+    const programName =
+        propProgramName ??
+        (activeProgramId === 'electrical-eng' ? 'Electrical Engineering' : 'Computer Engineering');
 
     // Zustand store action to inspect course in slide-over drawer
     const openCourseDrawer = usePlannerStore((state) => state.openCourseDrawer);
@@ -71,7 +84,12 @@ function InnerCurriculumCanvas({
         return calculateLayout(courses);
     }, [courses]);
 
-    // 2. React Flow node and edge state collections
+    // 2. Camera Translate Extent (Strictly bounds scrolling so viewport cannot scroll out of graph)
+    const translateExtent = useMemo(() => {
+        return calculateCanvasTranslateExtent(layout);
+    }, [layout]);
+
+    // 3. React Flow node and edge state collections
     const [nodes, setNodes, onNodesChange] = useNodesState<AnyCanvasNode>(layout.nodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(layout.edges);
 
@@ -149,32 +167,11 @@ function InnerCurriculumCanvas({
         }
     }, [inspectedCourse, layout.nodes, setCenter, getViewport]);
 
-    // 6. Responsive Viewport Scaling & Auto-Centering Engine
-    const getResponsiveViewport = useCallback((windowW: number) => {
-        const targetW = 1360; // 5 columns (1280px) + horizontal breathing margin
-        if (windowW < 768) {
-            // Mobile: keep cards 100% readable at zoom 0.75, centered on Semester 1 (first column)
-            // Students can pan freely across semesters horizontally & vertically
-            return { x: 20, y: 30, zoom: 0.75 };
-        }
-        if (windowW < 1024) {
-            // Tablets: zoom 0.72
-            return { x: 20, y: 30, zoom: 0.72 };
-        }
-        // Desktop / Widescreen: center the 5 columns cleanly
-        const horizontalPadding = 80;
-        const calculatedZoom = Math.min(1.0, (windowW - horizontalPadding) / targetW);
-        const zoom = Math.max(0.70, calculatedZoom);
-        const x = Math.max(20, (windowW - targetW * zoom) / 2);
-        const y = 30;
-        return { x, y, zoom };
-    }, []);
-
-    // Initial viewport calculation for React Flow
+    // 6. Initial Viewport Calculation for React Flow
     const initialViewport = useMemo(() => {
         if (typeof window === 'undefined') return { x: 40, y: 30, zoom: 0.95 };
         return getResponsiveViewport(window.innerWidth);
-    }, [getResponsiveViewport]);
+    }, []);
 
     // Live auto-fit on window resize or mobile orientation change
     useEffect(() => {
@@ -191,7 +188,7 @@ function InnerCurriculumCanvas({
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [getResponsiveViewport, getViewport, setViewport]);
+    }, [getViewport, setViewport]);
 
     // Adapt viewport when courses dataset changes
     useEffect(() => {
@@ -199,20 +196,27 @@ function InnerCurriculumCanvas({
             const nextVp = getResponsiveViewport(window.innerWidth);
             setViewport(nextVp);
         }
-    }, [courses, getResponsiveViewport, setViewport]);
+    }, [courses, setViewport]);
 
     // Fit Graph Width action
     const handleFitWidth = useCallback(() => {
         if (typeof window === 'undefined') return;
         const nextVp = getResponsiveViewport(window.innerWidth);
         setViewport(nextVp, { duration: 400 });
-    }, [getResponsiveViewport, setViewport]);
+    }, [setViewport]);
 
     // 7. Smooth Jump to Semester Handler with responsive header offset
     const handleJumpToSemester = useCallback(
         (semesterY: number) => {
             const current = getViewport();
-            const headerOffset = typeof window !== 'undefined' && window.innerWidth < 640 ? 90 : 70;
+            const headerOffset =
+                typeof window === 'undefined'
+                    ? 85
+                    : window.innerWidth < 640
+                    ? 110
+                    : window.innerWidth < 1280
+                    ? 95
+                    : 85;
             setViewport(
                 {
                     x: current.x,
@@ -234,7 +238,7 @@ function InnerCurriculumCanvas({
     return (
         <div className={`relative w-full h-full bg-[#030508] skyrim-canvas-bg overflow-hidden ${className}`}>
             {/* Top HUD: Program Info, Constellation Legend & Semester Jump Bar */}
-            <div className="absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-10 flex flex-wrap items-center gap-2 sm:gap-3 bg-[#030508]/90 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm border border-white/10 shadow-2xl pointer-events-auto max-w-[calc(100vw-1rem)] sm:max-w-none">
+            <div className="absolute top-2 left-2 right-12 sm:right-auto sm:top-4 sm:left-4 z-10 flex flex-wrap items-center gap-2 sm:gap-3 bg-[#030508]/90 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm border border-white/10 shadow-2xl pointer-events-auto max-w-[calc(100vw-3.75rem)] sm:max-w-none">
                 <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rotate-45 border border-white/60 bg-[var(--star-pip)] shadow-[0_0_6px_var(--constellation-beam)] shrink-0" />
                     <span className="font-serif uppercase font-bold text-[11px] sm:text-xs tracking-[0.12em] sm:tracking-[0.15em] text-slate-200 whitespace-nowrap">
@@ -271,7 +275,7 @@ function InnerCurriculumCanvas({
                     <button
                         type="button"
                         onClick={handleFitWidth}
-                        className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-[var(--accent-primary)] hover:text-white hover:bg-white/10 rounded-none border border-[var(--accent-primary)]/40 hover:border-white/20 transition-colors cursor-pointer shrink-0"
+                        className="px-2 py-0.5 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-[var(--accent-primary)] hover:text-white bg-[var(--accent-primary)]/10 hover:bg-[var(--accent-primary)]/20 rounded-none border border-[var(--accent-primary)]/40 hover:border-[var(--accent-primary)]/70 transition-colors cursor-pointer shrink-0 font-medium"
                         title="Fit entire constellation to screen width"
                     >
                         Fit Width
@@ -281,7 +285,7 @@ function InnerCurriculumCanvas({
                             key={`jump-${sem.semesterIndex}`}
                             type="button"
                             onClick={() => handleJumpToSemester(sem.y)}
-                            className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/10 rounded-none border border-transparent hover:border-white/15 transition-colors cursor-pointer shrink-0"
+                            className="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-slate-300 hover:text-white bg-white/5 hover:bg-white/15 rounded-none border border-white/10 hover:border-white/25 transition-colors cursor-pointer shrink-0"
                             title={`Jump to Semester ${sem.semesterIndex}`}
                         >
                             S{sem.semesterIndex}
@@ -295,7 +299,7 @@ function InnerCurriculumCanvas({
                 <button
                     type="button"
                     onClick={() => setShowMobileRadar((prev) => !prev)}
-                    className="p-1.5 bg-[#030508]/90 border border-white/10 rounded-none text-slate-300 hover:text-white transition-colors shadow-lg"
+                    className="p-1.5 bg-[#030508]/90 border border-white/10 rounded-none text-slate-300 hover:text-white transition-colors shadow-lg cursor-pointer"
                     title="Toggle Armillary Radar Minimap"
                     aria-label="Toggle Radar Minimap"
                 >
@@ -310,7 +314,7 @@ function InnerCurriculumCanvas({
                         <span className="font-bold text-[var(--accent-primary)] tracking-wider shrink-0">
                             {activeCourse.code}
                         </span>
-                        <span className="text-slate-400 truncate max-w-[120px] sm:max-w-[220px]">
+                        <span className="text-slate-300 font-medium truncate max-w-[120px] sm:max-w-[220px]">
                             {activeCourse.title}
                         </span>
                     </div>
@@ -324,11 +328,19 @@ function InnerCurriculumCanvas({
                             {downstreamCount} unlocked
                         </span>
                     </div>
+                    <button
+                        type="button"
+                        onClick={() => openCourseDrawer(activeCourse)}
+                        className="ml-1 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-[var(--accent-primary)] hover:text-white bg-white/5 hover:bg-white/10 px-1.5 sm:px-2 py-0.5 rounded-none border border-white/15 transition-colors shrink-0 cursor-pointer"
+                        title="Open full module details"
+                    >
+                        Details
+                    </button>
                     {selectedCourseId && (
                         <button
                             type="button"
                             onClick={handlePaneClick}
-                            className="ml-1 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 px-1.5 sm:px-2 py-0.5 rounded-none border border-white/15 transition-colors shrink-0"
+                            className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 px-1.5 sm:px-2 py-0.5 rounded-none border border-white/15 transition-colors shrink-0 cursor-pointer"
                         >
                             Clear
                         </button>
@@ -353,6 +365,7 @@ function InnerCurriculumCanvas({
                 zoomOnScroll={false}
                 zoomOnPinch={true}
                 panOnDrag={true}
+                translateExtent={translateExtent}
                 defaultViewport={initialViewport}
                 minZoom={0.12}
                 maxZoom={2.5}

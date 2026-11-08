@@ -59,4 +59,69 @@ describe('SemesterFeed Component (Mobile List View)', () => {
         });
         container.remove();
     });
+
+    it('renders sticky semester quick-jump navigation links for rapid mobile scrolling', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<SemesterFeed />);
+        });
+
+        // Quick jump bar has links for S1 through S8
+        for (let i = 1; i <= 8; i++) {
+            const link = container.querySelector(`a[href="#semester-${i}"]`);
+            expect(link).not.toBeNull();
+            expect(link?.textContent).toContain(`S${i}`);
+        }
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
+
+    it('supports keyboard navigation parity on feed course cards', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<SemesterFeed />);
+        });
+
+        const cards = container.querySelectorAll('[role="article"]');
+        expect(cards.length).toBeGreaterThan(0);
+
+        const firstCard = cards[0] as HTMLDivElement;
+        expect(firstCard.tabIndex).toBe(0);
+        expect(firstCard.getAttribute('aria-label')).toBeTruthy();
+        expect(firstCard.className).toContain('focus-visible:ring-1');
+
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(false);
+
+        // Press Enter to open drawer
+        act(() => {
+            firstCard.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+        });
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(true);
+
+        // Close drawer
+        act(() => {
+            usePlannerStore.getState().closeCourseDrawer();
+        });
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(false);
+
+        // Press Space to open drawer
+        act(() => {
+            firstCard.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+        });
+        expect(usePlannerStore.getState().isDrawerOpen).toBe(true);
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
 });

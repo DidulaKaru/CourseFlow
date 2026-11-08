@@ -271,4 +271,40 @@ describe('ModuleDetailsDrawer Component (CF-113)', () => {
         });
         container.remove();
     });
+
+    it('applies accessibility attributes and visibility classes to prevent off-screen focus leak when closed with inspected course', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            usePlannerStore.setState({ inspectedCourse: mockCourse, isDrawerOpen: true });
+            root.render(<ModuleDetailsDrawer />);
+        });
+
+        const openDrawer = container.querySelector('[data-testid="module-details-drawer"]') as HTMLElement;
+        expect(openDrawer).not.toBeNull();
+        expect(openDrawer.getAttribute('aria-hidden')).toBe('false');
+        expect(openDrawer.className).toContain('translate-x-0');
+        expect(openDrawer.className).toContain('pointer-events-auto');
+        expect(openDrawer.className).not.toContain('invisible');
+
+        // Transition to closed state while retaining inspectedCourse (e.g. during slide-out animation)
+        act(() => {
+            usePlannerStore.setState({ inspectedCourse: mockCourse, isDrawerOpen: false });
+            root.render(<ModuleDetailsDrawer />);
+        });
+
+        const closedDrawer = container.querySelector('[data-testid="module-details-drawer"]') as HTMLElement;
+        expect(closedDrawer).not.toBeNull();
+        expect(closedDrawer.getAttribute('aria-hidden')).toBe('true');
+        expect(closedDrawer.className).toContain('translate-x-full');
+        expect(closedDrawer.className).toContain('pointer-events-none');
+        expect(closedDrawer.className).toContain('invisible');
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
 });

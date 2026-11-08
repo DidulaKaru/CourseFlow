@@ -26,6 +26,12 @@ app.add_middleware(
 )
 
 
+@app.get("/", tags=["System"])
+def root():
+    """Root endpoint for top-level health verification."""
+    return {"status": "healthy", "service": settings.PROJECT_NAME, "version": settings.VERSION}
+
+
 @app.get("/api/health", tags=["System"])
 def health_check():
     """Health check endpoint to verify backend operational readiness."""

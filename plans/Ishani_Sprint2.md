@@ -190,3 +190,4 @@ A story or engineering task is marked **Done** in Jira only when:
 - [ ] PR is reviewed and approved by Didula (Lead Architect).
 - [ ] PR is Squash Merged into `dev` and local branches are synchronized.
 - [ ] Feature is validated against acceptance criteria on the live development build.
+
