@@ -2,8 +2,9 @@
 
 import json
 from pathlib import Path
+from typing import Literal
 
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -22,6 +23,16 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: str = "development"
     SECRET_KEY: str = "dev-secret-key-change-in-production"
+
+    # Faculty admin authentication (CF-201). Students never authenticate (ADR-001).
+    ALGORITHM: Literal["HS256", "HS384", "HS512"] = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60, gt=0)
+    # Accounts are configured via environment; there are no default credentials.
+    # Generate a hash with: python backend/scripts/hash_password.py
+    ADMIN_USERNAME: str = "admin"
+    ADMIN_PASSWORD_HASH: str = ""
+    REVIEWER_USERNAME: str = "reviewer"
+    REVIEWER_PASSWORD_HASH: str = ""
 
     # Database Configuration (Neon Serverless PostgreSQL or local container)
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/courseflow"
