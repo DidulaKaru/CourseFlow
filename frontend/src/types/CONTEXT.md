@@ -13,7 +13,7 @@
 
 ## 2. File Organization
 - `curriculum.ts`: Canonical domain models (`Course`, `DegreeProgram`, `PrerequisiteRule`, `CreditDistribution`, etc.).
-- `api.ts`: Auto-generated OpenAPI schema types output by `openapi-typescript`.
+- `api.ts`: Auto-generated OpenAPI schema types output by `openapi-typescript`. Since Sprint 2 it also contains the faculty auth contracts (`LoginRequest`, `TokenResponse`, `AuthenticatedUser`) and the admin course contracts (`CourseCreate`, `CourseUpdate`, `CoursePatch`, `ContactHoursUpdate`, `AdminCourse`, `CourseResponse`). Admin UI code imports these generated types.
 - `CONTEXT.md`: This architectural context slice.
 
 ## 3. Automated Type Generation Runbook
@@ -25,3 +25,9 @@ uvicorn app.main:app --port 8000 --reload
 # 2. In another terminal, generate the client API types
 npm run generate-types
 ```
+
+## 4. Sprint 2 Contract Notes
+- `curriculum.ts` is intentionally unchanged: the public `Course` contract has no `updatedAt`. The admin response type `AdminCourse` (`Course` plus `updatedAt`) exists only in `api.ts`.
+- Admin request bodies reject unknown fields, so send only the editable fields (never a whole `Course`). Course codes cannot be changed after creation.
+- `contactHours` values are hours per semester (e.g. 14 / 14 / 7), not weekly hours.
+- Extraction job states are `PENDING`, `PROCESSING`, `EXTRACTED`, `COMMITTED`, `FAILED`.

@@ -86,13 +86,18 @@ Malsha leads user-facing frontend component development, visual layout engineeri
   - `src/features/canvas/components/TopNav.tsx`
 * **Implementation Details:**
   1. Build `AdminLoginModal` adhering to Skyrim obsidian aesthetic (`bg-[#070B12]/95 border border-white/10 backdrop-blur-md rounded-sm`).
-  2. Implement `useAuthStore` with token persistence:
-     - `token: string | null`
-     - `user: { username: string; role: 'ADMIN' | 'FACULTY_REVIEWER' } | null`
-     - `login(username, password)` -> calls `/api/v1/auth/login`
-     - `logout()` -> clears token and returns UI to standard Student Mode
+  2. Implement `useAuthStore` with token persistence. The backend contract is implemented (CF-201); use the generated `TokenResponse` / `AuthenticatedUser` types from `src/types/api.ts`:
+     - `token: string | null` (sent as `Authorization: Bearer <token>` on admin API calls only; student routes never send it)
+     - `expiresAt: number | null` (epoch ms = login time + `expiresIn` seconds; access tokens last 60 minutes)
+     - `user: { username: string; role: 'ADMIN' | 'FACULTY_REVIEWER'; permissions: string[] } | null`
+     - `login(username, password)` -> `POST /api/v1/auth/login` with JSON `{ username, password }`. Success: `{ accessToken, tokenType: 'bearer', expiresIn, user }`. Failure: HTTP 401 `{ detail: 'Incorrect username or password.' }` (show inline; the message never says which field was wrong).
+     - `refresh()` -> `POST /api/v1/auth/refresh` with the current token, called before `expiresAt`. Expired tokens cannot be refreshed and must log in again.
+     - `logout()` -> clears token and returns UI to standard Student Mode. Any `401` from an admin API call also calls `logout()`.
+     - On rehydration from `localStorage`, an expired `expiresAt` triggers logout immediately.
+     - Gate admin controls on `user.permissions` (`courses:write`, `prerequisites:write`, `extraction:upload`, `extraction:review`, `extraction:commit`). A `FACULTY_REVIEWER` gets the extraction controls but not course editing (the backend answers 403).
   3. Update `TopNav`: Add subtle "Admin Access" lock icon; when logged in, display tracked `[ADMIN MODE]` badge with logout dropdown.
-* **Acceptance Criteria:** Valid credentials switch HUD to Admin Mode; invalid credentials trigger inline error text; logging out cleanly revokes admin controls.
+* **Local setup:** the backend has no default credentials. To test a real login, set `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` in `.env` (generate the hash with `python backend/scripts/hash_password.py`; keep it in single quotes because it contains `$`). Follow the mock-first policy (`guide.md` section 5) until your hash is set up.
+* **Acceptance Criteria:** Valid credentials switch HUD to Admin Mode; invalid credentials trigger inline error text; logging out cleanly revokes admin controls; an expired or rejected token (401) returns the HUD to Student Mode.
 
 ---
 
@@ -104,14 +109,20 @@ Malsha leads user-facing frontend component development, visual layout engineeri
   - `src/features/drawer/ModuleDetailsDrawer.tsx`
 * **Implementation Details:**
   1. Add an "Edit Course" action button visible only in Admin Mode on `CourseNode` cards and inside `ModuleDetailsDrawer`.
-  2. Form fields:
-     - Course Code (`CO544`), Title, Total Credits ($1\text{--}12$).
+  2. Form fields (names follow the `CourseUpdate` contract implemented in CF-202):
+     - Course Code (`CO544`): **read-only when editing.** Codes are permanent IDs referenced by prerequisite rules, and the server returns 409 if a different `code` is sent. Only an "Add Course" form (`POST /api/v1/courses`, optional stretch) lets the user type a code (`^[A-Z]{2,4}[0-9]{3,5}[A-Z]?$`; the server upper-cases it).
+     - Title (required, trimmed) and Total Credits ($1\text{--}12$).
      - Course Type dropdown (`CORE`, `ELECTIVE`, `LAB`, `CAPSTONE`).
-     - Recommended Semester ($1\text{--}8$) and Offering Semesters (`FALL`, `SPRING`, `BOTH`).
-     - Academic Contact Hours (Lectures, Labs, Tutorials per week).
-     - Full Syllabus Objectives and Description textarea.
-  3. Form submission calls `PUT /api/v1/courses/{id}`, updates local Zustand course catalog, and optimistic-refreshes the canvas graph without full-page reload.
-* **Acceptance Criteria:** Editing course attributes updates PostgreSQL and immediately reflects on the canvas card and drawer; validation prevents saving invalid credit numbers.
+     - Recommended Semester ($1\text{--}8$), Duration in Semesters, and Offering Semesters (`FALL`, `SPRING`, `BOTH`).
+     - Contact Hours: `lecture`, `lab`, `tutorial`. The seeded values are **hours per semester** (e.g. 14 / 14 / 7), not weekly hours, so label them accordingly.
+     - Description textarea and Syllabus Objectives (a list of strings: one input row per objective).
+     - Corequisites (course IDs that exist in the catalog; a course cannot list itself).
+     - Multi-semester courses: if credits, duration or start semester change, the form must also send a matching `creditDistribution` (one `{ semesterIndex, creditsAllocated }` per semester starting at the start semester, summing to Total Credits). Single-semester courses derive it on the server.
+  3. Form submission calls `PUT /api/v1/courses/{id}` (or `PATCH` for single-field edits such as description or contact hours) with **only** the fields above. The API rejects unknown fields with 422, so never spread a whole `Course` (`id`, `prerequisiteRule`, ...) into the body; prerequisites are edited through CF-213.
+  4. Handle responses. Success is `{ success: true, data: AdminCourse }`: use `data` (including the server-derived `creditDistribution` and `updatedAt`) to update the local Zustand catalog and refresh the canvas without a full-page reload. Errors: `422` -> `detail: [{ loc, msg, type }]` shown inline per field; `404` / `409` -> `detail: string`; `401` -> logout; `403` -> "not permitted".
+  5. Use the generated `AdminCourse`, `CourseUpdate`, `CoursePatch` and `CourseCreate` types from `src/types/api.ts` (`types/curriculum.ts` is intentionally unchanged).
+* **Known limitation:** the student-facing catalog still loads from the bundled JSON files, so a saved edit is reflected in the admin's local store but a page reload shows the bundled data until the read path moves to PostgreSQL (see `plans/Didula_Sprint2.md` section 6).
+* **Acceptance Criteria:** Editing course attributes updates PostgreSQL and immediately reflects on the canvas card and drawer; validation prevents saving invalid credit numbers; server validation errors (422/409) appear next to the offending field.
 
 ---
 
@@ -131,6 +142,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
      - "Add Nested Group" (+ Logical AND/OR block).
      - "Remove Node" (trash icon).
   4. Real-time mathematical preview: Renders live formula string (e.g. `(CO221 AND CO222) OR (CO225 AND ≥ 45 Credits)`).
+* **Persistence:** saving goes to `PUT /api/v1/courses/{id}/prerequisites`, which is delivered by CF-203 and is **not available yet**. Build and test against a mock first. The body is the `PrerequisiteRule` tree (camelCase: `courseId`, `minCredits`, `children`); the backend will reject depth > 20, unknown `courseId`s and self-dependencies with 400/422.
 * **Acceptance Criteria:** Administrators can construct compound `AND`/`OR` trees visually; tree serializes directly to `PrerequisiteRule` contract and passes AST evaluation.
 
 ---
@@ -144,7 +156,10 @@ Malsha leads user-facing frontend component development, visual layout engineeri
 * **Implementation Details:**
   1. Drag-and-drop upload zone with animated dashed border and file drag states.
   2. File validation: Accepts `.pdf` and `.docx` up to 15 MB.
-  3. Progress telemetry: Upload progress bar and ingestion state indicator (`UPLOADING`, `EXTRACTING`, `READY_FOR_REVIEW`).
+  3. Progress telemetry: Upload progress bar and ingestion state indicator. `UPLOADING` is client-only (while the multipart request is in flight). After that, show the server job status from the CF-204 API: `PENDING` / `PROCESSING` -> "Extracting", `EXTRACTED` -> "Ready for review", `FAILED` -> error message, `COMMITTED` -> "Committed".
+  4. API contract (CF-204, not available yet; build against mocks first). All calls need the admin or reviewer token:
+     - `POST /api/v1/extraction/upload` (multipart field `file`): `202` with the new job; `200` with the existing job if identical bytes were uploaded before (same SHA256); `400` unsupported type; `413` over 15 MB.
+     - `GET /api/v1/extraction/jobs/{jobId}`: poll until `EXTRACTED` or `FAILED`.
   4. Staging table listing recent uploads: File Name, Size, Upload Time, Detected Course Code, Extraction Status, and "Review Extraction" action button.
 * **Acceptance Criteria:** Dragging a PDF initiates upload; progress is visually displayed; completed upload adds a row to the staging table with an active "Review" link.
 
@@ -171,6 +186,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
      - "Discard Extraction" button.
      - "Save Draft" button.
      - "Commit to Curriculum Database" button with confirmation modal summarizing changes.
+* **API contract (CF-204, not available yet):** field confidence scores arrive as numbers from `0.0` to `1.0` (badge thresholds 0.9 and 0.7). Commit is `POST /api/v1/extraction/jobs/{jobId}/commit` with the reviewed course payload; `409` means the job was already committed or is not in `EXTRACTED` state. The committed `contactHours` are hours per semester and a multi-semester course needs a valid `creditDistribution` (same rules as CF-212).
 * **Acceptance Criteria:** Split-screen renders PDF on left and editable extracted fields on right; clicking commit writes verified course data to PostgreSQL and redirects to canvas.
 
 ---

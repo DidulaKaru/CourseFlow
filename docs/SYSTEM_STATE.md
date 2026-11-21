@@ -7,6 +7,7 @@
 - **Active Branch:** `dev`
 - **Sprint 2 Goal:** Deliver an automated Module Information Sheet (MIS) Ingestion & Feature Extraction Engine capable of parsing syllabus PDFs/DOCXs, extracting metadata and prerequisite ASTs using a local Small Language Model (Qwen 2.5 7B via Ollama + Instructor), surfaced via a side-by-side human review screen with 1-click database commit. Deploy authenticated admin in-app module content editor.
 - **Sprint 2 Backlog Story Points:** 49 SP (11 User Stories) | **Engineering Execution:** 108 SP (20 Jira Tasks)
+- **Sprint 2 Progress:** CF-201 (faculty auth) and CF-202 (course CRUD endpoints) are implemented on their feature branches, PRs pending. No other Sprint 2 ticket has started. See section 9.
 
 ---
 
@@ -17,6 +18,10 @@
 - **Deterministic Layout:** Semesters strictly mapped to X-coordinates ($X = (\text{semesterIndex} - 1) \times 280\text{px}$ for 1-indexed semesters). Dagre handles Y-axis vertical ordering only.
 - **Propositional Logic AST:** Prerequisites stored natively in `JSONB` as recursive boolean trees (`AND`, `OR`, `COURSE`, `CREDIT_THRESHOLD`).
 - **Git Airlock:** Strict feature branching (`feature/<ticket>-<description>`) merged into `dev` via PR approval with green GitHub Actions CI gates.
+- **Faculty-Only Authentication (ADR-002):** The only authenticated surface is the faculty admin API (`/auth/*`, `/courses/*`, later `/extraction/*`). Student routes (`/programs`, `/plans`) stay public. Accounts come from environment variables, sessions are stateless JWTs, and there is no users table.
+- **Course Code Immutability:** A course code is its primary key and is referenced by prerequisite ASTs and corequisites, so admin endpoints never change it. Codes are unique catalog-wide.
+- **Canonical Extraction Job States:** `PENDING` -> `PROCESSING` -> `EXTRACTED` -> `COMMITTED`, or `FAILED`. Every API, UI and test uses these names.
+- **Single Migration Head:** Alembic revisions form one chain (`0001_initial_curriculum_tables` -> `0002_course_updated_at` -> `0003_extraction_jobs_table`); `backend/tests/test_migrations.py` enforces it.
 
 ---
 
@@ -169,8 +174,8 @@ A story is only marked **Done** in Jira when:
 #### Didula (Lead Architect & Backend Developer) — 23 SP
 | Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
 | :--- | :--- | :--- | :--- | :--- |
-| [ ] **CF-201** | Faculty Admin Authentication & Security Session Management | 5 | CF-EPIC-6 | JWT Bearer auth, RBAC dependencies, student routes remain 100% public. |
-| [ ] **CF-202** | In-App Course CRUD & Content Modification Endpoints | 5 | CF-EPIC-6 | PUT/PATCH endpoints persist course updates to PostgreSQL with credit validation. |
+| [x] **CF-201** | Faculty Admin Authentication & Security Session Management | 5 | CF-EPIC-6 | JWT Bearer auth, RBAC dependencies, student routes remain 100% public. |
+| [x] **CF-202** | In-App Course CRUD & Content Modification Endpoints | 5 | CF-EPIC-6 | PUT/PATCH endpoints persist course updates to PostgreSQL with credit validation. |
 | [ ] **CF-203** | Administrative Prerequisite & AST Persistence Service | 5 | CF-EPIC-6 | AST JSONB mutation with depth guard ($\le 20$) and no dangling references. |
 | [ ] **CF-204** | MIS Ingestion API & Extraction Review Endpoints | 5 | CF-EPIC-7 / CF-EPIC-9 | Multipart file upload, job status polling, and atomic database commit. |
 | [ ] **CF-205** | System Contract Sync & PR Merge Governance | 3 | All Epics | `npm run generate-types` syncs frontend types; zero regression quality gate enforced. |
@@ -210,3 +215,18 @@ Detailed individual engineering plans are preserved in:
 - [Ishani_Sprint2.md](file:///c:/Users/didul/Documents/GitHub/CourseFlow/plans/Ishani_Sprint2.md) (QA & DevOps Engineer)
 - [Anuththara_Sprint2.md](file:///c:/Users/didul/Documents/GitHub/CourseFlow/plans/Anuththara_Sprint2.md) (Database & AI Engineer)
 
+---
+
+## 9. Sprint 2 Execution Status
+
+- [x] **CF-201:** Faculty Admin Authentication implemented (`POST /api/v1/auth/login`, `/auth/refresh`, `GET /auth/me`; bcrypt hashing; PyJWT HS256 access tokens, 60-minute expiry; `ADMIN` and `FACULTY_REVIEWER` roles; `CurrentUser` / `AdminUser` / `StaffUser` guards; env-configured accounts with no default credentials; `backend/scripts/hash_password.py`). 32 tests. Branch `cf-201-faculty-admin-auth`, PR pending.
+- [x] **CF-202:** Admin course endpoints implemented (`POST /api/v1/courses`, `PUT` / `PATCH /api/v1/courses/{id}`; `ADMIN` only; credits 1 to 12, semester window, immutable unique codes, corequisite and credit-distribution checks, `courses.updated_at` via migration `0002_course_updated_at`). 74 tests. Branch `cf-202-course-crud-endpoints` (stacked on CF-201), PR pending.
+- [ ] **CF-203, CF-204, CF-205:** not started.
+- [ ] **CF-211 to CF-216 (Malsha), CF-221 to CF-225 (Ishani), CF-231 to CF-235 (Anuththara):** not started. Their plans were reconciled with the delivered backend contracts (job states, file ownership, migration numbering, contact-hour units, login and course payloads). See `plans/Didula_Sprint2.md` section 6.
+- Backend test suite: 151 tests; frontend Vitest suite: 157 tests.
+
+### Known Gaps (tracked in `plans/Didula_Sprint2.md` section 6)
+- Student-facing reads (`GET /programs`, the frontend catalog) still come from the bundled JSON files, so admin edits saved to PostgreSQL are not visible to students yet.
+- Database-backed tests run on in-memory SQLite; no CI job exercises PostgreSQL or the migrations on it (CF-225).
+- `docker-compose.yml` does not yet pass the auth settings to the backend container (CF-221).
+- Seeded `contactHours` are hours per semester although the schema comment says weekly.

@@ -12,6 +12,7 @@ These architectural decisions are finalized. Do not refactor or deviate from the
   - Students do not register or log in.
   - All state (selected electives, completed courses, custom plans) is persisted client-side in `localStorage` via Zustand middleware.
   - Plan portability is handled strictly via JSON import/export.
+  - The faculty admin API is the only authenticated surface (ADR-002). Never add an auth dependency to `/programs` or `/plans`.
 
 - **Single Database Instance:**
   - Do not create separate databases for courses and community data.
@@ -125,6 +126,7 @@ Once pushed, open GitHub, create a Pull Request targeting `dev` (never `main`), 
 
 - If Malsha (CourseNode UI / Details Drawer) needs module data while Anuththara is still assembling degree datasets, she must import `src/data/mock_course.json` directly into local components.
 - When the core datasets or APIs are ready, switching from `mock_course.json` to the Zustand store requires updating only the import statement.
+- **Faculty admin endpoints (Sprint 2):** the auth and course APIs are implemented, but there are no default credentials. To try a real login locally, run `python backend/scripts/hash_password.py`, put the result in `.env` as `ADMIN_PASSWORD_HASH='<hash>'` (single quotes, the hash contains `$`) and run `cd backend && python -m alembic upgrade head`. Until the extraction API (CF-204) and prerequisite API (CF-203) exist, develop those screens against mocks of the contracts in the sprint plans.
 
 ---
 

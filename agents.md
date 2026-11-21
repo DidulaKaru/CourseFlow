@@ -112,6 +112,7 @@ Atmospheric styling is driven dynamically by `document.documentElement.dataset.d
    - All planner state (`selectedElectiveIds`, `completedCourseIds`, `failedCourseIds`) persists in `localStorage` via Zustand middleware.
    - All store updates must support versioned migrations (`version: 1`, `migrate()`).
    - Plan portability is handled via JSON import/export.
+   - The faculty admin API is the only authenticated surface (ADR-002). Never add an auth dependency to `/programs` or `/plans`, and never send the admin token from student code paths.
 
 2. **Single Database Instance & Clean Migrations:**
    - Single PostgreSQL instance across all services.
@@ -142,6 +143,14 @@ Atmospheric styling is driven dynamically by `document.documentElement.dataset.d
 7. **Error Boundaries Everywhere:**
    - Wrap application root and viewport canvas in `<ErrorBoundary>`.
    - Never allow unhandled React render exceptions to produce a blank white screen.
+
+8. **Faculty Admin API (Sprint 2):**
+   - Mutating routes use the guards in `backend/app/api/deps.py` (`AdminUser`, `StaffUser`). Course routes are guarded at router level; keep it that way for routes added later.
+   - Course codes are immutable, catalog-unique primary keys. Credits are 1 to 12 and a credit distribution must sum to `totalCredits` (`check_distribution` in `course_service.py`). Do not re-implement these rules elsewhere (ingestion, AST endpoints); call the shared service code.
+   - Extraction job states are `PENDING`, `PROCESSING`, `EXTRACTED`, `COMMITTED`, `FAILED`. Do not introduce synonyms (`COMPLETED`, `READY`, ...).
+
+9. **Schema Migrations:**
+   - Every column or table change ships with an Alembic revision chained onto the latest one (`alembic heads` must print exactly one head; `backend/tests/test_migrations.py` enforces it).
 
 ---
 
@@ -201,3 +210,5 @@ If ANY command fails:
 - [ ] Does dynamic catalog resolution adapt to the active degree program?
 - [ ] Have I written an automated regression test in `__tests__/` for the fix?
 - [ ] Did `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, and backend tests all pass with 0 errors?
+- [ ] Backend change: does it add a migration (single head), keep `/programs` and `/plans` public, and add tests that use the shared `db_client` / `admin_headers` fixtures?
+- [ ] If Pydantic schemas changed, did I regenerate `frontend/src/types/api.ts` (`npm --workspace=frontend run generate-types` with the backend running)?

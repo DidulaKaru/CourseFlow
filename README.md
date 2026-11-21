@@ -78,6 +78,7 @@ CourseFlow formalizes curriculum planning by treating an academic degree program
 | **State Management** | Zustand (persist middleware) | Reactive graph state and zero-login local-first persistence via `localStorage`. |
 | **Document Generation** | @react-pdf/renderer | Client-side reactive generation of exportable study plan PDFs. |
 | **Backend API** | Python (FastAPI), Uvicorn | Async high-performance REST API with Pydantic validation and type sync. |
+| **Faculty Authentication** | PyJWT, bcrypt | Stateless JWT sessions and salted password hashes for the faculty admin API only; students never log in. |
 | **Primary Database** | PostgreSQL with pgvector | Unified ACID relational storage, `JSONB` for AST trees, and vector embeddings. |
 | **Graph Mathematics Engine** | NetworkX & TypeScript | In-memory cycle detection, Kahn's topological sort, and critical path analysis. |
 | **Document Ingestion** | pdfplumber, DocTR / Tesseract | Deterministic PDF tabular parsing with OCR fallback for scanned syllabi. |
@@ -94,7 +95,7 @@ courseflow/
 ├── .github/workflows/ci.yml       # Automated Typecheck, Lint, Test & Build gate
 ├── docs/                          # Durable architectural documentation
 │   ├── SYSTEM_STATE.md            # Live sprint ledger and system invariants
-│   ├── adr/                       # Architectural Decision Records (ADR-001)
+│   ├── adr/                       # Architectural Decision Records (ADR-001, ADR-002)
 │   └── ARCHITECTURE.md            # Master architecture & technical specification
 ├── plans/                         # Sprint phase-by-phase implementation plans
 │   ├── Didula_Sprint1.md          # Lead Architect & Backend Developer (Sprint 1)
@@ -107,7 +108,7 @@ courseflow/
 │   └── Anuththara_Sprint2.md      # Database & AI Engineering Lead (Sprint 2)
 ├── backend/                       # Python FastAPI Backend Service
 │   ├── CONTEXT.md
-│   ├── app/                       # FastAPI application (main, config, api, models, schemas)
+│   ├── app/                       # FastAPI application (main, core/security, api, models, schemas, services)
 │   ├── alembic/                   # Database schema migrations
 │   ├── tests/                     # Pytest suite
 │   ├── scripts/                   # Database seed and startup scripts
@@ -194,6 +195,27 @@ powershell -File backend/scripts/start_db.ps1
 cd backend && python scripts/seed_db.py
 ```
 
+### Faculty Admin Login (Sprint 2)
+
+Admin endpoints (`/api/v1/auth/*`, `/api/v1/courses/*`) need a faculty account. There are no default credentials; accounts come from environment variables:
+
+```powershell
+# 1. Generate a bcrypt hash (prompts for the password without echoing it)
+python backend/scripts/hash_password.py
+
+# 2. Put it in .env (single quotes: bcrypt hashes contain $)
+#    ADMIN_USERNAME=admin
+#    ADMIN_PASSWORD_HASH='<hash from step 1>'
+#    SECRET_KEY=<long random string; the default is refused in production>
+
+# 3. Apply schema migrations (adds courses.updated_at)
+cd backend && python -m alembic upgrade head
+#    A database created earlier by seed_db.py has no alembic_version table: run
+#    `python -m alembic stamp 0001_initial_curriculum_tables` once before `upgrade head`.
+```
+
+Then `POST /api/v1/auth/login` with `{ "username", "password" }` returns a bearer token (60 minutes). See `docs/adr/ADR-002-faculty-admin-authentication.md`.
+
 ### Quality Verification
 
 Before pushing code or opening a Pull Request, verify that all static checks pass:
@@ -229,6 +251,7 @@ python -m pytest backend/tests
   - **Sprint Window:** November 02, 2026 – November 22, 2026 (3 Weeks)
   - **Sprint Goal:** Deliver an automated Module Information Sheet (MIS) Ingestion & Feature Extraction Engine capable of parsing syllabus PDFs/DOCXs, extracting metadata and prerequisite ASTs using a local Small Language Model (Qwen 2.5 7B via Ollama + Instructor), surfaced via a side-by-side human review screen with 1-click database commit. Deploy authenticated admin in-app module content editor.
   - **Backlog & Engineering Scope:** 11 User Stories (49 SP, US015–US025) | 20 Granular Jira Tasks (108 SP, CF-201–CF-235)
+  - **Progress:** CF-201 (faculty authentication) and CF-202 (admin course endpoints) are implemented with PRs pending; all other tickets are not started. Live status is in `docs/SYSTEM_STATE.md`.
   - **Target Epics:**
     - `CF-EPIC-6`: Faculty Admin Authentication & In-App Course Editor (Lead: Didula & Malsha)
     - `CF-EPIC-7`: MIS Document Ingestion & Text Parsing Pipeline (Lead: Anuththara & Ishani)

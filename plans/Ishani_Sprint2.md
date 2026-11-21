@@ -84,6 +84,7 @@ Ishani leads quality assurance, continuous integration, test automation, and loc
   3. Implement startup hook: `backend/scripts/init-ollama.sh` that checks if `qwen2.5:7b-instruct` is pulled and initiates `ollama pull qwen2.5:7b-instruct` on first run.
   4. Expose port `11434` with health check probe: `curl -f http://localhost:11434/api/tags || exit 1`.
   5. Configure NVIDIA container runtime parameters for GPU acceleration with automatic fallback to multi-threaded CPU inference.
+  6. Pass the backend settings through the `backend` service in `docker-compose.yml`: `SECRET_KEY`, `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, `REVIEWER_USERNAME`, `REVIEWER_PASSWORD_HASH` (faculty login from CF-201 cannot work in Docker without them) and `OLLAMA_BASE_URL=http://ollama:11434` (setting defined in Anuththara's CF-232). `.env.example` already documents the auth variables; bcrypt hashes contain `$`, so keep them in single quotes in `.env` (or escape as `$$`) or Compose will expand them.
 * **Acceptance Criteria:** Running `docker compose up` starts database, backend, frontend, and Ollama; Ollama responds with status 200 on port 11434 with Qwen 2.5 model ready.
 
 ---
@@ -95,16 +96,19 @@ Ishani leads quality assurance, continuous integration, test automation, and loc
   - `backend/tests/conftest.py`
 * **Implementation Details:**
   1. Test file upload validation:
-     - Valid PDF upload returns HTTP 202 / 200 with `job_id`.
+     - Valid PDF upload returns HTTP 202 Accepted with the job (`jobId`, status `PENDING`); uploading identical bytes again (same SHA256) returns 200 with the existing job instead of creating a new one.
+     - All extraction routes require a token: anonymous requests return 401; both `ADMIN` and `FACULTY_REVIEWER` accounts are allowed.
      - Unsupported MIME types (e.g. `.exe`, `.jpg`) return 400 Bad Request.
      - Files exceeding 15 MB return 413 Payload Too Large.
   2. Test extraction job polling:
-     - `GET /api/v1/extraction/jobs/{job_id}` returns valid status progression (`PENDING` -> `PROCESSING` -> `COMPLETED`).
+     - `GET /api/v1/extraction/jobs/{job_id}` returns valid status progression (`PENDING` -> `PROCESSING` -> `EXTRACTED`, or `FAILED` when the parser raises `ExtractionError`). `EXTRACTED` replaces the earlier name `COMPLETED`: the canonical states are defined in Anuththara's CF-235.
      - Non-existent job ID returns 404 Not Found.
   3. Test database commit:
      - `POST /api/v1/extraction/jobs/{job_id}/commit` inserts course, prerequisite AST, and credit distributions into PostgreSQL.
-     - Re-committing an already committed job returns 409 Conflict.
-  4. Deterministic offline mocking: Provide mock fixtures for Ollama LLM client to ensure tests run reliably in CI without requiring local GPU hardware.
+     - Re-committing an already committed job returns 409 Conflict; committing a job that is not yet `EXTRACTED` (e.g. `PENDING` or `FAILED`) also returns 409.
+  4. Deterministic offline mocking: Provide mock fixtures for Ollama LLM client to ensure tests run reliably in CI without requiring local GPU hardware. Replace the client via `app.dependency_overrides` on `get_llm_client()` (Anuththara's CF-232).
+  5. Reuse the shared fixtures already in `backend/tests/conftest.py`: `db_client` (TestClient on an in-memory database), `session_factory` / `db_session`, `admin_headers` and `reviewer_headers`. Add new fixtures there rather than creating a second conftest.
+  6. Naming: this suite is `test_extraction_api.py` (HTTP-level); Didula's CF-204 service/unit tests are `test_extraction.py`.
 * **Acceptance Criteria:** Pytest integration suite passes cleanly with zero network dependencies in under 8 seconds.
 
 ---
@@ -113,7 +117,7 @@ Ishani leads quality assurance, continuous integration, test automation, and loc
 * **Description:** Create a curated fixture library of real-world syllabus documents to test the robustness of the `pdfplumber` and OCR extraction pipelines.
 * **Target Files:**
   - `backend/tests/fixtures/syllabi/`
-  - `backend/tests/test_pdf_parser.py`
+  - `backend/tests/test_pdf_fixtures.py` (a separate file: `test_pdf_parser.py` belongs to Anuththara's CF-231 unit tests)
 * **Implementation Details:**
   1. Curate test fixtures:
      - `standard_course.pdf`: Clean text with standard contact hour table.
@@ -136,9 +140,11 @@ Ishani leads quality assurance, continuous integration, test automation, and loc
   - `src/features/admin/components/__tests__/AstVisualEditor.test.tsx`
 * **Implementation Details:**
   1. `authStore.test.ts`:
-     - Successful login saves JWT token and updates role to `ADMIN`.
-     - Logout clears token from memory and `localStorage`.
-     - Rehydrating expired token automatically triggers logout.
+     - Successful login (mock `POST /api/v1/auth/login` returning `{ accessToken, tokenType, expiresIn, user: { username, role, permissions } }`) saves the JWT, computes `expiresAt` from `expiresIn`, and updates role to `ADMIN`.
+     - Failed login (HTTP 401 `{ detail }`) leaves the store logged out and exposes the error message.
+     - Logout clears token from memory and `localStorage`; any 401 from an admin API call also logs out.
+     - Rehydrating an expired token (`expiresAt` in the past) automatically triggers logout.
+     - `refresh()` replaces the token via `POST /api/v1/auth/refresh`; a `FACULTY_REVIEWER` account does not expose the `courses:write` permission.
   2. `CourseEditorModal.test.tsx`:
      - Renders form pre-populated with existing course values.
      - Validates required fields (code, title, credits).
@@ -163,7 +169,9 @@ Ishani leads quality assurance, continuous integration, test automation, and loc
   2. Add frontend audit job:
      - Run `npm audit --audit-level=high`.
   3. Pre-commit hook configuration:
-     - Enforce secret scanning to prevent accidental commit of JWT secrets, Neon database passwords, or private API keys.
+     - Enforce secret scanning to prevent accidental commit of JWT secrets, Neon database passwords, or private API keys. Allow-list the placeholder values in `.env.example` (e.g. `ADMIN_PASSWORD_HASH='replace-with-bcrypt-hash-of-admin-password'`).
+  4. PostgreSQL CI job: add a service container (`pgvector/pgvector:pg16`) that runs `alembic upgrade head` and `pytest backend/tests`. Today every database-backed test (courses, migrations) runs on in-memory SQLite, so native `JSONB` behaviour and migrations `0002_course_updated_at` / `0003_extraction_jobs_table` are not yet verified on the real engine.
+  5. Dependency audit scope: `PyJWT` and `bcrypt` are new backend dependencies (CF-201), and `bandit` will scan `backend/scripts/hash_password.py` (it reads a password from the terminal by design).
 * **Acceptance Criteria:** Security scan runs on all PRs targeting `dev`; any high-severity vulnerability or exposed secret fails the pipeline.
 
 ---
