@@ -34,3 +34,10 @@ def test_all_quality_gate_commands_present():
     for command in ("npm ci", "npm run lint", "npm test", "npm run build",
                     "ruff check backend/", "pytest backend/tests"):
         assert command in text
+
+
+def test_backend_coverage_threshold_is_enforced():
+    # CF-124: CI must fail if backend coverage drops below 85%.
+    text = _text()
+    assert "--cov=backend/app" in text
+    assert "--cov-fail-under=85" in text

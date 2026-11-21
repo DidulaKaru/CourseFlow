@@ -65,5 +65,5 @@ jobs:
       - name: Python Linter Check (Ruff)
         run: ruff check backend/
 
-      - name: Automated Backend Tests (Pytest)
-        run: pytest backend/tests
+      - name: Automated Backend Tests (Pytest + Coverage >= 85%)
+        run: pytest backend/tests --cov=backend/app --cov-report=term-missing --cov-fail-under=85
