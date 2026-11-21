@@ -15,16 +15,21 @@
     "test": "npm --workspace=frontend test",
     "typecheck": "npm --workspace=frontend run typecheck",
     "preview": "npm --workspace=frontend run preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "format:check": "prettier --check \"**/*.json\""
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
     "husky": "^9.1.7",
-    "lint-staged": "^17.6.0"
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.10.1"
   },
   "lint-staged": {
     "frontend/**/*.{js,jsx,ts,tsx}": [
       "npm --workspace=frontend run lint"
+    ],
+    "**/*.json": [
+      "prettier --write"
     ],
     "backend/**/*.py": [
       "python -m ruff check"
