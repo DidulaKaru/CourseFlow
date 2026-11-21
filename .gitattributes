@@ -1,0 +1,5 @@
+# Shell scripts run inside Linux containers / git hooks: always check out with LF.
+# With core.autocrlf=true (Windows default) they would otherwise get CRLF and fail
+# with "exec /app/entrypoint.sh: no such file or directory" (CF-121).
+*.sh text eol=lf
+.husky/* text eol=lf
