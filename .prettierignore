@@ -1,0 +1,6 @@
+node_modules
+dist
+package-lock.json
+# Official curriculum catalog data: keep byte-stable, never reformat
+backend/data
+frontend/src/data
