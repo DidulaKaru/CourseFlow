@@ -77,31 +77,25 @@ In unconstrained graph viewports, scrolling up with a mouse wheel or trackpad pa
 
 ---
 
-## 3. Skyrim Constellation Skill Tree Aesthetic Invariants
+## 3. UI Design Invariants (Friendly, Light, Mobile-First)
 
-CourseFlow is modeled after the *Elder Scrolls V: Skyrim* Perk Constellation Menu. It is not an administrative spreadsheet or a toy flowchart.
+The Skyrim perk-constellation theme is **retired**: users found it too hostile. CourseFlow is now a friendly, inviting study planner, and most students use it on a phone. The full system is in [`design-philosophy.md`](design-philosophy.md), and Claude Code agents also get the `/courseflow-ui` skill. Where any sprint plan or older doc asks for Skyrim styling (obsidian glass, Cinzel, glowing beams, diamond pips), `design-philosophy.md` wins.
 
-```mermaid
-flowchart TD
-    Void["Deep Obsidian Void (#030508)"] --> Canvas["Translucent Glass Nodes (bg-[#070B12]/85, border-white/10)"]
-    Canvas --> Pips["45° Diamond Star Core Pips (rotate-45, bg-[var(--star-pip)])"]
-    Canvas --> Beams["Ancestry Laser Beams (Cyan Prerequisites, Emerald Unlocked)"]
-    Canvas --> HUD["Cinzel All-Caps HUD & JetBrains Mono Technical Telemetry"]
-```
+### Non-negotiables
+- **Phone first:** design at 375px (minimum 320px), then enhance for desktop. Below 768px the semester list is the default view, and course details open in a bottom sheet.
+- **Mobile ergonomics:** touch targets of at least 44px, body text 16px, nothing below 12px, no horizontal scroll, no hover-only affordances, primary actions in the thumb zone with safe-area insets, `min-h-dvh` instead of `h-screen`, and pinch zoom never disabled.
+- **Light and warm:** use the tokens (`bg-canvas`, `bg-surface`, `border-line`, `text-ink*`, `accent*`, status colors). Never put raw hex in classes. Don't use dark backgrounds, glows, neon or gradients.
+- **Soft shapes:** `rounded-2xl` cards, `rounded-xl` buttons and inputs, `rounded-full` chips, gentle `shadow-sm`.
+- **States never rely on color alone:** pair color with a Lucide icon and a label. No emoji.
+- **Friendly, specific copy:** a blocked course explains how to unlock it, and errors reassure and offer a way forward.
+- **Preserve Academic Strings Verbatim:** course codes (`CO544`), official module titles and credit numbers are formal university catalog data. Never edit, rephrase or translate them.
+- **Accessibility:** WCAG AA contrast, keyboard parity, visible focus, and `prefers-reduced-motion` respected.
 
-### Prohibited "Vibe-Coding" Anti-Patterns
-- **No Bubble Geometry:** Never use `rounded-2xl`, `rounded-3xl`, or `rounded-full` on cards or panels. Always use `rounded-sm` ($2\text{px}$) or `rounded-none`.
-- **No Cartoon Shadows or Neon Gradients:** Never introduce saturated purple, pink, or rainbow glow kits (`shadow-purple-500/50`). Use subtle starlight aura glows (`shadow-[0_0_8px_var(--constellation-beam-glow)]`).
-- **No Solid White Cards:** Course cards and modal panels are dark translucent glass (`bg-[#070B12]/85 backdrop-blur-sm`).
-- **No Thick Borders:** All borders and dividers are razor-thin $1\text{px}$ hairlines (`border-white/10` or `border-white/15`).
-- **No Emojis in Headers or Status Pills:** Never put emojis (🚀, 🎓, ⚠️, ❌) in production HUDs or badges. Use Lucide icons or diamond star pips (`rotate-45 w-2 h-2`).
-- **Preserve Academic Strings Verbatim:** Course codes (`CO544`), official module titles, and credit numbers are formal university catalog data. Never edit, rephrase, or translate them.
+### Department themes
+The accent switches on `document.documentElement.dataset.department`: **CE** is teal (`#0F766E`) and **EE** is warm orange (`#C2410C`). Components use only the `accent` / `accent-strong` / `accent-soft` utilities.
 
-### Department Constellation Themes
-Atmospheric styling is driven dynamically by `document.documentElement.dataset.department`:
-- **Computer Engineering (`data-department="ce"`)**: *Aetherius Frost / Mage Constellation* (Frost blue, cyan starlight laser beams `#00F0FF`, accent `#38BDF8`).
-- **Electrical Engineering (`data-department="ee"`)**: *Dwemer Forge / High-Voltage Constellation* (Dwemer bronze, high-voltage amber beams `#F59E0B`, accent `#D97706`).
-- Always use CSS variables for theme accents: `var(--constellation-beam)`, `var(--constellation-beam-glow)`, `var(--accent-primary)`, `var(--star-pip)`.
+### Migration
+Existing components still carry the legacy theme. `scripts/check_invariants.py` (`ui-migration`) holds **new or changed lines** to the new system, so components migrate as they are touched (see the mapping table in design-philosophy.md section 10).
 
 ---
 

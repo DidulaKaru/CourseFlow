@@ -14,6 +14,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  invariants:
+    name: Repository Invariants
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Code (full history for base-ref diffs)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Invariant Checks (catalog, UI aesthetic, canvas camera, store, tests)
+        # Executable form of agents.md / CLAUDE.md. Diffs against the PR base so catalog
+        # facts cannot change silently and fix/ branches must ship a regression test.
+        env:
+          CF_BASE_REF: origin/${{ github.base_ref || 'dev' }}
+        run: python scripts/check_invariants.py
+
   frontend:
     name: Frontend Quality Gate
     runs-on: ubuntu-latest
