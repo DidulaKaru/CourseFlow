@@ -6,6 +6,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -58,3 +60,34 @@ def test_updated_at_migration_upgrades_and_downgrades(tmp_path: Path):
     assert "updated_at" not in course_columns(database)
     with sqlite3.connect(database) as connection:
         assert connection.execute("SELECT COUNT(*) FROM courses").fetchone()[0] == 1
+
+
+def table_names(database_path: Path) -> set[str]:
+    with sqlite3.connect(database_path) as connection:
+        return {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+
+
+def test_extraction_jobs_migration_upgrades_and_downgrades(tmp_path: Path):
+    """CF-204: 0003 creates extraction_jobs with a unique file_hash and removes it cleanly."""
+    database = tmp_path / "extraction.db"
+
+    alembic(database, "upgrade", "0002_course_updated_at")
+    assert "extraction_jobs" not in table_names(database)
+
+    alembic(database, "upgrade", "head")
+    assert "extraction_jobs" in table_names(database)
+    insert = (
+        "INSERT INTO extraction_jobs (id, filename, content_type, file_hash, status) "
+        "VALUES (?, 'mis.pdf', 'application/pdf', ?, 'PENDING')"
+    )
+    with sqlite3.connect(database) as connection:
+        connection.execute(insert, ("job-1", "f" * 64))
+        stamps = connection.execute("SELECT created_at, updated_at FROM extraction_jobs").fetchone()
+        assert all(stamps)
+        # file_hash is unique so identical uploads share one job.
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute(insert, ("job-2", "f" * 64))
+
+    alembic(database, "downgrade", "0002_course_updated_at")
+    assert "extraction_jobs" not in table_names(database)
+    assert "courses" in table_names(database)

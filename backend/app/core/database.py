@@ -43,3 +43,8 @@ def get_db() -> Generator:
         yield db
     finally:
         db.close()
+
+
+def get_session_factory() -> sessionmaker:
+    """Session factory dependency for work that outlives the request (background extraction jobs)."""
+    return SessionLocal

@@ -192,6 +192,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/extraction/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Syllabus Document
+         * @description Multipart field `file`: a PDF or DOCX of at most 15 MB. A new document returns 202 with a PENDING job that is processed in the background; poll the job until it is EXTRACTED or FAILED. Identical bytes return 200 with the existing job (a FAILED job is retried instead).
+         */
+        post: operations["upload_document_api_extraction_upload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/extraction/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Extraction Job
+         * @description Job status, extracted course data and per-field confidence scores (0.0 to 1.0).
+         */
+        get: operations["get_extraction_job_api_extraction_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/extraction/jobs/{job_id}/commit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Commit Reviewed Extraction
+         * @description Writes the reviewed course (fields, credit distribution and prerequisite rule) and marks the job COMMITTED in one transaction. Only EXTRACTED jobs can be committed. A new code creates the course in `programId`; an existing code replaces that course, which must already belong to `programId`.
+         */
+        post: operations["commit_extraction_job_api_extraction_jobs__job_id__commit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/programs": {
         parameters: {
             query?: never;
@@ -400,6 +460,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/extraction/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Syllabus Document
+         * @description Multipart field `file`: a PDF or DOCX of at most 15 MB. A new document returns 202 with a PENDING job that is processed in the background; poll the job until it is EXTRACTED or FAILED. Identical bytes return 200 with the existing job (a FAILED job is retried instead).
+         */
+        post: operations["upload_document_api_v1_extraction_upload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/extraction/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Extraction Job
+         * @description Job status, extracted course data and per-field confidence scores (0.0 to 1.0).
+         */
+        get: operations["get_extraction_job_api_v1_extraction_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/extraction/jobs/{job_id}/commit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Commit Reviewed Extraction
+         * @description Writes the reviewed course (fields, credit distribution and prerequisite rule) and marks the job COMMITTED in one transaction. Only EXTRACTED jobs can be committed. A new code creates the course in `programId`; an existing code replaces that course, which must already belong to `programId`.
+         */
+        post: operations["commit_extraction_job_api_v1_extraction_jobs__job_id__commit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/programs": {
         parameters: {
             query?: never;
@@ -551,6 +671,16 @@ export interface components {
             role: components["schemas"]["UserRole"];
             /** Permissions */
             permissions?: string[];
+        };
+        /** Body_upload_document_api_extraction_upload_post */
+        Body_upload_document_api_extraction_upload_post: {
+            /** File */
+            file: string;
+        };
+        /** Body_upload_document_api_v1_extraction_upload_post */
+        Body_upload_document_api_v1_extraction_upload_post: {
+            /** File */
+            file: string;
         };
         /**
          * ContactHours
@@ -952,6 +1082,161 @@ export interface components {
              */
             semestersCount: number;
         };
+        /**
+         * ExtractionCommitRequest
+         * @description The reviewer's corrected course, written to the catalog in one transaction.
+         *
+         *     A new code creates the course inside ``programId``; an existing code replaces that course's editable
+         *     fields (it must already belong to ``programId``). ``prerequisiteRule`` replaces the stored rule; null clears it.
+         */
+        ExtractionCommitRequest: {
+            /**
+             * Code
+             * @description Unique official course code, e.g. CO544
+             */
+            code: string;
+            /** Title */
+            title: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Totalcredits */
+            totalCredits: number;
+            /**
+             * Durationsemesters
+             * @default 1
+             */
+            durationSemesters: number;
+            /** Recommendedsemester */
+            recommendedSemester: number;
+            type: components["schemas"]["CourseType"];
+            /** Offeredsemesters */
+            offeredSemesters?: components["schemas"]["SemesterTerm"][];
+            /** Corequisites */
+            corequisites?: string[];
+            /** Syllabusobjectives */
+            syllabusObjectives?: string[];
+            /** @description Null clears stored contact hours */
+            contactHours?: components["schemas"]["ContactHours"] | null;
+            /**
+             * Creditdistribution
+             * @description Per-semester credit split. Omit for single-semester courses (derived automatically); required when a multi-semester course changes credits, duration or start semester.
+             */
+            creditDistribution?: components["schemas"]["CreditDistribution"][] | null;
+            /**
+             * Programid
+             * @description Degree program that will own the course
+             */
+            programId: string;
+            /**
+             * Prerequisiterule
+             * @description Reviewed prerequisite AST
+             */
+            prerequisiteRule?: (components["schemas"]["CourseRuleNode"] | components["schemas"]["CreditThresholdRuleNode"] | components["schemas"]["LogicalRuleNode"]) | null;
+        };
+        /**
+         * ExtractionCommitResponse
+         * @description Standard success envelope for a commit.
+         */
+        ExtractionCommitResponse: {
+            /**
+             * Success
+             * @default true
+             * @constant
+             */
+            success: true;
+            data: components["schemas"]["ExtractionCommitResult"];
+        };
+        /**
+         * ExtractionCommitResult
+         * @description The committed job together with the course as now stored.
+         */
+        ExtractionCommitResult: {
+            job: components["schemas"]["ExtractionJob"];
+            course: components["schemas"]["AdminCourse"];
+        };
+        /**
+         * ExtractionJob
+         * @description An uploaded syllabus document and what has been extracted from it so far.
+         */
+        ExtractionJob: {
+            /**
+             * Jobid
+             * @description UUID of the extraction job
+             */
+            jobId: string;
+            /**
+             * Filename
+             * @description Original uploaded file name
+             */
+            filename: string;
+            /**
+             * Contenttype
+             * @description MIME type of the uploaded document
+             */
+            contentType: string;
+            /**
+             * Filehash
+             * @description SHA256 of the file bytes; identical uploads share one job
+             */
+            fileHash: string;
+            status: components["schemas"]["ExtractionJobStatus"];
+            /**
+             * Extracteddata
+             * @description Extracted course fields and prerequisite AST (EXTRACTED and later)
+             */
+            extractedData?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Confidencescores
+             * @description Field name -> extraction confidence from 0.0 to 1.0
+             */
+            confidenceScores?: {
+                [key: string]: number;
+            } | null;
+            /**
+             * Errormessage
+             * @description Why extraction failed (FAILED only)
+             */
+            errorMessage?: string | null;
+            /**
+             * Committedcourseid
+             * @description Course written by the commit (COMMITTED only)
+             */
+            committedCourseId?: string | null;
+            /**
+             * Createdat
+             * Format: date-time
+             */
+            createdAt: string;
+            /**
+             * Updatedat
+             * Format: date-time
+             */
+            updatedAt: string;
+        };
+        /**
+         * ExtractionJobResponse
+         * @description Standard success envelope for a single extraction job.
+         */
+        ExtractionJobResponse: {
+            /**
+             * Success
+             * @default true
+             * @constant
+             */
+            success: true;
+            data: components["schemas"]["ExtractionJob"];
+        };
+        /**
+         * ExtractionJobStatus
+         * @description Canonical job states: PENDING -> PROCESSING -> EXTRACTED (ready for review) -> COMMITTED, or FAILED.
+         * @enum {string}
+         */
+        ExtractionJobStatus: "PENDING" | "PROCESSING" | "EXTRACTED" | "COMMITTED" | "FAILED";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1635,6 +1920,189 @@ export interface operations {
             };
         };
     };
+    upload_document_api_extraction_upload_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_document_api_extraction_upload_post"];
+            };
+        };
+        responses: {
+            /** @description Identical file uploaded before; its existing job */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionJobResponse"];
+                };
+            };
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionJobResponse"];
+                };
+            };
+            /** @description Not a PDF or DOCX document */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not faculty staff */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Document larger than 15 MB */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_extraction_job_api_extraction_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionJobResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not faculty staff */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Extraction job not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    commit_extraction_job_api_extraction_jobs__job_id__commit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtractionCommitRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionCommitResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not faculty staff */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Extraction job or degree program not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Job not ready for commit, already committed, or the course conflicts */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The reviewed course breaks a catalog rule */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     list_programs_api_programs_get: {
         parameters: {
             query?: never;
@@ -2144,6 +2612,189 @@ export interface operations {
                 content?: never;
             };
             /** @description Validation failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    upload_document_api_v1_extraction_upload_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_document_api_v1_extraction_upload_post"];
+            };
+        };
+        responses: {
+            /** @description Identical file uploaded before; its existing job */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionJobResponse"];
+                };
+            };
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionJobResponse"];
+                };
+            };
+            /** @description Not a PDF or DOCX document */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not faculty staff */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Document larger than 15 MB */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_extraction_job_api_v1_extraction_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionJobResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not faculty staff */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Extraction job not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    commit_extraction_job_api_v1_extraction_jobs__job_id__commit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtractionCommitRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionCommitResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not faculty staff */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Extraction job or degree program not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Job not ready for commit, already committed, or the course conflicts */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The reviewed course breaks a catalog rule */
             422: {
                 headers: {
                     [name: string]: unknown;

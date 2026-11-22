@@ -61,13 +61,15 @@ backend/app/
   main.py                      routers mounted at BOTH /api and /api/v1; GET / and /api/health
   api/deps.py                  auth guards: CurrentUser / AdminUser / StaffUser, DbSession
   api/v1/endpoints/            programs.py (GET /programs, /programs/{id}), plans.py (POST /plans/validate) are PUBLIC;
-                               auth.py (/auth/login, /refresh, /me) and courses.py (POST, PUT, PATCH; ADMIN only)
+                               auth.py (/auth/login, /refresh, /me), courses.py (POST, PUT, PATCH; ADMIN only),
+                               extraction.py (/extraction/upload, /jobs/{id}, /jobs/{id}/commit; StaffUser)
   core/ast_evaluator.py        Python mirror of the TS evaluator
   core/security.py             bcrypt hashing, env-configured staff accounts, JWT issue/verify
   services/course_service.py   admin course rules + transactions (check_distribution is shared with CF-203/CF-235)
+  services/extraction_service.py  MIS job lifecycle; ExtractionPipeline seam (get_extraction_pipeline) for CF-231..234
   core/config.py               settings; DATA_PROGRAMS_DIR resolves backend/data → frontend/src/data → container path
   schemas/                     Pydantic DTOs, camelCase aliases (to_camel) mirroring types/curriculum.ts 1:1
-  models/, alembic/            SQLAlchemy models and migrations (0001 initial, 0002 courses.updated_at)
+  models/, alembic/            SQLAlchemy models and migrations (0001 initial, 0002 courses.updated_at, 0003 extraction_jobs)
 backend/data/programs/*.json   copy of the frontend catalogs (used by serverless deploys)
 ```
 
