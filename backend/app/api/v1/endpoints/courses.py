@@ -35,7 +35,7 @@ _ERROR_RESPONSES: dict[int | str, dict[str, str]] = {
 }
 
 
-def _http_error(error: course_service.CourseServiceError) -> HTTPException:
+def course_http_error(error: course_service.CourseServiceError) -> HTTPException:
     """Translate service errors into HTTP responses; 422s mirror FastAPI's validation error shape."""
     if isinstance(error, CourseNotFoundError):
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error))
@@ -66,7 +66,7 @@ def create_course(payload: CourseCreate, db: DbSession) -> CourseResponse:
     try:
         return CourseResponse(data=course_service.create_course(db, payload))
     except course_service.CourseServiceError as error:
-        raise _http_error(error) from None
+        raise course_http_error(error) from None
 
 
 @router.put(
@@ -81,7 +81,7 @@ def replace_course(course_id: str, payload: CourseUpdate, db: DbSession) -> Cour
     try:
         return CourseResponse(data=course_service.replace_course(db, course_id, payload))
     except course_service.CourseServiceError as error:
-        raise _http_error(error) from None
+        raise course_http_error(error) from None
 
 
 @router.patch(
@@ -96,7 +96,7 @@ def patch_course(course_id: str, payload: CoursePatch, db: DbSession) -> CourseR
     try:
         return CourseResponse(data=course_service.patch_course(db, course_id, payload))
     except course_service.CourseServiceError as error:
-        raise _http_error(error) from None
+        raise course_http_error(error) from None
 
 
 @router.put(
@@ -115,7 +115,7 @@ def replace_prerequisites(course_id: str, rule: PrerequisiteRule, db: DbSession)
     try:
         return CourseResponse(data=course_service.set_prerequisite_rule(db, course_id, rule))
     except course_service.CourseServiceError as error:
-        raise _http_error(error) from None
+        raise course_http_error(error) from None
 
 
 @router.delete(
@@ -130,7 +130,7 @@ def clear_prerequisites(course_id: str, db: DbSession) -> CourseResponse:
     try:
         return CourseResponse(data=course_service.set_prerequisite_rule(db, course_id, None))
     except course_service.CourseServiceError as error:
-        raise _http_error(error) from None
+        raise course_http_error(error) from None
 
 
 @router.put(
@@ -148,4 +148,4 @@ def replace_credit_distribution(course_id: str, entries: list[CreditDistribution
     try:
         return CourseResponse(data=course_service.set_credit_distribution(db, course_id, entries))
     except course_service.CourseServiceError as error:
-        raise _http_error(error) from None
+        raise course_http_error(error) from None

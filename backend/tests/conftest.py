@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 from app.core.config import settings
-from app.core.database import Base, get_db
+from app.core.database import Base, get_db, get_session_factory
 from app.core.security import create_access_token, get_staff_accounts, hash_password
 from app.main import app
 from app.schemas.curriculum import (
@@ -108,11 +108,14 @@ def db_client(session_factory: sessionmaker[Session]) -> Generator[TestClient, N
             yield session
 
     app.dependency_overrides[get_db] = override_get_db
+    # Background work (CF-204 extraction jobs) opens its own sessions; point it at the same database.
+    app.dependency_overrides[get_session_factory] = lambda: session_factory
     try:
         with TestClient(app) as test_client:
             yield test_client
     finally:
         app.dependency_overrides.pop(get_db, None)
+        app.dependency_overrides.pop(get_session_factory, None)
 
 
 @pytest.fixture(scope="session")

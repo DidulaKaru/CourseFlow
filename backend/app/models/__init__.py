@@ -8,12 +8,14 @@ from app.models.curriculum import (
     PrerequisiteRule,
     program_courses,
 )
+from app.models.extraction import ExtractionJob
 
 __all__ = [
     "Base",
     "Course",
     "CreditDistribution",
     "DegreeProgram",
+    "ExtractionJob",
     "PrerequisiteRule",
     "program_courses",
 ]

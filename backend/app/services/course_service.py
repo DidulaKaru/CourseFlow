@@ -274,21 +274,43 @@ def _apply_update(db: Session, course: CourseRecord, values: dict[str, Any], pro
 # ==========================================
 
 
+def _get_program(db: Session, program_id: str) -> DegreeProgramRecord:
+    program = db.get(DegreeProgramRecord, program_id)
+    if program is None:
+        raise CourseNotFoundError(f"Degree program '{program_id}' was not found.")
+    return program
+
+
+def _check_code_free(db: Session, code: str) -> None:
+    # `courses.code` is unique across the catalog, which also guarantees uniqueness within the program.
+    taken = db.get(CourseRecord, code) or db.scalar(select(CourseRecord.id).where(CourseRecord.code == code))
+    if taken:
+        raise CourseConflictError(f"A course with code '{code}' already exists in the catalog.")
+
+
+def _editable_values(payload: CourseUpdate) -> dict[str, Any]:
+    """The editable course fields of a full-replacement payload (code, distribution and rule are handled apart)."""
+    values = payload.model_dump(
+        include={
+            "title", "description", "total_credits", "duration_semesters", "recommended_semester",
+            "type", "offered_semesters", "corequisites", "syllabus_objectives",
+        }
+    )
+    values["contact_hours"] = payload.contact_hours.model_dump() if payload.contact_hours else {}
+    return values
+
+
 def create_course(db: Session, payload: CourseCreate) -> AdminCourse:
     """Create a course inside a degree program. The course ID is its code."""
-    program = db.get(DegreeProgramRecord, payload.program_id)
-    if program is None:
-        raise CourseNotFoundError(f"Degree program '{payload.program_id}' was not found.")
-    # `courses.code` is unique across the catalog, which also guarantees uniqueness within the program.
-    taken = db.get(CourseRecord, payload.code) or db.scalar(
-        select(CourseRecord.id).where(CourseRecord.code == payload.code)
-    )
-    if taken:
-        raise CourseConflictError(f"A course with code '{payload.code}' already exists in the catalog.")
+    program = _get_program(db, payload.program_id)
+    _check_code_free(db, payload.code)
+    course = _stage_new_course(db, program, payload)
+    return to_admin_course(_commit(db, course))
 
-    values = payload.model_dump(exclude={"program_id", "code", "credit_distribution"})
-    values["contact_hours"] = payload.contact_hours.model_dump() if payload.contact_hours else {}
-    values = _normalize(values)
+
+def _stage_new_course(db: Session, program: DegreeProgramRecord, payload: CourseCreate) -> CourseRecord:
+    """Validate a new course and add it to the session without committing."""
+    values = _normalize(_editable_values(payload))
     _validate_semester_window(values["recommended_semester"], values["duration_semesters"], program.semesters_count)
     values["corequisites"] = _clean_corequisites(db, payload.code, values["corequisites"])
     distribution = _resolve_distribution(
@@ -303,16 +325,14 @@ def create_course(db: Session, payload: CourseCreate) -> AdminCourse:
     course.programs.append(program)
     _write_fields(course, values, distribution)
     db.add(course)
-    return to_admin_course(_commit(db, course))
+    return course
 
 
 def replace_course(db: Session, course_id: str, payload: CourseUpdate) -> AdminCourse:
     """Full update (PUT) of a course's editable fields."""
     course = _get_course(db, course_id)
     _check_code_echo(course, payload.code)
-    values = payload.model_dump(exclude={"code", "credit_distribution"})
-    values["contact_hours"] = payload.contact_hours.model_dump() if payload.contact_hours else {}
-    return _save_update(db, course, values, _provided_distribution(payload))
+    return _save_update(db, course, _editable_values(payload), _provided_distribution(payload))
 
 
 def patch_course(db: Session, course_id: str, payload: CoursePatch) -> AdminCourse:
@@ -463,3 +483,34 @@ def set_credit_distribution(db: Session, course_id: str, entries: list[CreditDis
     _replace_distribution(course, distribution)
     course.updated_at = func.now()
     return to_admin_course(_commit(db, course))
+
+
+# ==========================================
+# Reviewed extraction ingestion (CF-204)
+# ==========================================
+
+
+def stage_reviewed_course(db: Session, payload: CourseCreate, rule: PrerequisiteRule | None) -> CourseRecord:
+    """Validate a reviewed course and its prerequisite rule and stage them without committing.
+
+    A new code creates the course in ``payload.program_id``; an existing code replaces the course's editable
+    fields (it must already belong to that program) and ``rule`` replaces its prerequisite rule. The caller
+    commits, so the course can be written in the same transaction as other changes, and must roll back on error.
+    """
+    program = _get_program(db, payload.program_id)
+    course = db.get(CourseRecord, payload.code)
+    if course is None:
+        _check_code_free(db, payload.code)
+        course = _stage_new_course(db, program, payload)
+    elif program not in course.programs:
+        raise CourseConflictError(
+            f"Course '{payload.code}' already exists outside degree program '{payload.program_id}'."
+        )
+    else:
+        _apply_update(db, course, _editable_values(payload), _provided_distribution(payload))
+
+    raw = None if rule is None else rule.model_dump(by_alias=True, mode="json")
+    if rule is not None and raw is not None:
+        _check_prerequisite_rule(db, course.id, rule, raw)
+    _write_prerequisite_rule(db, course, raw)
+    return course
