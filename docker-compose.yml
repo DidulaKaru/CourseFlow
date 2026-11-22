@@ -15,7 +15,10 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-courseflow}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      # First boot runs initdb, which can exceed 25s on slower machines; failures
+      # during this window don't count, so `docker compose up` works first time.
+      start_period: 60s
 
   backend:
     build:
@@ -40,17 +43,21 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      # Root context: frontend is an npm workspace and the lockfile lives at the repo root.
+      context: .
+      dockerfile: frontend/Dockerfile
     container_name: courseflow_frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-5173}:5173"
     environment:
-      - VITE_API_URL=http://localhost:8000
+      # Vite dev-server proxy target for /api (container localhost is not the backend).
+      VITE_PROXY_TARGET: http://backend:8000
     volumes:
-      - ./frontend:/app
+      - ./frontend:/app/frontend
+      # Keep the Linux node_modules installed in the image; never shadow them with host files.
       - /app/node_modules
+      - /app/frontend/node_modules
     depends_on:
       - backend
     command: npm run dev -- --host 0.0.0.0
