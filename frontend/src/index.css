@@ -16,8 +16,35 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
+/* Design-system tokens (design-philosophy.md section 2). New and migrated components use these. */
+@theme {
+  --color-canvas: #FAFAF9;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F5F5F4;
+  --color-line: #E7E5E4;
+  --color-line-strong: #D6D3D1;
+  --color-ink: #1C1917;
+  --color-ink-muted: #57534E;
+  --color-ink-subtle: #78716C;
+  --color-success: #15803D;
+  --color-success-soft: #DCFCE7;
+  --color-warning: #B45309;
+  --color-warning-soft: #FEF3C7;
+  --color-danger: #B91C1C;
+  --color-danger-soft: #FEE2E2;
+}
+
+@theme inline {
+  --color-accent: var(--dept-accent);
+  --color-accent-strong: var(--dept-accent-strong);
+  --color-accent-soft: var(--dept-accent-soft);
+}
+
 /* Computer Engineering: Aetherius Frost / Mage Constellation */
 :root, [data-department="ce"] {
+  --dept-accent: #0F766E;
+  --dept-accent-strong: #115E59;
+  --dept-accent-soft: #CCFBF1;
   --nebula-core: radial-gradient(circle at 50% 30%, rgba(2, 132, 199, 0.14) 0%, rgba(3, 5, 8, 0.98) 75%);
   --constellation-beam: #00F0FF;
   --constellation-beam-glow: rgba(0, 240, 255, 0.35);
@@ -28,6 +55,9 @@
 
 /* Electrical Engineering: Dwemer Forge / High-Voltage Constellation */
 [data-department="ee"] {
+  --dept-accent: #C2410C;
+  --dept-accent-strong: #9A3412;
+  --dept-accent-soft: #FFEDD5;
   --nebula-core: radial-gradient(circle at 50% 30%, rgba(217, 119, 6, 0.12) 0%, rgba(5, 4, 3, 0.98) 75%);
   --constellation-beam: #F59E0B;
   --constellation-beam-glow: rgba(245, 158, 11, 0.35);

@@ -153,6 +153,25 @@ describe('TopNav Component (CF-115)', () => {
         container.remove();
     });
 
+    it('shows the faculty sign-in lock to everyone and keeps student controls unchanged (CF-211)', () => {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        act(() => {
+            root.render(<TopNav />);
+        });
+
+        expect(container.querySelector('[data-testid="admin-access-button"]')).not.toBeNull();
+        expect(container.querySelector('[data-testid="admin-mode-badge"]')).toBeNull();
+        expect(container.querySelector('[data-testid="degree-selector"]')).not.toBeNull();
+
+        act(() => {
+            root.unmount();
+        });
+        container.remove();
+    });
+
     it('applies responsive single-row layout at xl breakpoint and flexible brand container', () => {
         const container = document.createElement('div');
         document.body.appendChild(container);
