@@ -17,6 +17,17 @@ MAX_AST_RECURSION_DEPTH = 20
 
 
 @dataclass(frozen=True)
+class RuleIssue:
+    """One structural problem in a prerequisite tree, located by its path from the root.
+
+    ``path`` is the JSON path in request-body terms, e.g. ``("children", 1, "courseId")``.
+    """
+
+    path: tuple[str | int, ...]
+    message: str
+
+
+@dataclass(frozen=True)
 class PrerequisiteEvaluationResult:
     """Detailed diagnostics for prerequisite evaluation."""
 
@@ -138,6 +149,55 @@ def evaluate_prerequisite_with_diagnostics(
         credit_deficit=credit_deficit,
         summary=summary,
     )
+
+
+def find_rule_issues(
+    rule: PrerequisiteRule,
+    *,
+    course_id: str | None = None,
+    known_course_ids: Collection[str] | None = None,
+) -> list[RuleIssue]:
+    """Validate the structure of a prerequisite tree and return every problem found (empty = valid).
+
+    Shared by the admin prerequisite endpoint (CF-203) and the NL-to-AST synthesizer (CF-234) so the
+    rules they enforce cannot drift. Pydantic already guarantees node tags and leaf shapes; this adds
+    the invariants it cannot express:
+
+    * nesting never exceeds ``MAX_AST_RECURSION_DEPTH`` (the depth the evaluators stop at),
+    * AND / OR nodes have at least one child (an empty OR can never be satisfied),
+    * no leaf references ``course_id`` itself (when given),
+    * every referenced course exists in ``known_course_ids`` (when given).
+    """
+    issues: list[RuleIssue] = []
+
+    def visit(node: PrerequisiteRule, path: tuple[str | int, ...], depth: int) -> None:
+        if depth > MAX_AST_RECURSION_DEPTH:
+            issues.append(
+                RuleIssue(path, f"Rule is nested more than {MAX_AST_RECURSION_DEPTH} levels deep.")
+            )
+            return  # Do not descend: deeper nodes would only repeat the same problem.
+
+        if isinstance(node, CourseRuleNode):
+            target = node.course_id
+            location = (*path, "courseId")
+            if not target.strip():
+                issues.append(RuleIssue(location, "courseId must not be blank."))
+            elif course_id is not None and target == course_id:
+                issues.append(RuleIssue(location, f"A course cannot be its own prerequisite ({target})."))
+            elif known_course_ids is not None and target not in known_course_ids:
+                issues.append(
+                    RuleIssue(location, f"Unknown course '{target}': it does not exist in the catalog.")
+                )
+        elif isinstance(node, LogicalRuleNode):
+            if not node.children:
+                issues.append(
+                    RuleIssue((*path, "children"), f"{node.type} node must have at least one child.")
+                )
+            for index, child in enumerate(node.children):
+                visit(child, (*path, "children", index), depth + 1)
+
+    visit(rule, (), 0)
+    return issues
 
 
 def format_prerequisite_rule(rule: PrerequisiteRule | None) -> str:

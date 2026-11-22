@@ -1,7 +1,8 @@
 """CourseFlow FastAPI Application Entrypoint."""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.v1.api import api_router
 from app.core.config import settings
@@ -13,6 +14,9 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
+    # The prerequisite AST is both a request body (CF-203) and part of every course response. One
+    # shared schema keeps the generated TypeScript names (LogicalRuleNode, ...) stable for the frontend.
+    separate_input_output_schemas=False,
 )
 
 # CORS Middleware supporting both explicit origin list and Cloudflare Pages domains
@@ -24,6 +28,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(RecursionError)
+async def recursion_error_handler(_request: Request, _exc: RecursionError) -> JSONResponse:
+    """Answer absurdly nested JSON bodies (e.g. a ~2000-level prerequisite tree) with 422 instead of a 500.
+
+    The JSON parser itself hits Python's recursion limit before any schema validation runs.
+    """
+    detail = [{"loc": ["body"], "msg": "Request body is nested too deeply to process.", "type": "value_error"}]
+    return JSONResponse(status_code=422, content={"detail": detail})
 
 
 @app.get("/", tags=["System"])

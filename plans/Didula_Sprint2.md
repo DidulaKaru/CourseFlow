@@ -32,7 +32,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **US015** | As a faculty admin, I want to authenticate securely using credentials to access administrative course editing and document extraction tools without exposing endpoints to unauthenticated users. | Must Have | 5 | CF-EPIC-6 | [x] Implemented (CF-201, PR pending) |
 | **US016** | As a faculty curriculum coordinator, I want to update course content (syllabus description, title, credits, contact hours, course type) via REST endpoints with real-time validation. | Must Have | 5 | CF-EPIC-6 | [x] Implemented (CF-202, PR pending) |
-| **US017** | As an academic advisor, I want to update course prerequisite rules and multi-semester credit distributions directly, persisting recursive ASTs into PostgreSQL. | Must Have | 5 | CF-EPIC-6 | [ ] Target: CF-203 |
+| **US017** | As an academic advisor, I want to update course prerequisite rules and multi-semester credit distributions directly, persisting recursive ASTs into PostgreSQL. | Must Have | 5 | CF-EPIC-6 | [x] Backend: CF-203 |
 | **US018** | As a faculty data officer, I want to upload syllabus PDFs/DOCXs to the backend to trigger asynchronous text extraction and structured parsing. | Must Have | 5 | CF-EPIC-7 | [ ] Target: CF-204 |
 | **US022** | As a faculty reviewer, I want to query the status and extracted payloads of an ingestion job, including field-level confidence scores. | Must Have | 3 | CF-EPIC-9 | [ ] Target: CF-204 |
 | **US023** | As a faculty reviewer, I want to commit verified course extraction data to PostgreSQL in a single atomic transaction. | Must Have | 5 | CF-EPIC-9 | [ ] Target: CF-204 |
@@ -45,7 +45,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 | :--- | :--- | :--- | :--- | :--- |
 | [x] **CF-201** | Faculty Admin Authentication & Security Session Management | 5 SP | CF-EPIC-6 | Didula |
 | [x] **CF-202** | In-App Course CRUD & Content Modification Endpoints | 5 SP | CF-EPIC-6 | Didula |
-| [ ] **CF-203** | Administrative Prerequisite & AST Persistence Service | 5 SP | CF-EPIC-6 | Didula |
+| [x] **CF-203** | Administrative Prerequisite & AST Persistence Service | 5 SP | CF-EPIC-6 | Didula |
 | [ ] **CF-204** | MIS Ingestion API & Extraction Review Endpoints | 5 SP | CF-EPIC-7 / CF-EPIC-9 | Didula |
 | [ ] **CF-205** | System Contract Sync & PR Merge Governance | 3 SP | All Epics | Didula |
 
@@ -149,6 +149,8 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
      - Validates sequential semester indices (e.g. Semesters 7 and 8).
   3. Persists directly into native PostgreSQL `JSONB` column on the `courses` table.
   4. Both endpoints are added to the existing admin-guarded `courses.py` router, keep the `prerequisite_rules` table in sync with `courses.prerequisite_rule` (the seeder maintains both), set `updated_at`, and reuse `check_distribution` from `app/services/course_service.py` so credit-distribution rules cannot differ from CF-202. The AST validator should be importable so Anuththara's CF-234 synthesizer can reuse it.
+* **Status:** Implemented on branch `feature/cf-203-prerequisite-ast-persistence` (stacked on CF-202; PR pending). 97 passing tests across `test_ast.py` and `test_course_prerequisites.py`.
+* **As delivered:** Three routes on the admin-guarded `/courses` router: `PUT /api/v1/courses/{course_id}/prerequisites` (the body is the `PrerequisiteRule` AST itself), `DELETE /api/v1/courses/{course_id}/prerequisites` (clears the rule; added beyond the plan because a PUT body of `null` cannot be expressed reliably) and `PUT /api/v1/courses/{course_id}/credit-distribution` (the body is a JSON array of `CreditDistribution`). All return `{ success, data: AdminCourse }`. Rejected with 422 (`loc` is `["body", ...path to the offending leaf]`): depth > 20, empty `AND` / `OR`, unknown or self `courseId`, and indirect circular dependencies (cycles use `loc: ["body", "prerequisiteRule"]`). Both writes keep `courses.prerequisite_rule` and the `prerequisite_rules` table in sync and bump `updated_at`. Credit distribution reuses `check_distribution` from `course_service`. The validator `find_rule_issues` in `backend/app/core/ast_evaluator.py` is importable for CF-234. `main.py` now sets `separate_input_output_schemas=False` so OpenAPI keeps single `LogicalRuleNode` style names instead of splitting them into `-Input` / `-Output`, which would break the generated TS names. `frontend/src/types/api.ts` was regenerated with the new operations.
 * **Acceptance Criteria:** Prerequisite updates successfully update JSONB column; malformed trees, excessive nesting, or dangling course IDs are rejected with status 400/422.
 
 ---
@@ -257,6 +259,6 @@ CF-202 is implemented backend-only (`PUT`/`PATCH /api/v1/courses/{id}`, `POST /a
 - [ ] **CF-224 Vitest:** auth store tests should mock `POST /auth/login` (`accessToken`, `tokenType`, `expiresIn`, `user`) and 401 handling; token expiry is 60 minutes and `/auth/refresh` only accepts a still-valid token.
 
 ### My own follow-ups (CF-203 / CF-205)
-- [ ] **CF-203** adds its routes to the same `courses.py` router, which already requires `ADMIN` at router level. It must update both `courses.prerequisite_rule` and the `prerequisite_rules` table, bump `updated_at`, and reuse CF-202's credit-distribution checks (`check_distribution`) so the two endpoints cannot disagree.
-- [ ] **CF-205:** `api.ts` was regenerated for auth and courses; re-run `npm run generate-types` after CF-203 and CF-204.
+- [x] **CF-203** adds its routes to the same `courses.py` router, which already requires `ADMIN` at router level. It must update both `courses.prerequisite_rule` and the `prerequisite_rules` table, bump `updated_at`, and reuse CF-202's credit-distribution checks (`check_distribution`) so the two endpoints cannot disagree.
+- [ ] **CF-205:** `api.ts` was regenerated for auth and courses; CF-203 was included in the latest regeneration; re-run `npm run generate-types` once more after CF-204.
 - [ ] **CF-216 docs (Malsha):** `docs/ADMIN_PORTAL_GUIDE.md` should cover the rules above (immutable codes, credit and semester bounds, multi-semester splits).

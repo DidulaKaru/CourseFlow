@@ -143,7 +143,7 @@ Anuththara leads database architecture, schema migrations, natural language proc
      - Sanitize course codes: Strip whitespace, ensure standard uppercase formatting.
      - Validate course pointers against catalog: Check if referenced course IDs exist in known degree datasets.
      - Tree simplifier: Flatten single-child `AND`/`OR` gates and eliminate redundant tautologies.
-     - Structural limits: output must satisfy the rules the admin API enforces in CF-203 (depth <= 20, only `AND` / `OR` / `COURSE` / `CREDIT_THRESHOLD`, no course referencing itself). Reuse the CF-203 validator once it is merged instead of re-implementing it.
+     - Structural limits: output must satisfy the rules the admin API enforces in CF-203 (depth <= 20, only `AND` / `OR` / `COURSE` / `CREDIT_THRESHOLD`, no course referencing itself). Reuse the CF-203 validator `find_rule_issues` (`backend/app/core/ast_evaluator.py`, delivered on branch `feature/cf-203-prerequisite-ast-persistence`; available once that PR merges) instead of re-implementing it.
 * **Acceptance Criteria:** Natural language prerequisite strings are converted into valid, recursive `PrerequisiteRule` trees matching TypeScript contracts.
 
 ---

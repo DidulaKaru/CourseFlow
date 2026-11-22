@@ -142,7 +142,7 @@ Malsha leads user-facing frontend component development, visual layout engineeri
      - "Add Nested Group" (+ Logical AND/OR block).
      - "Remove Node" (trash icon).
   4. Real-time mathematical preview: Renders live formula string (e.g. `(CO221 AND CO222) OR (CO225 AND ≥ 45 Credits)`).
-* **Persistence:** saving goes to `PUT /api/v1/courses/{id}/prerequisites`, which is delivered by CF-203 and is **not available yet**. Build and test against a mock first. The body is the `PrerequisiteRule` tree (camelCase: `courseId`, `minCredits`, `children`); the backend will reject depth > 20, unknown `courseId`s and self-dependencies with 400/422.
+* **Persistence:** saving goes to `PUT /api/v1/courses/{id}/prerequisites`, which CF-203 delivers (implemented on branch `feature/cf-203-prerequisite-ast-persistence`; available once that PR merges). Until then, build and test against a mock. `DELETE` on the same path clears a rule. The body is the `PrerequisiteRule` tree (camelCase: `courseId`, `minCredits`, `children`); the backend will reject depth > 20, unknown `courseId`s, self-dependencies and circular dependencies with 422.
 * **Acceptance Criteria:** Administrators can construct compound `AND`/`OR` trees visually; tree serializes directly to `PrerequisiteRule` contract and passes AST evaluation.
 
 ---
