@@ -177,7 +177,7 @@ A story is only marked **Done** in Jira when:
 | [x] **CF-201** | Faculty Admin Authentication & Security Session Management | 5 | CF-EPIC-6 | JWT Bearer auth, RBAC dependencies, student routes remain 100% public. |
 | [x] **CF-202** | In-App Course CRUD & Content Modification Endpoints | 5 | CF-EPIC-6 | PUT/PATCH endpoints persist course updates to PostgreSQL with credit validation. |
 | [x] **CF-203** | Administrative Prerequisite & AST Persistence Service | 5 | CF-EPIC-6 | AST JSONB mutation with depth guard ($\le 20$) and no dangling references. |
-| [ ] **CF-204** | MIS Ingestion API & Extraction Review Endpoints | 5 | CF-EPIC-7 / CF-EPIC-9 | Multipart file upload, job status polling, and atomic database commit. |
+| [x] **CF-204** | MIS Ingestion API & Extraction Review Endpoints | 5 | CF-EPIC-7 / CF-EPIC-9 | Multipart file upload, job status polling, and atomic database commit. |
 | [ ] **CF-205** | System Contract Sync & PR Merge Governance | 3 | All Epics | `npm run generate-types` syncs frontend types; zero regression quality gate enforced. |
 
 #### Malsha (Frontend & Documentation Specialist) — 31 SP
@@ -222,7 +222,8 @@ Detailed individual engineering plans are preserved in:
 - [x] **CF-201:** Faculty Admin Authentication implemented (`POST /api/v1/auth/login`, `/auth/refresh`, `GET /auth/me`; bcrypt hashing; PyJWT HS256 access tokens, 60-minute expiry; `ADMIN` and `FACULTY_REVIEWER` roles; `CurrentUser` / `AdminUser` / `StaffUser` guards; env-configured accounts with no default credentials; `backend/scripts/hash_password.py`). 32 tests. Branch `cf-201-faculty-admin-auth`, PR pending.
 - [x] **CF-202:** Admin course endpoints implemented (`POST /api/v1/courses`, `PUT` / `PATCH /api/v1/courses/{id}`; `ADMIN` only; credits 1 to 12, semester window, immutable unique codes, corequisite and credit-distribution checks, `courses.updated_at` via migration `0002_course_updated_at`). 74 tests. Branch `cf-202-course-crud-endpoints` (stacked on CF-201), PR pending.
 - [x] **CF-203:** Admin prerequisite and credit-distribution endpoints implemented (`PUT` / `DELETE /api/v1/courses/{id}/prerequisites`, `PUT /api/v1/courses/{id}/credit-distribution`; `ADMIN` only; depth <= 20, empty `AND` / `OR`, unknown, self and circular `courseId` rejected with 422; `courses.prerequisite_rule` and `prerequisite_rules` kept in sync; reusable validator `find_rule_issues`). 97 passing tests across `test_ast.py` and `test_course_prerequisites.py`. Branch `feature/cf-203-prerequisite-ast-persistence` (stacked on CF-202), PR pending.
-- [ ] **CF-204, CF-205:** not started.
+- [x] **CF-204:** MIS extraction endpoints implemented (`POST /api/v1/extraction/upload`, `GET /api/v1/extraction/jobs/{id}`, `POST /api/v1/extraction/jobs/{id}/commit`; `ADMIN` or `FACULTY_REVIEWER`; PDF/DOCX only (MIME type and file signature), 15 MB limit, SHA256 dedup; background processing through a pluggable `ExtractionPipeline`; atomic commit via `course_service.stage_reviewed_course`). Adds the `ExtractionJob` model and migration `0003_extraction_jobs_table` ahead of CF-235. Until CF-231 to CF-234 are wired in, the default pipeline marks jobs `FAILED` ("not available"). 40 tests in `test_extraction.py` and `test_migrations.py`. Branch `feature/cf-204-mis-extraction-api`, PR pending.
+- [ ] **CF-205:** not started.
 - [ ] **CF-211 to CF-216 (Malsha), CF-221 to CF-225 (Ishani), CF-231 to CF-235 (Anuththara):** not started. Their plans were reconciled with the delivered backend contracts (job states, file ownership, migration numbering, contact-hour units, login and course payloads). See `plans/Didula_Sprint2.md` section 6.
 - Backend test suite: 151 tests; frontend Vitest suite: 157 tests.
 

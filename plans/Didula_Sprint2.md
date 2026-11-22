@@ -33,9 +33,9 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 | **US015** | As a faculty admin, I want to authenticate securely using credentials to access administrative course editing and document extraction tools without exposing endpoints to unauthenticated users. | Must Have | 5 | CF-EPIC-6 | [x] Implemented (CF-201, PR pending) |
 | **US016** | As a faculty curriculum coordinator, I want to update course content (syllabus description, title, credits, contact hours, course type) via REST endpoints with real-time validation. | Must Have | 5 | CF-EPIC-6 | [x] Implemented (CF-202, PR pending) |
 | **US017** | As an academic advisor, I want to update course prerequisite rules and multi-semester credit distributions directly, persisting recursive ASTs into PostgreSQL. | Must Have | 5 | CF-EPIC-6 | [x] Backend: CF-203 |
-| **US018** | As a faculty data officer, I want to upload syllabus PDFs/DOCXs to the backend to trigger asynchronous text extraction and structured parsing. | Must Have | 5 | CF-EPIC-7 | [ ] Target: CF-204 |
-| **US022** | As a faculty reviewer, I want to query the status and extracted payloads of an ingestion job, including field-level confidence scores. | Must Have | 3 | CF-EPIC-9 | [ ] Target: CF-204 |
-| **US023** | As a faculty reviewer, I want to commit verified course extraction data to PostgreSQL in a single atomic transaction. | Must Have | 5 | CF-EPIC-9 | [ ] Target: CF-204 |
+| **US018** | As a faculty data officer, I want to upload syllabus PDFs/DOCXs to the backend to trigger asynchronous text extraction and structured parsing. | Must Have | 5 | CF-EPIC-7 | [x] Backend: CF-204 (pipeline: CF-231 to CF-234) |
+| **US022** | As a faculty reviewer, I want to query the status and extracted payloads of an ingestion job, including field-level confidence scores. | Must Have | 3 | CF-EPIC-9 | [x] Backend: CF-204 |
+| **US023** | As a faculty reviewer, I want to commit verified course extraction data to PostgreSQL in a single atomic transaction. | Must Have | 5 | CF-EPIC-9 | [x] Backend: CF-204 |
 
 ---
 
@@ -46,7 +46,7 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
 | [x] **CF-201** | Faculty Admin Authentication & Security Session Management | 5 SP | CF-EPIC-6 | Didula |
 | [x] **CF-202** | In-App Course CRUD & Content Modification Endpoints | 5 SP | CF-EPIC-6 | Didula |
 | [x] **CF-203** | Administrative Prerequisite & AST Persistence Service | 5 SP | CF-EPIC-6 | Didula |
-| [ ] **CF-204** | MIS Ingestion API & Extraction Review Endpoints | 5 SP | CF-EPIC-7 / CF-EPIC-9 | Didula |
+| [x] **CF-204** | MIS Ingestion API & Extraction Review Endpoints | 5 SP | CF-EPIC-7 / CF-EPIC-9 | Didula |
 | [ ] **CF-205** | System Contract Sync & PR Merge Governance | 3 SP | All Epics | Didula |
 
 ```
@@ -175,6 +175,14 @@ Didula serves as Lead Architect and Backend Developer for CourseFlow. In Sprint 
      - Atomically commits the course into `courses`, `prerequisite_rules`, and `credit_distributions` tables by calling Anuththara's `ingestion_service` (CF-235), which applies the CF-202 course rules.
      - Marks extraction job as `COMMITTED`. Committing an already committed job, or one that is not `EXTRACTED`, returns 409.
   4. Access control: all three routes use the `StaffUser` guard (`ADMIN` or `FACULTY_REVIEWER`); anonymous requests return 401.
+* **Status:** Implemented on branch `feature/cf-204-mis-extraction-api` (PR pending). 39 tests in `backend/tests/test_extraction.py` plus a `0003` migration test in `test_migrations.py`.
+* **As delivered (built ahead of CF-231 to CF-235, which had not started):**
+  - **Job persistence:** CF-204 adds `backend/app/models/extraction.py` (`ExtractionJob`) and `backend/alembic/versions/0003_extraction_jobs_table.py` (chained onto `0002_course_updated_at`) using CF-235's planned columns, plus `content_type`, `error_message` and `committed_course_id`. CF-235 extends these instead of creating them.
+  - **Pipeline seam:** `extraction_service.ExtractionPipeline` is a `Protocol` with `extract(document, *, filename, content_type) -> ExtractionResult(extracted_data, confidence_scores)`, provided by the FastAPI dependency `get_extraction_pipeline()`. The default `UnavailablePipeline` raises `ExtractionError`, so jobs end `FAILED` with "Automatic extraction is not available on this server yet." until CF-231 to CF-234 return a real pipeline from that dependency. `ExtractionError` lives in `extraction_service`; CF-231's parser should raise it (or a subclass) rather than define its own. Tests (and CF-222) override the dependency with a fake.
+  - **Processing:** a FastAPI background task opens its own session through the new `get_session_factory()` dependency (`app/core/database.py`; `db_client` in `conftest.py` overrides it). Any other exception becomes `FAILED` with a generic message, and confidence scores outside 0.0 to 1.0 fail the job.
+  - **Upload:** the MIME type must be `application/pdf` or the DOCX type, and the file must start with the matching signature (`%PDF-` or `PK`); otherwise 400. Over 15 MB returns 413. Identical bytes return 200 with the existing job, except a `FAILED` job or a `PENDING` / `PROCESSING` job untouched for 15 minutes (`STALE_JOB_AFTER`: its worker died), which is reset to `PENDING` and retried (202, same `jobId`). Client paths are stripped from `filename`. `python-multipart` was added to both requirements files (FastAPI needs it for `UploadFile`). Not verified: Vercel caps serverless request bodies at about 4.5 MB, so the 15 MB limit only holds on a non-serverless backend (extraction needs Ollama, so it is expected to run in Docker anyway).
+  - **Commit body:** `ExtractionCommitRequest` = `CourseCreate` + `prerequisiteRule` (strict). A new code creates the course in `programId`; an existing code replaces it (409 if it is not in `programId`); `prerequisiteRule` replaces the stored rule (null clears it). Written by `course_service.stage_reviewed_course` (same CF-202/CF-203 rules, no commit) and committed with the job's `COMMITTED` status in one transaction. Prerequisite errors use `loc: ["body", "prerequisiteRule", ...]`. Response: `{ success, data: { job, course: AdminCourse } }`.
+  - `frontend/src/types/api.ts` regenerated (additions only).
 * **Acceptance Criteria:** Uploading valid syllabus PDF initiates background job; polling returns structured course data with confidence scores; commit atomically writes course to database.
 
 ---
@@ -252,6 +260,8 @@ CF-202 is implemented backend-only (`PUT`/`PATCH /api/v1/courses/{id}`, `POST /a
 - [ ] **Code pattern mismatch:** CF-233 plans `^[A-Z]{2,3}[0-9]{4}$` for confidence checks; the catalog and CF-202 accept `^[A-Z]{2,4}[0-9]{3,5}[A-Z]?$`. Align them.
 - [ ] **Shared courses:** 32 course IDs appear in both the CE and EE catalogs; 17 of them have different `description` text (everything else is identical). The database has one row per ID, so the seeder is last-writer-wins (EE overwrites CE), and an admin edit to a shared course changes it for both programs. Decide whether descriptions should be per-program.
 
+- [ ] **CF-204 landed first (decision taken):** the `ExtractionJob` model, migration `0003_extraction_jobs_table` and the atomic commit (`course_service.stage_reviewed_course`) already exist. CF-235 should extend them (a new migration `0004_...` for any column change) and may move the commit body into `ingestion_service` behind the same call. CF-231 to CF-234 plug in by returning a real pipeline from `extraction_service.get_extraction_pipeline()` and raising `extraction_service.ExtractionError`.
+
 ### Ishani: CF-221 / CF-222 / CF-224 / CF-225
 - [ ] **docker-compose.yml backend service** does not pass `SECRET_KEY`, `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, `REVIEWER_USERNAME`, `REVIEWER_PASSWORD_HASH`, so admin login cannot work in Docker. Hashes contain `$`, so quote them in `.env` (single quotes) or escape as `$$`.
 - [ ] **CI has no PostgreSQL job.** All DB-backed tests run on in-memory SQLite (`db_client`, `session_factory` fixtures in `conftest.py`), and migration `0002` is only verified on SQLite. Add a Postgres service job running `alembic upgrade head` and the course tests so `JSONB` behaviour is covered. CF-222 can reuse `db_client`, `admin_headers` and `reviewer_headers`.
@@ -260,5 +270,5 @@ CF-202 is implemented backend-only (`PUT`/`PATCH /api/v1/courses/{id}`, `POST /a
 
 ### My own follow-ups (CF-203 / CF-205)
 - [x] **CF-203** adds its routes to the same `courses.py` router, which already requires `ADMIN` at router level. It must update both `courses.prerequisite_rule` and the `prerequisite_rules` table, bump `updated_at`, and reuse CF-202's credit-distribution checks (`check_distribution`) so the two endpoints cannot disagree.
-- [ ] **CF-205:** `api.ts` was regenerated for auth and courses; CF-203 was included in the latest regeneration; re-run `npm run generate-types` once more after CF-204.
+- [ ] **CF-205:** `api.ts` was regenerated for auth, courses, CF-203 and CF-204 (extraction).
 - [ ] **CF-216 docs (Malsha):** `docs/ADMIN_PORTAL_GUIDE.md` should cover the rules above (immutable codes, credit and semester bounds, multi-semester splits).
