@@ -84,6 +84,7 @@ Anuththara leads database architecture, schema migrations, natural language proc
   3. Extract document sections: Course Code, Course Title, Prerequisites string, Corequisites, Course Objectives, and Syllabus topics.
   4. OCR Fallback: If extracted text character density is $< 50\text{ characters/page}$ (indicating a scanned image), pass page images to `pytesseract` or `DocTR` for optical character recognition.
   5. Text cleaner utility: Strip running headers, page numbers, and university disclaimers.
+  6. Define a structured `ExtractionError` in `backend/app/services/pdf_parser.py`, raised for corrupted or unparseable documents so they never surface as HTTP 500s. CF-204 turns it into a `FAILED` extraction job with a readable message, and Ishani's fixture suite (CF-223, `backend/tests/test_pdf_fixtures.py`) asserts on it. `backend/tests/test_pdf_parser.py` stays yours (unit tests); CF-223 uses a separate file.
 * **Acceptance Criteria:** Successfully extracts raw syllabus text and tabular contact hours from university PDF handbooks; scanned pages automatically trigger OCR fallback.
 
 ---
@@ -101,6 +102,8 @@ Anuththara leads database architecture, schema migrations, natural language proc
      - Instructs model on engineering curriculum domain rules (course codes, credit bounds, contact hour conventions).
      - Provides few-shot exemplars mapping syllabus excerpts to structured outputs.
   4. Telemetry logging: Track token usage, prompt evaluation latency, and generation speed ($tokens/sec$).
+  5. Test seam: expose the client through a factory / FastAPI dependency (`get_llm_client()`) returning a small `Protocol`, so Ishani's CF-222 suite can replace it with a deterministic mock through `app.dependency_overrides`, with no network or GPU.
+  6. Settings: add `OLLAMA_BASE_URL` and `OLLAMA_MODEL` (default `qwen2.5:7b-instruct`) to `Settings` in `app/core/config.py` and to `.env.example`. Inside Docker Compose the URL is `http://ollama:11434` (Ishani's CF-221 passes it to the backend service).
 * **Acceptance Criteria:** Service successfully sends prompt payloads to Ollama and receives responses with $< 3\text{s}$ first-token latency on local hardware.
 
 ---
@@ -112,16 +115,16 @@ Anuththara leads database architecture, schema migrations, natural language proc
   - `backend/app/schemas/extraction.py`
   - `backend/tests/test_extractor.py`
 * **Implementation Details:**
-  1. Define extraction DTOs:
-     - `ExtractedCourseMetadata`: `code`, `title`, `description`, `totalCredits`, `durationSemesters`, `courseType`, `offeredSemesters`.
-     - `ExtractedContactHours`: `lecturesWeekly`, `labsWeekly`, `tutorialsWeekly`, `totalSemesterHours`.
-     - `ExtractedCreditDistribution`: `semesterIndex`, `creditsAllocated`.
+  1. Define extraction DTOs (this file, `schemas/extraction.py`, is owned by CF-233; Didula's CF-204 job API models live in `schemas/extraction_jobs.py` so the two do not collide). Extracted values must map one-to-one onto the admin course contract implemented in CF-202 (`CourseUpdate`):
+     - `ExtractedCourseMetadata`: `code`, `title`, `description`, `totalCredits` (1 to 12), `durationSemesters`, `courseType` (committed as `type`: `CORE`, `ELECTIVE`, `LAB`, `CAPSTONE`), `offeredSemesters` (`FALL`, `SPRING`, `BOTH`).
+     - `ExtractedContactHours`: produce the catalog's `ContactHours` shape (`lecture`, `lab`, `tutorial`) in **hours per semester**, as in the seeded data (e.g. 14 / 14 / 7). If a syllabus states weekly hours, convert and lower the field's confidence. A `totalSemesterHours` value is informational only.
+     - `ExtractedCreditDistribution`: `semesterIndex`, `creditsAllocated`. Must have one entry per semester starting at the recommended semester and sum to `totalCredits` (the same `check_distribution` rule CF-202 enforces).
   2. Configure `instructor.from_openai` (or `instructor.from_ollama`) with structured JSON mode.
   3. Multi-Semester Detection:
      - Detect year-long modules (e.g. "Final Year Project spanning terms 7 and 8 with 6 total credits").
      - Automatically formulate `creditDistribution` array allocating split credits evenly (3 cr + 3 cr).
   4. Confidence score estimation:
-     - Cross-validate extracted fields against regex patterns (e.g. course code pattern `^[A-Z]{2,3}[0-9]{4}$`).
+     - Cross-validate extracted fields against regex patterns (e.g. import `COURSE_CODE_PATTERN` from `app/schemas/curriculum.py`, currently `^[A-Z]{2,4}[0-9]{3,5}[A-Z]?$`, so extraction and the catalog accept the same codes).
      - Assign confidence scores ($0.0 - 1.0$) per field to power frontend review badges.
 * **Acceptance Criteria:** Extracted output strictly adheres to Pydantic models; multi-semester courses are automatically detected; confidence scores are generated for each extracted field.
 
@@ -140,6 +143,7 @@ Anuththara leads database architecture, schema migrations, natural language proc
      - Sanitize course codes: Strip whitespace, ensure standard uppercase formatting.
      - Validate course pointers against catalog: Check if referenced course IDs exist in known degree datasets.
      - Tree simplifier: Flatten single-child `AND`/`OR` gates and eliminate redundant tautologies.
+     - Structural limits: output must satisfy the rules the admin API enforces in CF-203 (depth <= 20, only `AND` / `OR` / `COURSE` / `CREDIT_THRESHOLD`, no course referencing itself). Reuse the CF-203 validator once it is merged instead of re-implementing it.
 * **Acceptance Criteria:** Natural language prerequisite strings are converted into valid, recursive `PrerequisiteRule` trees matching TypeScript contracts.
 
 ---
@@ -148,7 +152,7 @@ Anuththara leads database architecture, schema migrations, natural language proc
 * **Description:** Design database models for tracking extraction jobs, create Alembic migrations, and implement the atomic ingestion service writing verified course data into PostgreSQL.
 * **Target Files:**
   - `backend/app/models/extraction.py`
-  - `backend/alembic/versions/0002_extraction_jobs_table.py`
+  - `backend/alembic/versions/0003_extraction_jobs_table.py`
   - `backend/app/services/ingestion_service.py`
   - `backend/tests/test_ingestion_service.py`
 * **Implementation Details:**
@@ -156,16 +160,18 @@ Anuththara leads database architecture, schema migrations, natural language proc
      - `id`: UUID Primary Key.
      - `filename`: Source document name.
      - `file_hash`: SHA256 checksum for deduplication.
-     - `status`: Enum (`PENDING`, `PROCESSING`, `EXTRACTED`, `COMMITTED`, `FAILED`).
+     - `status`: Enum (`PENDING`, `PROCESSING`, `EXTRACTED`, `COMMITTED`, `FAILED`). These names are the single source of truth for the whole sprint (CF-204 API, CF-214/215 UI and CF-222 tests all use them): `PENDING` -> `PROCESSING` -> `EXTRACTED` (ready for review) -> `COMMITTED`, or `FAILED` (with an error message) from any processing step.
      - `extracted_data`: JSONB containing extracted course schema.
      - `confidence_scores`: JSONB containing field-level confidence ratings.
      - `created_at`, `updated_at`: Timestamps.
-  2. Generate and test Alembic migration: `0002_extraction_jobs_table.py`.
-  3. Ingestion Service:
+  2. Generate and test Alembic migration `0003_extraction_jobs_table.py`. Revision `0002_course_updated_at` already exists (CF-202), so set `down_revision = "0002_course_updated_at"`; two heads would break `alembic upgrade head` (`backend/tests/test_migrations.py` fails on that). Import the new model in `backend/app/models/__init__.py` so Alembic and the test fixtures see the table.
+  3. Ingestion Service (called by Didula's `POST /api/v1/extraction/jobs/{job_id}/commit`, which handles auth, job-state checks and HTTP errors):
      - Atomically upserts course entity into `courses` table.
      - Upserts associated `credit_distributions` records.
-     - Updates `prerequisite_rule` JSONB tree.
-     - Wraps operation in a single database transaction (`db.commit()` / `db.rollback()`).
+     - Updates `prerequisite_rule` JSONB tree **and** the `prerequisite_rules` table row (the seeder keeps both in sync).
+     - Applies the same rules as the admin editor: credits 1 to 12, semester window, distribution consistency (reuse `check_distribution` and the helpers in `app/services/course_service.py`), and sets `updated_at`.
+     - Wraps operation in a single database transaction (`db.commit()` / `db.rollback()`) and moves the job to `COMMITTED`.
+     - Note: 32 course IDs exist in both the CE and EE catalogs and the database has one row per ID, so an upsert on a shared ID changes it for both programs.
 * **Acceptance Criteria:** Database migration runs cleanly; extraction jobs persist in database; approved course data is atomically committed with zero partial-write anomalies.
 
 ---

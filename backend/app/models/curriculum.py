@@ -6,11 +6,13 @@ CreditDistribution, and PrerequisiteRule.
 
 from sqlalchemy import (
     Column,
+    DateTime,
     ForeignKey,
     Integer,
     String,
     Table,
     Text,
+    func,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import backref, relationship
@@ -82,6 +84,16 @@ class Course(Base):
     offered_semesters = Column(JSONB_COMPAT, default=list, nullable=False, doc="Terms offered (FALL, SPRING, BOTH)")
     syllabus_objectives = Column(JSONB_COMPAT, default=list, nullable=True, doc="List of learning objectives")
     contact_hours = Column(JSONB_COMPAT, default=dict, nullable=True, doc="Breakdown of lecture, lab, tutorial hours")
+
+    # Bumped on every admin mutation (CF-202); the course services also set it explicitly so
+    # changes that only touch child rows (e.g. credit distributions) are tracked too.
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+        doc="Last modification timestamp",
+    )
 
     # Relationships
     programs = relationship(

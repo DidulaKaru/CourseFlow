@@ -5,6 +5,7 @@
 - **Contract-First Synchronization:** Backend Pydantic models in `app/schemas/` must mirror `src/types/curriculum.ts` 1:1 using camelCase aliases (`to_camel`).
 - **OpenAPI Type Generation:** TypeScript definitions are synchronized via `npm run generate-types`, which invokes `openapi-typescript http://localhost:8000/openapi.json -o src/types/api.ts`.
 - **Database Boundary:** Single PostgreSQL instance with `pgvector` extension for semantic syllabus search. No dual databases.
+- **Authentication Boundary (ADR-002):** Only the faculty admin routes (`/auth`, `/courses`, later `/extraction`) are authenticated. `/programs` and `/plans` are public. Student-facing reads still use the bundled JSON catalogs, not PostgreSQL.
 
 ## 2. Directory Structure & Key Modules
 ```text
@@ -25,15 +26,28 @@ backend/
 │   │       ├── api.py             # Router aggregator mounting /auth, /programs and /plans
 │   │       └── endpoints/
 │   │           ├── auth.py        # POST /auth/login, POST /auth/refresh, GET /auth/me
+│   │           ├── courses.py     # POST /courses, PUT/PATCH /courses/{id} (ADMIN only, CF-202)
 │   │           ├── programs.py    # GET /api/programs, GET /api/programs/{id}
 │   │           └── plans.py       # POST /api/plans/validate
+│   ├── services/
+│   │   └── course_service.py      # Course create/replace/patch rules + transactions (CF-202)
 │   └── models/                    # SQLAlchemy database ORM models
-├── tests/                         # Pytest test suite
+├── alembic/versions/              # 0001_initial_curriculum_tables, 0002_course_updated_at (single chain)
+├── tests/                         # Pytest test suite (151 tests)
+│   ├── conftest.py                # Shared fixtures: client, db_client (in-memory SQLite), admin_headers, reviewer_headers
 │   ├── test_schemas.py            # Contract fidelity & Pydantic model serialization
 │   ├── test_ast.py                # Python AST prerequisite evaluator unit tests
-│   └── test_programs.py           # Endpoint integration tests (programs & validation)
+│   ├── test_programs.py           # Endpoint integration tests (programs & validation)
+│   ├── test_main.py               # App startup, health, CORS, OpenAPI
+│   ├── test_database.py           # ORM models and seeder idempotency
+│   ├── test_layout.py             # Layout contract tests
+│   ├── test_auth.py               # Faculty authentication, RBAC, token hardening (CF-201)
+│   ├── test_courses.py            # Admin course CRUD and validation (CF-202)
+│   └── test_migrations.py         # Alembic upgrade/downgrade and single-head check
 ├── scripts/                       # Database seed scripts & schema exporters
-│   └── export_openapi.py          # Standalone OpenAPI schema exporter
+│   ├── export_openapi.py          # Standalone OpenAPI schema exporter
+│   ├── seed_db.py                 # Idempotent catalog seeder
+│   └── hash_password.py           # Generates bcrypt hashes for ADMIN/REVIEWER_PASSWORD_HASH
 └── requirements.txt               # Python dependencies
 ```
 
@@ -52,8 +66,17 @@ backend/
   - **Invariants:** the role is always read from configuration, never from the token; removing an account revokes its live tokens; `SECRET_KEY` left at its default is refused when `ENVIRONMENT` is `production`/`staging` or on Vercel. Never attach a guard to `/programs` or `/plans`.
   - Uses `bcrypt` directly (not `passlib`, which is unmaintained and breaks on bcrypt 5).
 
+- **CF-202 (Admin Course Editing):** `POST /api/v1/courses`, `PUT /api/v1/courses/{id}`, `PATCH /api/v1/courses/{id}`; the whole router requires `ADMIN`, so routes added later are protected by default. Responses use `{ success: true, data: AdminCourse }` (`AdminCourse` = `Course` + `updatedAt`).
+  - **Rules:** credits 1 to 12; semester 1 to 8 and within every owning program's semester count; the course code is immutable (409) and unique catalog-wide (409 on create); corequisites must exist and not be self; titles are trimmed; unknown request fields are rejected (422) so prerequisite edits are never silently dropped.
+  - **Credit distribution:** single-semester courses derive it from `totalCredits` and `recommendedSemester`; multi-semester courses must send a `creditDistribution` (consecutive from the start semester, summing to `totalCredits`) whenever credits, duration or start change.
+  - **Persistence:** one transaction per request (rollback on any failure); `courses.updated_at` (migration `0002_course_updated_at`) is set on every mutation, including child-row-only changes. Prerequisite ASTs are untouched here (CF-203).
+  - **Tests** run on in-memory SQLite via the `db_client`, `admin_headers` and `reviewer_headers` fixtures in `tests/conftest.py`.
+
 ## 4. Operational Commands
 - Start dev server: `uvicorn app.main:app --reload --port 8000` (run from `backend/`)
 - Run tests: `pytest backend/tests`
+- Apply migrations: `python -m alembic upgrade head` (from `backend/`; an old `seed_db.py`-only database needs `python -m alembic stamp 0001_initial_curriculum_tables` first)
+- Generate a faculty password hash: `python backend/scripts/hash_password.py`
+- Regenerate frontend API types (backend running on :8000): `npm --workspace=frontend run generate-types`
 - Run linter: `ruff check backend/`
 - Export OpenAPI schema: `python scripts/export_openapi.py`

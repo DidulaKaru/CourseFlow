@@ -47,6 +47,25 @@ python backend/scripts/seed_db.py
 
 This creates all PostgreSQL tables (`degree_programs`, `courses`, `prerequisite_rules`, `credit_distributions`, `course_evaluations`) and populates Computer Engineering & Electrical Engineering curriculums.
 
+### Step 4: Apply Schema Migrations
+
+Schema changes ship as Alembic revisions (`0001_initial_curriculum_tables`, `0002_course_updated_at`, ...). Run them against the same `DATABASE_URL` from the `backend/` directory:
+
+```powershell
+cd backend
+
+# New database: migrate first, then seed
+python -m alembic upgrade head
+python scripts/seed_db.py
+
+# Existing database created before Alembic was used (by seed_db.py alone, so it has no alembic_version table):
+# mark it as being at the initial revision once, then upgrade
+python -m alembic stamp 0001_initial_curriculum_tables
+python -m alembic upgrade head
+```
+
+Without the `stamp` step, `upgrade head` fails on an existing database with "table already exists". Run `python -m alembic current` to confirm the database is at `head`. Re-run `upgrade head` after every release that adds a revision (CF-202 adds `courses.updated_at`).
+
 ---
 
 ## 2. Backend: Vercel Serverless (Free Hobby Tier)
@@ -70,7 +89,11 @@ In the **Environment Variables** section, configure:
 | :--- | :--- | :--- |
 | `DATABASE_URL` | `postgresql://neondb_owner:...-pooler...neon.tech/neondb?sslmode=require` | Your Neon pooled connection string. |
 | `ENVIRONMENT` | `production` | Enables `NullPool` serverless connection mode. |
-| `SECRET_KEY` | *(Generate a 32+ character random secret)* | Cryptographic signing key. |
+| `SECRET_KEY` | *(Generate a 32+ character random secret)* | Signs faculty JWTs. The built-in default is refused in production, staging and on Vercel, so faculty login fails until this is set. |
+| `ADMIN_USERNAME` | `admin` (or your choice) | Username of the administrator account. |
+| `ADMIN_PASSWORD_HASH` | *(bcrypt hash)* | Generate locally with `python backend/scripts/hash_password.py` and paste the hash as-is. There are no default credentials; leaving this empty disables the account. |
+| `REVIEWER_USERNAME` / `REVIEWER_PASSWORD_HASH` | *(optional)* | Faculty reviewer account (can upload, review and commit extractions, but cannot edit courses). |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `60` (default) | Lifetime of faculty access tokens. |
 | `CORS_ORIGINS` | `https://*.pages.dev,http://localhost:5173` | Allowed CORS origins (Cloudflare Pages domains are also allowed via regex). |
 
 ### Step 4: Deploy and Verify
@@ -131,10 +154,14 @@ Once both services are deployed:
 4. Toggle between Computer Engineering and Electrical Engineering to verify theme switching (`data-department="ce"` frost blue / `data-department="ee"` dwemer amber).
 5. Open a course module drawer: verify syllabus objectives, contact hours, and prerequisite dependencies.
 6. Click **PDF Export**: confirm that client-side rendering compiles your academic plan cleanly.
+7. Faculty API check: `POST /api/v1/auth/login` with the admin credentials returns an `accessToken`; `GET /api/v1/auth/me` with `Authorization: Bearer <token>` returns the admin identity; the same call without a token returns 401. `GET /api/programs` must still work with no token.
+8. Course edits are saved to PostgreSQL, but the student canvas currently loads the bundled catalog files, so edits do not appear for students until the read path moves to the database (see `plans/Didula_Sprint2.md` section 6).
 
 ---
 
 ## 5. Ongoing Maintenance & Secrets Rotation
+
+- **Rotating `SECRET_KEY`** immediately signs out every faculty session (tokens signed with the old key stop verifying). **Changing a password** means generating a new hash, updating `ADMIN_PASSWORD_HASH` and redeploying; existing tokens stay valid until they expire (60 minutes) unless the key is also rotated.
 
 - **Zero Cost Guarantee:** As long as database usage remains under 0.5 GiB and backend executions stay within 100k invocations/day, all services operate permanently within free allowances.
 - **Database Cold Starts:** Neon automatically suspends idle compute after 5 minutes of inactivity. When a student visits after an idle period, the first API request might experience a brief ~1-2s cold-start while compute resumes. CourseFlow's `pool_pre_ping=True` and guest-mode local catalog ensure students can continue interacting with the canvas seamlessly even during cold starts.

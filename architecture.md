@@ -35,6 +35,7 @@ CourseFlow avoids generic PERN/MERN stack templates in favor of a domain-optimiz
 | **Client State** | Zustand | Local-first state management with persist middleware for `localStorage`. |
 | **Backend API** | Python (FastAPI) | High-performance async server running under Uvicorn/Starlette. |
 | **Type Synchronization** | `openapi-typescript` | Auto-generates client TypeScript interfaces directly from Pydantic models. |
+| **Faculty Authentication** | PyJWT, bcrypt | Stateless JWT bearer sessions and salted password hashes for the admin API (students stay unauthenticated, ADR-001/ADR-002). |
 | **Primary Database** | PostgreSQL | Handles `JSONB` for AST trees and `pgvector` for semantic embeddings. |
 | **Graph Mathematics Engine** | NetworkX | Backend in-memory graph analysis; pure TypeScript engine on client. |
 | **Document Ingestion** | pdfplumber, DocTR / Tesseract | Deterministic PDF tabular parsing with OCR fallback for scans. |
@@ -136,6 +137,13 @@ Standard RAG fails in academic advising because vector similarity does not under
 To generalize CourseFlow beyond engineering to any degree program (including Major/Minor tracks and free electives), requirements are modeled as orthogonal constraint buckets:
 * `RequirementBucket`: `min_credits`, `max_credits`, `is_mandatory`, `bucket_type` (Core, Major Specialization, Minor, General Elective, Technical Elective).
 * Verification checks that $\text{total credits} \ge 150$, each bucket meets its minimum credit threshold, and the selected sub-graph is acyclic.
+
+### 4.5 Faculty Admin Authentication & Course Administration (Sprint 2: CF-201, CF-202)
+1. **Faculty-only authentication (ADR-002):** `POST /api/v1/auth/login` exchanges credentials for a signed JWT (HS256, 60-minute expiry); `POST /auth/refresh` extends a still-valid session; `GET /auth/me` returns `{ username, role, permissions }`. Accounts are configured through environment variables (`ADMIN_*`, `REVIEWER_*`) with bcrypt hashes, there are no default credentials and no users table.
+2. **Roles and guards:** `ADMIN` can edit courses and prerequisites; `FACULTY_REVIEWER` can upload, review and commit extractions. Routes declare `AdminUser` / `StaffUser` dependencies (`app/api/deps.py`): missing or invalid token returns 401, wrong role returns 403. The role is always read from configuration, never trusted from the token. Student routes (`/programs`, `/plans`) have no guard.
+3. **Course administration API:** `POST /api/v1/courses`, `PUT` and `PATCH /api/v1/courses/{id}` return `{ success: true, data: AdminCourse }` (`AdminCourse` is `Course` plus `updatedAt`). Rules live in `app/services/course_service.py`: credits 1 to 12, semester 1 to 8 and within the owning programs' semester count, immutable catalog-unique course codes, valid corequisites, and credit distributions that sum to `totalCredits` and run consecutively from the start semester. Each request is one transaction and bumps `courses.updated_at`.
+4. **Extraction job lifecycle (CF-204/CF-235):** `PENDING` -> `PROCESSING` -> `EXTRACTED` -> `COMMITTED`, or `FAILED`.
+5. **Current limitation:** student-facing reads still use the bundled JSON catalogs, so edits stored in PostgreSQL are not yet visible to students.
 
 ---
 
@@ -239,6 +247,7 @@ export interface DegreeProgram {
   * Automated natural-language prerequisite to boolean AST synthesis.
   * Side-by-side human review screen with confidence scores.
   * Authenticated admin in-app module editing modal.
+  * **Status:** CF-201 (faculty authentication) and CF-202 (admin course endpoints) implemented, PRs pending; see `docs/SYSTEM_STATE.md` section 9.
 
 * **Sprint 3: Frictionless Alumni Portal & Graph Integrity**
   * Zero-login public alumni feedback submission portal.

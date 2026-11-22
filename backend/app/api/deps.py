@@ -10,7 +10,9 @@ from typing import Annotated
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.orm import Session
 
+from app.core.database import get_db
 from app.core.security import decode_access_token, get_staff_accounts
 from app.schemas.auth import AuthenticatedUser, UserRole
 
@@ -69,3 +71,6 @@ get_current_staff_user = require_roles(UserRole.ADMIN, UserRole.FACULTY_REVIEWER
 CurrentUser = Annotated[AuthenticatedUser, Depends(get_current_user)]
 AdminUser = Annotated[AuthenticatedUser, Depends(get_current_admin_user)]
 StaffUser = Annotated[AuthenticatedUser, Depends(get_current_staff_user)]
+
+# Request-scoped SQLAlchemy session (closed automatically after the response).
+DbSession = Annotated[Session, Depends(get_db)]

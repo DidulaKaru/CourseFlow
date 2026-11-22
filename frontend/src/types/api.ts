@@ -104,6 +104,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Course
+         * @description Create a new course inside a degree program. The course ID equals its unique code.
+         */
+        post: operations["create_course_api_courses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/courses/{course_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace Course
+         * @description Full update of a course's editable fields. Prerequisite rules use their own endpoint.
+         */
+        put: operations["replace_course_api_courses__course_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Course Fields
+         * @description Partial update: only the supplied fields change (contactHours merges per field).
+         */
+        patch: operations["patch_course_api_courses__course_id__patch"];
+        trace?: never;
+    };
     "/api/programs": {
         parameters: {
             query?: never;
@@ -224,6 +268,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Course
+         * @description Create a new course inside a degree program. The course ID equals its unique code.
+         */
+        post: operations["create_course_api_v1_courses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/courses/{course_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace Course
+         * @description Full update of a course's editable fields. Prerequisite rules use their own endpoint.
+         */
+        put: operations["replace_course_api_v1_courses__course_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Course Fields
+         * @description Partial update: only the supplied fields change (contactHours merges per field).
+         */
+        patch: operations["patch_course_api_v1_courses__course_id__patch"];
+        trace?: never;
+    };
     "/api/v1/programs": {
         parameters: {
             query?: never;
@@ -289,6 +377,83 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
+         * AdminCourse
+         * @description Course as returned to admin tools: the public contract plus audit metadata.
+         */
+        AdminCourse: {
+            /**
+             * Id
+             * @description Unique primary identifier (e.g., 'CO544')
+             */
+            id: string;
+            /**
+             * Code
+             * @description Official display code
+             */
+            code: string;
+            /**
+             * Title
+             * @description Full course title
+             */
+            title: string;
+            /**
+             * Description
+             * @description Course syllabus description
+             * @default
+             */
+            description: string;
+            /**
+             * Totalcredits
+             * @description Total academic credits
+             */
+            totalCredits: number;
+            /**
+             * Durationsemesters
+             * @description Duration in semesters (1 standard, 2+ capstone/spanning)
+             * @default 1
+             */
+            durationSemesters: number;
+            /**
+             * Recommendedsemester
+             * @description Recommended semester: 1 through 8
+             */
+            recommendedSemester: number;
+            /**
+             * Creditdistribution
+             * @description Credit distribution across semesters for multi-term courses
+             */
+            creditDistribution?: components["schemas"]["CreditDistribution"][];
+            /** @description Course classification */
+            type: components["schemas"]["CourseType"];
+            /**
+             * Prerequisiterule
+             * @description Prerequisite AST boolean formula
+             */
+            prerequisiteRule?: (components["schemas"]["CourseRuleNode"] | components["schemas"]["CreditThresholdRuleNode"] | components["schemas"]["LogicalRuleNode"]) | null;
+            /**
+             * Corequisites
+             * @description Course IDs required concurrently
+             */
+            corequisites?: string[];
+            /**
+             * Offeredsemesters
+             * @description Semester terms when course is offered
+             */
+            offeredSemesters?: components["schemas"]["SemesterTerm"][];
+            /**
+             * Syllabusobjectives
+             * @description Official learning objectives from syllabus
+             */
+            syllabusObjectives?: string[];
+            /** @description Weekly lecture, lab, and tutorial contact hours */
+            contactHours?: components["schemas"]["ContactHours"] | null;
+            /**
+             * Updatedat
+             * @description Last admin modification time
+             */
+            updatedAt?: string | null;
+        };
+        /**
          * AuthenticatedUser
          * @description Identity and permissions of the active session.
          */
@@ -322,6 +487,27 @@ export interface components {
              * @default 0
              */
             tutorial: number;
+        };
+        /**
+         * ContactHoursUpdate
+         * @description Partial contact hours: omitted fields keep their stored value (PATCH merge).
+         */
+        ContactHoursUpdate: {
+            /**
+             * Lecture
+             * @description Lecture hours
+             */
+            lecture?: number | null;
+            /**
+             * Lab
+             * @description Practical lab hours
+             */
+            lab?: number | null;
+            /**
+             * Tutorial
+             * @description Tutorial hours
+             */
+            tutorial?: number | null;
         };
         /**
          * Course
@@ -396,6 +582,96 @@ export interface components {
             contactHours?: components["schemas"]["ContactHours"] | null;
         };
         /**
+         * CourseCreate
+         * @description Create a new course inside a degree program (POST). The course ID equals its code.
+         */
+        CourseCreate: {
+            /**
+             * Code
+             * @description Unique official course code, e.g. CO544
+             */
+            code: string;
+            /** Title */
+            title: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Totalcredits */
+            totalCredits: number;
+            /**
+             * Durationsemesters
+             * @default 1
+             */
+            durationSemesters: number;
+            /** Recommendedsemester */
+            recommendedSemester: number;
+            type: components["schemas"]["CourseType"];
+            /** Offeredsemesters */
+            offeredSemesters?: components["schemas"]["SemesterTerm"][];
+            /** Corequisites */
+            corequisites?: string[];
+            /** Syllabusobjectives */
+            syllabusObjectives?: string[];
+            /** @description Null clears stored contact hours */
+            contactHours?: components["schemas"]["ContactHours"] | null;
+            /**
+             * Creditdistribution
+             * @description Per-semester credit split. Omit for single-semester courses (derived automatically); required when a multi-semester course changes credits, duration or start semester.
+             */
+            creditDistribution?: components["schemas"]["CreditDistribution"][] | null;
+            /**
+             * Programid
+             * @description Degree program that will own the course
+             */
+            programId: string;
+        };
+        /**
+         * CoursePatch
+         * @description Partial update (PATCH). Omitted fields are untouched; null is never a valid value.
+         */
+        CoursePatch: {
+            /**
+             * Code
+             * @description Optional echo of the course code (immutable)
+             */
+            code?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Totalcredits */
+            totalCredits?: number | null;
+            /** Durationsemesters */
+            durationSemesters?: number | null;
+            /** Recommendedsemester */
+            recommendedSemester?: number | null;
+            type?: components["schemas"]["CourseType"] | null;
+            /** Offeredsemesters */
+            offeredSemesters?: components["schemas"]["SemesterTerm"][] | null;
+            /** Corequisites */
+            corequisites?: string[] | null;
+            /** Syllabusobjectives */
+            syllabusObjectives?: string[] | null;
+            contactHours?: components["schemas"]["ContactHoursUpdate"] | null;
+            /** Creditdistribution */
+            creditDistribution?: components["schemas"]["CreditDistribution"][] | null;
+        };
+        /**
+         * CourseResponse
+         * @description Standard success envelope for admin course mutations.
+         */
+        CourseResponse: {
+            /**
+             * Success
+             * @default true
+             * @constant
+             */
+            success: true;
+            data: components["schemas"]["AdminCourse"];
+        };
+        /**
          * CourseRuleNode
          * @description Leaf AST node asserting completion of a prerequisite course.
          */
@@ -417,6 +693,50 @@ export interface components {
          * @enum {string}
          */
         CourseType: "CORE" | "ELECTIVE" | "LAB" | "CAPSTONE";
+        /**
+         * CourseUpdate
+         * @description Full replacement of a course's editable fields (PUT).
+         *
+         *     Prerequisite rules are edited through the dedicated prerequisites endpoint, and the
+         *     course code is a permanent identifier, so neither can be changed here.
+         */
+        CourseUpdate: {
+            /**
+             * Code
+             * @description Optional echo of the course code. Codes are immutable; a different value is rejected.
+             */
+            code?: string | null;
+            /** Title */
+            title: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Totalcredits */
+            totalCredits: number;
+            /**
+             * Durationsemesters
+             * @default 1
+             */
+            durationSemesters: number;
+            /** Recommendedsemester */
+            recommendedSemester: number;
+            type: components["schemas"]["CourseType"];
+            /** Offeredsemesters */
+            offeredSemesters?: components["schemas"]["SemesterTerm"][];
+            /** Corequisites */
+            corequisites?: string[];
+            /** Syllabusobjectives */
+            syllabusObjectives?: string[];
+            /** @description Null clears stored contact hours */
+            contactHours?: components["schemas"]["ContactHours"] | null;
+            /**
+             * Creditdistribution
+             * @description Per-semester credit split. Omit for single-semester courses (derived automatically); required when a multi-semester course changes credits, duration or start semester.
+             */
+            creditDistribution?: components["schemas"]["CreditDistribution"][] | null;
+        };
         /**
          * CreditDistribution
          * @description Credit allocation for a specific semester in multi-semester courses.
@@ -867,6 +1187,187 @@ export interface operations {
             };
         };
     };
+    create_course_api_courses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not an administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course or degree program not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Duplicate or immutable course code */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    replace_course_api_courses__course_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not an administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course or degree program not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Duplicate or immutable course code */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    patch_course_api_courses__course_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CoursePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not an administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course or degree program not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Duplicate or immutable course code */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     list_programs_api_programs_get: {
         parameters: {
             query?: never;
@@ -1021,6 +1522,187 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AuthenticatedUser"];
                 };
+            };
+        };
+    };
+    create_course_api_v1_courses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not an administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course or degree program not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Duplicate or immutable course code */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    replace_course_api_v1_courses__course_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not an administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course or degree program not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Duplicate or immutable course code */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    patch_course_api_v1_courses__course_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                course_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CoursePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticated but not an administrator */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Course or degree program not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Duplicate or immutable course code */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
