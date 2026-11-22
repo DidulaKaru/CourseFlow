@@ -69,8 +69,12 @@ backend/
 - **CF-202 (Admin Course Editing):** `POST /api/v1/courses`, `PUT /api/v1/courses/{id}`, `PATCH /api/v1/courses/{id}`; the whole router requires `ADMIN`, so routes added later are protected by default. Responses use `{ success: true, data: AdminCourse }` (`AdminCourse` = `Course` + `updatedAt`).
   - **Rules:** credits 1 to 12; semester 1 to 8 and within every owning program's semester count; the course code is immutable (409) and unique catalog-wide (409 on create); corequisites must exist and not be self; titles are trimmed; unknown request fields are rejected (422) so prerequisite edits are never silently dropped.
   - **Credit distribution:** single-semester courses derive it from `totalCredits` and `recommendedSemester`; multi-semester courses must send a `creditDistribution` (consecutive from the start semester, summing to `totalCredits`) whenever credits, duration or start change.
-  - **Persistence:** one transaction per request (rollback on any failure); `courses.updated_at` (migration `0002_course_updated_at`) is set on every mutation, including child-row-only changes. Prerequisite ASTs are untouched here (CF-203).
+  - **Persistence:** one transaction per request (rollback on any failure); `courses.updated_at` (migration `0002_course_updated_at`) is set on every mutation, including child-row-only changes. Prerequisite ASTs are untouched by these routes (see CF-203).
   - **Tests** run on in-memory SQLite via the `db_client`, `admin_headers` and `reviewer_headers` fixtures in `tests/conftest.py`.
+
+- **CF-203 (Prerequisite & Credit-Distribution Persistence):** `PUT /api/v1/courses/{id}/prerequisites` (body is the `PrerequisiteRule` AST), `DELETE /api/v1/courses/{id}/prerequisites` (clears the rule) and `PUT /api/v1/courses/{id}/credit-distribution` (body is an array of `CreditDistribution`); same `ADMIN` router guard and `AdminCourse` envelope.
+  - **Validation:** depth <= 20, empty `AND` / `OR`, unknown or self `courseId` and indirect cycles are rejected with 422; `core/ast_evaluator.py::find_rule_issues` is the shared, importable validator. Credit distribution reuses `check_distribution`.
+  - **Persistence:** `courses.prerequisite_rule` and the `prerequisite_rules` table are written together and `updated_at` is bumped. `main.py` sets `separate_input_output_schemas=False` to keep single OpenAPI schema names.
 
 ## 4. Operational Commands
 - Start dev server: `uvicorn app.main:app --reload --port 8000` (run from `backend/`)

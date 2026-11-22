@@ -4,7 +4,8 @@ Owns every business rule for creating and editing courses so the endpoints stay 
 credit and semester bounds, code immutability and uniqueness, corequisite integrity,
 credit-distribution consistency, ``updated_at`` tracking and transactional commits.
 
-Prerequisite ASTs are intentionally untouched here; they belong to CF-203.
+CF-203 adds the prerequisite-rule and credit-distribution mutations at the bottom of this module;
+they reuse the same helpers, so they cannot disagree with the CF-202 course edits.
 """
 
 from typing import Any
@@ -13,10 +14,19 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.core.ast_evaluator import RuleIssue, find_rule_issues
 from app.models.curriculum import Course as CourseRecord
 from app.models.curriculum import CreditDistribution as CreditDistributionRecord
 from app.models.curriculum import DegreeProgram as DegreeProgramRecord
-from app.schemas.curriculum import AdminCourse, CourseCreate, CoursePatch, CourseUpdate
+from app.models.curriculum import PrerequisiteRule as PrerequisiteRuleRecord
+from app.schemas.curriculum import (
+    AdminCourse,
+    CourseCreate,
+    CoursePatch,
+    CourseUpdate,
+    CreditDistribution,
+    PrerequisiteRule,
+)
 
 DEFAULT_SEMESTER_COUNT = 8
 
@@ -42,6 +52,14 @@ class CourseValidationError(CourseServiceError):
         super().__init__(message)
         self.field = field
         self.message = message
+
+
+class RuleValidationError(CourseServiceError):
+    """A prerequisite tree broke one or more structural or referential rules (CF-203)."""
+
+    def __init__(self, issues: list[RuleIssue]) -> None:
+        super().__init__("; ".join(issue.message for issue in issues))
+        self.issues = issues
 
 
 # ==========================================
@@ -157,6 +175,15 @@ def _existing_distribution(course: CourseRecord) -> Distribution:
     return sorted((d.semester_index, d.credits_allocated) for d in course.credit_distribution)
 
 
+def _replace_distribution(course: CourseRecord, distribution: Distribution) -> None:
+    """Swap the stored credit split only when it actually changed."""
+    if distribution != _existing_distribution(course):
+        course.credit_distribution = [
+            CreditDistributionRecord(semester_index=index, credits_allocated=credits)
+            for index, credits in distribution
+        ]
+
+
 def _write_fields(course: CourseRecord, values: dict[str, Any], distribution: Distribution) -> None:
     """Assign validated values. Fresh objects are assigned so JSON column changes are detected."""
     course.title = values["title"]
@@ -169,11 +196,7 @@ def _write_fields(course: CourseRecord, values: dict[str, Any], distribution: Di
     course.corequisites = values["corequisites"]
     course.syllabus_objectives = values["syllabus_objectives"]
     course.contact_hours = values["contact_hours"]
-    if distribution != _existing_distribution(course):
-        course.credit_distribution = [
-            CreditDistributionRecord(semester_index=index, credits_allocated=credits)
-            for index, credits in distribution
-        ]
+    _replace_distribution(course, distribution)
     # Explicit so edits that only touch child rows still advance the timestamp.
     course.updated_at = func.now()
 
@@ -327,4 +350,116 @@ def _save_update(db: Session, course: CourseRecord, values: dict[str, Any], prov
     except CourseServiceError:
         db.rollback()
         raise
+    return to_admin_course(_commit(db, course))
+
+
+# ==========================================
+# Prerequisite rules and credit distributions (CF-203)
+# ==========================================
+
+
+def _referenced_course_ids(raw: Any) -> list[str]:
+    """Course IDs referenced by a stored (JSON) rule tree, in first-seen order."""
+    found: list[str] = []
+    stack = [raw]
+    while stack:
+        node = stack.pop()
+        if not isinstance(node, dict):
+            continue
+        if node.get("type") == "COURSE" and isinstance(node.get("courseId"), str):
+            found.append(node["courseId"])
+        stack.extend(reversed(node.get("children") or []))
+    return list(dict.fromkeys(found))
+
+
+def _find_dependency_cycle(course_id: str, targets: list[str], graph: dict[str, list[str]]) -> list[str] | None:
+    """Return a path ``course -> ... -> course`` if requiring ``targets`` would make the course unreachable.
+
+    ``graph`` maps a course to the courses its stored rule requires. A cycle exists when any new
+    target can already reach ``course_id`` through those requirements.
+    """
+    for target in targets:
+        parents: dict[str, str] = {}
+        queue = [target]
+        seen = {target}
+        while queue:
+            current = queue.pop(0)
+            if current == course_id:
+                path = [current]
+                while path[-1] != target:
+                    path.append(parents[path[-1]])
+                return [course_id, *reversed(path)]
+            for upstream in graph.get(current, []):
+                if upstream not in seen:
+                    seen.add(upstream)
+                    parents[upstream] = current
+                    queue.append(upstream)
+    return None
+
+
+def _check_prerequisite_rule(db: Session, course_id: str, rule: PrerequisiteRule, raw: dict[str, Any]) -> None:
+    """Reject trees that are malformed, dangle, reference the course itself or create a cycle."""
+    catalog = {
+        row.id: row.prerequisite_rule
+        for row in db.execute(select(CourseRecord.id, CourseRecord.prerequisite_rule))
+    }
+    issues = find_rule_issues(rule, course_id=course_id, known_course_ids=catalog.keys())
+    if issues:
+        raise RuleValidationError(issues)
+
+    graph = {other: _referenced_course_ids(stored) for other, stored in catalog.items() if other != course_id}
+    cycle = _find_dependency_cycle(course_id, _referenced_course_ids(raw), graph)
+    if cycle:
+        raise CourseValidationError(
+            "prerequisiteRule",
+            f"This rule would create a circular dependency: {' -> '.join(cycle)}.",
+        )
+
+
+def _write_prerequisite_rule(db: Session, course: CourseRecord, raw: dict[str, Any] | None) -> None:
+    """Keep ``courses.prerequisite_rule`` and the relational ``prerequisite_rules`` row identical (as the seeder does)."""
+    course.prerequisite_rule = raw
+    record = course.prerequisite_rule_record
+    if raw is None:
+        if record is not None:
+            db.delete(record)
+    elif record is None:
+        course.prerequisite_rule_record = PrerequisiteRuleRecord(
+            course_id=course.id, rule_type=raw["type"], expression=raw
+        )
+    else:
+        record.rule_type = raw["type"]
+        record.expression = raw
+    course.updated_at = func.now()
+
+
+def set_prerequisite_rule(db: Session, course_id: str, rule: PrerequisiteRule | None) -> AdminCourse:
+    """Replace a course's prerequisite AST (``None`` clears it) after validating it against the catalog."""
+    course = _get_course(db, course_id)
+    raw = None if rule is None else rule.model_dump(by_alias=True, mode="json")
+    try:
+        if rule is not None and raw is not None:
+            _check_prerequisite_rule(db, course.id, rule, raw)
+        _write_prerequisite_rule(db, course, raw)
+    except CourseServiceError:
+        db.rollback()
+        raise
+    return to_admin_course(_commit(db, course))
+
+
+def set_credit_distribution(db: Session, course_id: str, entries: list[CreditDistribution]) -> AdminCourse:
+    """Replace a course's per-semester credit split, enforcing the same rule as CF-202 edits."""
+    course = _get_course(db, course_id)
+    try:
+        distribution = check_distribution(
+            [(entry.semester_index, entry.credits_allocated) for entry in entries],
+            course.total_credits,
+            course.duration_semesters,
+            course.recommended_semester,
+        )
+    except CourseServiceError:
+        db.rollback()
+        raise
+    _replace_distribution(course, distribution)
+    course.updated_at = func.now()
     return to_admin_course(_commit(db, course))
