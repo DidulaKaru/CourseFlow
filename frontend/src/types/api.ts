@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Root
+         * @description Root endpoint for top-level health verification.
+         */
+        get: operations["root__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -16,6 +36,66 @@ export interface paths {
          * @description Health check endpoint to verify backend operational readiness.
          */
         get: operations["health_check_api_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Faculty Login
+         * @description Exchange faculty credentials for a JWT bearer token.
+         */
+        post: operations["login_api_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh Session
+         * @description Exchange a still-valid bearer token for a fresh one with a new expiry.
+         */
+        post: operations["refresh_api_auth_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Current Session
+         * @description Return the identity and permissions of the authenticated faculty user.
+         */
+        get: operations["me_api_auth_me_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -78,6 +158,66 @@ export interface paths {
          * @description Validates per-semester credit minimums (>= 18 credits), term caps, and prerequisite AST satisfiability.
          */
         post: operations["validate_plan_api_plans_validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Faculty Login
+         * @description Exchange faculty credentials for a JWT bearer token.
+         */
+        post: operations["login_api_v1_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Refresh Session
+         * @description Exchange a still-valid bearer token for a fresh one with a new expiry.
+         */
+        post: operations["refresh_api_v1_auth_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Current Session
+         * @description Return the identity and permissions of the authenticated faculty user.
+         */
+        get: operations["me_api_v1_auth_me_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -149,6 +289,41 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
+         * AuthenticatedUser
+         * @description Identity and permissions of the active session.
+         */
+        AuthenticatedUser: {
+            /** Username */
+            username: string;
+            role: components["schemas"]["UserRole"];
+            /** Permissions */
+            permissions?: string[];
+        };
+        /**
+         * ContactHours
+         * @description Contact hours breakdown for lecture, lab, and tutorial.
+         */
+        ContactHours: {
+            /**
+             * Lecture
+             * @description Weekly lecture hours
+             * @default 0
+             */
+            lecture: number;
+            /**
+             * Lab
+             * @description Weekly practical lab hours
+             * @default 0
+             */
+            lab: number;
+            /**
+             * Tutorial
+             * @description Weekly tutorial hours
+             * @default 0
+             */
+            tutorial: number;
+        };
+        /**
          * Course
          * @description Course entity in the curriculum dependency graph.
          */
@@ -181,7 +356,7 @@ export interface components {
             totalCredits: number;
             /**
              * Durationsemesters
-             * @description Duration in semesters (1 standard, 2 capstone)
+             * @description Duration in semesters (1 standard, 2+ capstone/spanning)
              * @default 1
              */
             durationSemesters: number;
@@ -212,6 +387,13 @@ export interface components {
              * @description Semester terms when course is offered
              */
             offeredSemesters?: components["schemas"]["SemesterTerm"][];
+            /**
+             * Syllabusobjectives
+             * @description Official learning objectives from syllabus
+             */
+            syllabusObjectives?: string[];
+            /** @description Weekly lecture, lab, and tutorial contact hours */
+            contactHours?: components["schemas"]["ContactHours"] | null;
         };
         /**
          * CourseRuleNode
@@ -384,6 +566,16 @@ export interface components {
             children: (components["schemas"]["CourseRuleNode"] | components["schemas"]["CreditThresholdRuleNode"] | components["schemas"]["LogicalRuleNode"])[];
         };
         /**
+         * LoginRequest
+         * @description Credentials submitted to POST /auth/login.
+         */
+        LoginRequest: {
+            /** Username */
+            username: string;
+            /** Password */
+            password: string;
+        };
+        /**
          * PlanValidationRequest
          * @description Payload to validate a student's study plan against curriculum rules.
          */
@@ -514,6 +706,32 @@ export interface components {
              */
             courseIds?: string[];
         };
+        /**
+         * TokenResponse
+         * @description JWT bearer token issued on login or refresh.
+         */
+        TokenResponse: {
+            /** Accesstoken */
+            accessToken: string;
+            /**
+             * Tokentype
+             * @default bearer
+             * @constant
+             */
+            tokenType: "bearer";
+            /**
+             * Expiresin
+             * @description Token lifetime in seconds
+             */
+            expiresIn: number;
+            user: components["schemas"]["AuthenticatedUser"];
+        };
+        /**
+         * UserRole
+         * @description Roles available to authenticated faculty staff.
+         * @enum {string}
+         */
+        UserRole: "ADMIN" | "FACULTY_REVIEWER";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -536,6 +754,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    root__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     health_check_api_health_get: {
         parameters: {
             query?: never;
@@ -552,6 +790,79 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    login_api_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refresh_api_auth_refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+        };
+    };
+    me_api_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthenticatedUser"];
                 };
             };
         };
@@ -636,6 +947,79 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    login_api_v1_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refresh_api_v1_auth_refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+        };
+    };
+    me_api_v1_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthenticatedUser"];
                 };
             };
         };
