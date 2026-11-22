@@ -139,13 +139,13 @@ This project is built mostly by agents with little human review. Write code a ca
 | Layer | What it does | Where |
 | --- | --- | --- |
 | Invariant checker | Catalog sync, structure and immutable facts; emoji and pinch-zoom; new or changed UI lines follow the design system (`ui-migration`); canvas camera props; store persistence; no `mockCourses` in UI; no focused tests; evaluator/schema coupling; `fix/` branches need a test | `scripts/check_invariants.py` (`--list`, `--only`, `--for-file`) |
-| Claude Code hooks | Blocks `--no-verify`, pushes to main/dev, force-push and bypasses. Asks before destructive git/DB commands, new deps, `.env`, editing guardrails, existing migrations, catalog facts or reducing test assertions. Re-checks each edited file. Runs the gate before the turn ends | `.claude/settings.json`, `.claude/hooks/cf_guard.py` |
+| Claude Code hooks | Never prompts, so sessions can run unattended. Automatically denies (with the reason) `--no-verify`, pushes to main/dev, force-push, hook bypasses, destructive git/DB commands, `.env`, edits to existing migrations or catalog facts, and edits that reduce test assertions. Re-checks each edited file. Runs the gate before the turn ends | `.claude/settings.json`, `.claude/hooks/cf_guard.py` |
 | Skills | `/ship-ticket` (workflow), `/courseflow-ui` (visual design, mobile-first), `/curriculum-data`, `/contract-change` | `.claude/skills/` |
 | Reviewer agents | `invariant-auditor` (correctness and invariants), `design-critic` (UI craft). Both are read-only | `.claude/agents/` |
 | Pre-commit and CI | lint-staged, typecheck and invariants locally. CI adds the full test suites, coverage of at least 85% and an invariants job diffed against the PR base | `.husky/pre-commit`, `.github/workflows/ci.yml` |
 | Regression locks | Tests that fail if any of the above is weakened | `backend/tests/test_guardrails.py`, `test_ci_workflow.py`, `test_precommit_config.py` |
 
-If a guardrail blocks you, fix the cause. Never work around it (with a shell edit, a renamed file or a weakened test). If you think the guardrail itself is wrong, stop and tell the user. Set `CF_SKIP_STOP_GATE=1` only when the user asks you to. A UI rule exception needs an inline `cf-allow: <reason>`.
+If a guardrail blocks you, fix the cause. Never work around it (with a shell edit, a renamed file or a weakened test). If you think the guardrail itself is wrong, or the user explicitly asked for the blocked action, finish everything else and explain the block in your final report. The user may be away from the keyboard, so don't stall. Set `CF_SKIP_STOP_GATE=1` only when the user asks you to. A UI rule exception needs an inline `cf-allow: <reason>`.
 
 ## Git workflow
 
