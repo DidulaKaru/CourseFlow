@@ -41,7 +41,9 @@ export default defineConfig({
     },
   },
   test: {
-    environment: 'jsdom',
+    // Node by default: jsdom setup dominated runtime (~85%). DOM/localStorage test files opt in
+    // with a `// @vitest-environment jsdom` docblock on line 1.
+    environment: 'node',
     alias: {
       '@react-pdf/renderer': '@react-pdf/renderer/lib/react-pdf.browser.js',
     },
