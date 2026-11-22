@@ -1,5 +1,7 @@
 # CourseFlow: Senior UI/UX Audit & Implementation Roadmap
 
+> **Visual direction superseded (2026-11-22).** The Skyrim / constellation aesthetic in this document is retired as too hostile. The UX findings (mobile-first, semester feed, bottom sheets, ergonomics) still apply, but all visual styling now follows [`design-philosophy.md`](../design-philosophy.md): friendly, light and mobile-first.
+
 > **Product Definition:** Dynamic Engineering Curriculum Planner & PDF Study Plan Generator  
 > **Target Audience:** Enrolled engineering students designing their elective specializations and auditing credit requirements  
 > **Primary Platform:** Mobile-First responsive web application with full desktop constellation exploration  

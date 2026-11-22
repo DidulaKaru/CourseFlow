@@ -1,0 +1,2 @@
+# CI runs Python 3.11; flag syntax newer than that (CLAUDE.md "Commands").
+target-version = "py311"
