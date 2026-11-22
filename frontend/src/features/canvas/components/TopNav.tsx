@@ -2,6 +2,7 @@ import { memo, useState, useEffect, useMemo } from 'react';
 import { Search, LayoutGrid, Network } from 'lucide-react';
 import { usePlannerStore, calculateGraduationProgress } from '@/core/store';
 import { getProgram, getProgramCourses } from '@/data/mockCourses';
+import { AdminAccessControl } from '@/features/admin/components/AdminAccessControl';
 import { ExportPdfButton } from '@/features/planner/components/ExportPdfButton';
 import type { Course, DegreeProgram } from '@/types/curriculum';
 import { DegreeSelector } from './DegreeSelector';
@@ -141,6 +142,11 @@ export const TopNav = memo(function TopNav({
                                 <LayoutGrid className="w-3 h-3" />
                                 <span className="hidden sm:inline">Semester List</span>
                             </button>
+                        </div>
+
+                        {/* Faculty tooling is desktop-first; the phone header has no room for another 44px target */}
+                        <div className="hidden sm:block">
+                            <AdminAccessControl />
                         </div>
 
                         {/* Desktop Graduation Bar & PDF Button (Visible on xl and up, >= 1280px) */}
