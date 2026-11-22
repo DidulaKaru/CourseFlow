@@ -4,12 +4,20 @@ on:
   push:
     branches: [main, dev]
   pull_request:
-    branches: [main, dev]
+
+permissions:
+  contents: read
+
+# Cancel superseded runs of the same branch/PR to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   frontend:
     name: Frontend Quality Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -24,7 +32,9 @@ jobs:
         run: npm ci
 
       - name: TypeScript Static Verification
-        run: npx tsc --noEmit
+        # `tsc -b` follows the project references. A bare `tsc --noEmit` at the repo
+        # root has `files: []` and checks nothing.
+        run: npm run typecheck
 
       - name: Linter Check
         run: npm run lint
@@ -38,6 +48,7 @@ jobs:
   backend:
     name: Backend Quality Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
