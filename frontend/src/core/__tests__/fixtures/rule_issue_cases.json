@@ -1,0 +1,245 @@
+{
+  "description": "Shared cases for findRuleIssues (ast_evaluator.ts) and find_rule_issues (ast_evaluator.py). Both suites must produce exactly these issues. 'chain' wraps the rule in that many single-child AND nodes; 'chainPrefix' on an issue prepends that many ['children', 0] steps to its path.",
+  "cases": [
+    {
+      "name": "valid compound tree",
+      "rule": {
+        "type": "AND",
+        "children": [
+          { "type": "COURSE", "courseId": "CE1001" },
+          {
+            "type": "OR",
+            "children": [
+              { "type": "COURSE", "courseId": "MA1001" },
+              { "type": "CREDIT_THRESHOLD", "minCredits": 30 }
+            ]
+          }
+        ]
+      },
+      "courseId": "CE2001",
+      "knownCourseIds": ["CE1001", "MA1001"],
+      "issues": []
+    },
+    {
+      "name": "lone course leaf without options",
+      "rule": { "type": "COURSE", "courseId": "CE1001" },
+      "issues": []
+    },
+    {
+      "name": "leaf at exactly depth 20",
+      "chain": 20,
+      "rule": { "type": "COURSE", "courseId": "CE1001" },
+      "issues": []
+    },
+    {
+      "name": "leaf at depth 21",
+      "chain": 21,
+      "rule": { "type": "COURSE", "courseId": "CE1001" },
+      "issues": [
+        {
+          "chainPrefix": 21,
+          "path": [],
+          "message": "Rule is nested more than 20 levels deep."
+        }
+      ]
+    },
+    {
+      "name": "no descent below the first too-deep node",
+      "chain": 20,
+      "rule": {
+        "type": "AND",
+        "children": [
+          {
+            "type": "OR",
+            "children": [
+              { "type": "COURSE", "courseId": " " },
+              { "type": "AND", "children": [] }
+            ]
+          }
+        ]
+      },
+      "issues": [
+        {
+          "chainPrefix": 21,
+          "path": [],
+          "message": "Rule is nested more than 20 levels deep."
+        }
+      ]
+    },
+    {
+      "name": "25-level chain reports once",
+      "chain": 25,
+      "rule": { "type": "COURSE", "courseId": "CE1001" },
+      "issues": [
+        {
+          "chainPrefix": 21,
+          "path": [],
+          "message": "Rule is nested more than 20 levels deep."
+        }
+      ]
+    },
+    {
+      "name": "empty AND",
+      "rule": { "type": "AND", "children": [] },
+      "issues": [
+        {
+          "path": ["children"],
+          "message": "AND node must have at least one child."
+        }
+      ]
+    },
+    {
+      "name": "nested empty OR",
+      "rule": {
+        "type": "AND",
+        "children": [
+          { "type": "COURSE", "courseId": "CE1001" },
+          { "type": "OR", "children": [] }
+        ]
+      },
+      "issues": [
+        {
+          "path": ["children", 1, "children"],
+          "message": "OR node must have at least one child."
+        }
+      ]
+    },
+    {
+      "name": "empty courseId",
+      "rule": { "type": "COURSE", "courseId": "" },
+      "issues": [
+        { "path": ["courseId"], "message": "courseId must not be blank." }
+      ]
+    },
+    {
+      "name": "whitespace courseId is blank, not unknown",
+      "rule": { "type": "COURSE", "courseId": "   " },
+      "knownCourseIds": ["CE1001"],
+      "issues": [
+        { "path": ["courseId"], "message": "courseId must not be blank." }
+      ]
+    },
+    {
+      "name": "root leaf references its own course",
+      "rule": { "type": "COURSE", "courseId": "CE2001" },
+      "courseId": "CE2001",
+      "issues": [
+        {
+          "path": ["courseId"],
+          "message": "A course cannot be its own prerequisite (CE2001)."
+        }
+      ]
+    },
+    {
+      "name": "nested self-reference",
+      "rule": {
+        "type": "OR",
+        "children": [
+          { "type": "COURSE", "courseId": "CE1001" },
+          {
+            "type": "AND",
+            "children": [{ "type": "COURSE", "courseId": "CE2001" }]
+          }
+        ]
+      },
+      "courseId": "CE2001",
+      "issues": [
+        {
+          "path": ["children", 1, "children", 0, "courseId"],
+          "message": "A course cannot be its own prerequisite (CE2001)."
+        }
+      ]
+    },
+    {
+      "name": "self-reference skipped without a courseId",
+      "rule": { "type": "COURSE", "courseId": "CE2001" },
+      "issues": []
+    },
+    {
+      "name": "unknown course",
+      "rule": {
+        "type": "AND",
+        "children": [
+          { "type": "COURSE", "courseId": "CE1001" },
+          { "type": "COURSE", "courseId": "ZZ9999" }
+        ]
+      },
+      "knownCourseIds": ["CE1001"],
+      "issues": [
+        {
+          "path": ["children", 1, "courseId"],
+          "message": "Unknown course 'ZZ9999': it does not exist in the catalog."
+        }
+      ]
+    },
+    {
+      "name": "empty known set flags every course",
+      "rule": { "type": "COURSE", "courseId": "CE1001" },
+      "knownCourseIds": [],
+      "issues": [
+        {
+          "path": ["courseId"],
+          "message": "Unknown course 'CE1001': it does not exist in the catalog."
+        }
+      ]
+    },
+    {
+      "name": "self-reference wins over unknown",
+      "rule": { "type": "COURSE", "courseId": "CE2001" },
+      "courseId": "CE2001",
+      "knownCourseIds": [],
+      "issues": [
+        {
+          "path": ["courseId"],
+          "message": "A course cannot be its own prerequisite (CE2001)."
+        }
+      ]
+    },
+    {
+      "name": "every issue in traversal order",
+      "rule": {
+        "type": "AND",
+        "children": [
+          { "type": "COURSE", "courseId": "CE2001" },
+          { "type": "COURSE", "courseId": "" },
+          {
+            "type": "OR",
+            "children": [
+              { "type": "AND", "children": [] },
+              { "type": "COURSE", "courseId": "ZZ9999" }
+            ]
+          },
+          { "type": "CREDIT_THRESHOLD", "minCredits": 10 }
+        ]
+      },
+      "courseId": "CE2001",
+      "knownCourseIds": ["CE1001"],
+      "issues": [
+        {
+          "path": ["children", 0, "courseId"],
+          "message": "A course cannot be its own prerequisite (CE2001)."
+        },
+        {
+          "path": ["children", 1, "courseId"],
+          "message": "courseId must not be blank."
+        },
+        {
+          "path": ["children", 2, "children", 0, "children"],
+          "message": "AND node must have at least one child."
+        },
+        {
+          "path": ["children", 2, "children", 1, "courseId"],
+          "message": "Unknown course 'ZZ9999': it does not exist in the catalog."
+        }
+      ]
+    },
+    {
+      "name": "credit thresholds are never flagged",
+      "chain": 20,
+      "rule": { "type": "CREDIT_THRESHOLD", "minCredits": 120 },
+      "courseId": "CE2001",
+      "knownCourseIds": [],
+      "issues": []
+    }
+  ]
+}

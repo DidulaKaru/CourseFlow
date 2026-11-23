@@ -33,7 +33,7 @@ function normalizeCompletedSet(completed: Set<string> | readonly string[]): Set<
     return new Set(completed);
 }
 
-const MAX_AST_RECURSION_DEPTH = 20;
+export const MAX_AST_RECURSION_DEPTH = 20;
 
 /**
  * Evaluates a recursive boolean Prerequisite AST against a student's completed courses
@@ -411,6 +411,62 @@ export function formatPrerequisiteRule(rule: PrerequisiteRule | null): string {
         default:
             return '';
     }
+}
+
+// ==========================================
+// 5b. Structural Rule Validation (mirror of backend find_rule_issues)
+// ==========================================
+
+/** One structural problem, located by its JSON path from the root, e.g. ['children', 1, 'courseId']. */
+export interface RuleIssue {
+    path: (string | number)[];
+    message: string;
+}
+
+export interface RuleIssueOptions {
+    /** The course that owns the rule; a leaf pointing back at it is flagged. */
+    courseId?: string;
+    /** Every course that exists; a leaf pointing anywhere else is flagged. */
+    knownCourseIds?: ReadonlySet<string>;
+}
+
+/**
+ * Returns every structural problem in a prerequisite tree (empty = valid), in traversal order.
+ * Behaviourally identical to `find_rule_issues` in backend/app/core/ast_evaluator.py, which the
+ * admin API enforces, so the editor can show the same errors before saving.
+ */
+export function findRuleIssues(rule: PrerequisiteRule, options: RuleIssueOptions = {}): RuleIssue[] {
+    const { courseId, knownCourseIds } = options;
+    const issues: RuleIssue[] = [];
+
+    const visit = (node: PrerequisiteRule, path: (string | number)[], depth: number): void => {
+        if (depth > MAX_AST_RECURSION_DEPTH) {
+            issues.push({ path, message: `Rule is nested more than ${MAX_AST_RECURSION_DEPTH} levels deep.` });
+            return; // Deeper nodes would only repeat the same problem.
+        }
+        if (node.type === 'COURSE') {
+            const target = node.courseId;
+            const location = [...path, 'courseId'];
+            if (target.trim() === '') {
+                issues.push({ path: location, message: 'courseId must not be blank.' });
+            } else if (courseId !== undefined && target === courseId) {
+                issues.push({ path: location, message: `A course cannot be its own prerequisite (${target}).` });
+            } else if (knownCourseIds !== undefined && !knownCourseIds.has(target)) {
+                issues.push({
+                    path: location,
+                    message: `Unknown course '${target}': it does not exist in the catalog.`,
+                });
+            }
+        } else if (node.type === 'AND' || node.type === 'OR') {
+            if (node.children.length === 0) {
+                issues.push({ path: [...path, 'children'], message: `${node.type} node must have at least one child.` });
+            }
+            node.children.forEach((child, index) => visit(child, [...path, 'children', index], depth + 1));
+        }
+    };
+
+    visit(rule, [], 0);
+    return issues;
 }
 
 // ==========================================

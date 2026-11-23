@@ -1,7 +1,13 @@
 """Unit tests for Python recursive AST evaluator."""
 
+import json
+from pathlib import Path
+from typing import Any
+
+import pytest
 from app.core.ast_evaluator import (
     MAX_AST_RECURSION_DEPTH,
+    RuleIssue,
     evaluate_prerequisite,
     evaluate_prerequisite_with_diagnostics,
     find_rule_issues,
@@ -13,6 +19,7 @@ from app.schemas.curriculum import (
     LogicalRuleNode,
     PrerequisiteRule,
 )
+from pydantic import TypeAdapter
 
 
 def test_null_prerequisite():
@@ -350,6 +357,38 @@ def test_find_rule_issues_credit_threshold_never_flagged():
     assert find_rule_issues(leaf, course_id="CE2001", known_course_ids=set()) == []
     rule = _chain(MAX_AST_RECURSION_DEPTH, CreditThresholdRuleNode(min_credits=120))
     assert find_rule_issues(rule, course_id="CE2001", known_course_ids=set()) == []
+
+
+SHARED_RULE_ISSUE_CASES = (
+    Path(__file__).resolve().parents[2] / "frontend" / "src" / "core" / "__tests__" / "fixtures" / "rule_issue_cases.json"
+)
+
+
+def _wrap_in_chain(rule: dict[str, Any], levels: int) -> dict[str, Any]:
+    for _ in range(levels):
+        rule = {"type": "AND", "children": [rule]}
+    return rule
+
+
+def _shared_rule_issue_cases() -> list[dict[str, Any]]:
+    return json.loads(SHARED_RULE_ISSUE_CASES.read_text(encoding="utf-8"))["cases"]
+
+
+@pytest.mark.parametrize("case", _shared_rule_issue_cases(), ids=lambda case: case["name"])
+def test_find_rule_issues_matches_shared_cases(case: dict[str, Any]) -> None:
+    """Verify find_rule_issues matches the case table the TS findRuleIssues also runs (CF-213)."""
+    rule = TypeAdapter(PrerequisiteRule).validate_python(_wrap_in_chain(case["rule"], case.get("chain", 0)))
+    known = case.get("knownCourseIds")
+    issues = find_rule_issues(
+        rule,
+        course_id=case.get("courseId"),
+        known_course_ids=None if known is None else set(known),
+    )
+    expected = [
+        RuleIssue(("children", 0) * issue.get("chainPrefix", 0) + tuple(issue["path"]), issue["message"])
+        for issue in case["issues"]
+    ]
+    assert issues == expected
 
 
 def test_validator_and_evaluator_agree_on_depth_limit():
