@@ -11,9 +11,7 @@ Tests replace it through ``app.dependency_overrides``.
 
 import hashlib
 import logging
-from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import Any, Protocol
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
@@ -27,12 +25,17 @@ from app.schemas.extraction_jobs import (
     ExtractionJobStatus,
 )
 from app.services import course_service
+from app.services.extraction_contract import (
+    DOCX_CONTENT_TYPE,
+    PDF_CONTENT_TYPE,
+    ExtractionError,
+    ExtractionPipeline,
+    ExtractionResult,
+)
 
 logger = logging.getLogger(__name__)
 
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
-PDF_CONTENT_TYPE = "application/pdf"
-DOCX_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 # The declared MIME type must agree with the file's leading bytes (a DOCX is a ZIP container).
 _FILE_SIGNATURES = {PDF_CONTENT_TYPE: b"%PDF-", DOCX_CONTENT_TYPE: b"PK\x03\x04"}
 _MAX_FILENAME_LENGTH = 255
@@ -43,34 +46,6 @@ STALE_JOB_AFTER = timedelta(minutes=15)
 # ==========================================
 # Extraction pipeline seam
 # ==========================================
-
-
-class ExtractionError(Exception):
-    """A document could not be turned into course data; its job becomes FAILED with this message.
-
-    The CF-231 parser and CF-233/234 extractors raise this (or a subclass) for expected failures.
-    """
-
-
-@dataclass(frozen=True)
-class ExtractionResult:
-    """What a pipeline extracted from one document."""
-
-    extracted_data: dict[str, Any]
-    confidence_scores: dict[str, float]
-
-    def __post_init__(self) -> None:
-        out_of_range = [name for name, score in self.confidence_scores.items() if not 0.0 <= score <= 1.0]
-        if out_of_range:
-            raise ValueError(f"Confidence scores must be between 0.0 and 1.0: {', '.join(out_of_range)}")
-
-
-class ExtractionPipeline(Protocol):
-    """Turns a validated PDF or DOCX into extracted course fields with per-field confidence scores."""
-
-    def extract(self, document: bytes, *, filename: str, content_type: str) -> ExtractionResult:
-        """Extract course data, raising ``ExtractionError`` when the document cannot be processed."""
-        ...
 
 
 class UnavailablePipeline:
