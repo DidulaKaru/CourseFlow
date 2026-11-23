@@ -10,9 +10,13 @@ interface CatalogEditsState {
     courseEdits: CourseEdits;
     /** Course whose editor modal is open, if any. */
     editingCourseId: string | null;
+    /** Course whose prerequisite rule editor is open, if any. */
+    editingPrerequisitesCourseId: string | null;
     applyCourseEdit: (programId: string, course: Course) => void;
     openCourseEditor: (courseId: string) => void;
     closeCourseEditor: () => void;
+    openPrerequisiteEditor: (courseId: string) => void;
+    closePrerequisiteEditor: () => void;
 }
 
 /**
@@ -23,6 +27,7 @@ interface CatalogEditsState {
 export const useCatalogEditsStore = create<CatalogEditsState>()((set) => ({
     courseEdits: {},
     editingCourseId: null,
+    editingPrerequisitesCourseId: null,
     applyCourseEdit: (programId, course) =>
         set((state) => ({
             courseEdits: {
@@ -32,6 +37,8 @@ export const useCatalogEditsStore = create<CatalogEditsState>()((set) => ({
         })),
     openCourseEditor: (courseId) => set({ editingCourseId: courseId }),
     closeCourseEditor: () => set({ editingCourseId: null }),
+    openPrerequisiteEditor: (courseId) => set({ editingPrerequisitesCourseId: courseId }),
+    closePrerequisiteEditor: () => set({ editingPrerequisitesCourseId: null }),
 }));
 
 export function applyCourseEdits(

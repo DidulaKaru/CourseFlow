@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { usePlannerStore } from '@/core/store';
 import { getProgram } from '@/data/mockCourses';
 import { CourseEditorModal } from '@/features/admin/components/CourseEditorModal';
+import { PrerequisiteEditorModal } from '@/features/admin/components/PrerequisiteEditorModal';
 import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import { CurriculumCanvas } from '@/features/canvas/CurriculumCanvas';
 import { TopNav } from '@/features/canvas/components/TopNav';
@@ -53,6 +54,7 @@ export default function App() {
                     </ErrorBoundary>
                     <ModuleDetailsDrawer />
                     <CourseEditorModal />
+                    <PrerequisiteEditorModal />
                 </main>
             </div>
         </ErrorBoundary>

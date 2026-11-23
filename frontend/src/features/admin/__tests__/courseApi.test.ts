@@ -6,9 +6,11 @@ import {
     SAVE_NETWORK_ERROR_MESSAGE,
     SESSION_ENDED_MESSAGE,
     saveCourse,
+    savePrerequisiteRule,
 } from '@/features/admin/api/courses';
 import { selectIsAdminMode, useAuthStore } from '@/features/admin/store/authStore';
 import { buildCourseUpdate, courseToFormValues } from '@/features/admin/utils/courseForm';
+import type { PrerequisiteRule } from '@/types/curriculum';
 import { jsonResponse, tokenResponse } from './authFixtures';
 
 const fetchMock = vi.fn<typeof fetch>();
@@ -94,5 +96,76 @@ describe('saveCourse (CF-212)', () => {
             fieldErrors: {},
             formError: SAVE_NETWORK_ERROR_MESSAGE,
         });
+    });
+});
+
+describe('savePrerequisiteRule (CF-213)', () => {
+    const rule: PrerequisiteRule = {
+        type: 'OR',
+        children: [
+            { type: 'COURSE', courseId: 'EC3301' },
+            { type: 'CREDIT_THRESHOLD', minCredits: 45 },
+        ],
+    };
+
+    beforeEach(() => {
+        vi.stubGlobal('fetch', fetchMock);
+        fetchMock.mockReset();
+        useAuthStore.setState({ token: 'token-1', expiresAt: Date.now() + 60_000, user: tokenResponse().user });
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it('PUTs the tree itself as the body', async () => {
+        fetchMock.mockResolvedValue(jsonResponse({ success: true, data: { ...course, prerequisiteRule: rule } }));
+
+        const result = await savePrerequisiteRule('EC5202', rule);
+
+        const [url, init] = fetchMock.mock.calls[0];
+        expect(url).toBe('/api/v1/courses/EC5202/prerequisites');
+        expect(init?.method).toBe('PUT');
+        expect(new Headers(init?.headers).get('Authorization')).toBe('Bearer token-1');
+        expect(JSON.parse(String(init?.body))).toEqual(rule);
+        expect(result.ok).toBe(true);
+    });
+
+    it('DELETEs to clear the rule', async () => {
+        fetchMock.mockResolvedValue(jsonResponse({ success: true, data: { ...course, prerequisiteRule: null } }));
+
+        await savePrerequisiteRule('EC5202', null);
+
+        const [url, init] = fetchMock.mock.calls[0];
+        expect(url).toBe('/api/v1/courses/EC5202/prerequisites');
+        expect(init?.method).toBe('DELETE');
+        expect(init?.body).toBeUndefined();
+    });
+
+    it('places tree errors on their node and whole-rule errors in the form message', async () => {
+        fetchMock.mockResolvedValue(
+            jsonResponse(
+                {
+                    detail: [
+                        { loc: ['body', 'children', 0, 'courseId'], msg: "Unknown course 'EC3301': it does not exist in the catalog.", type: 'value_error' },
+                        { loc: ['body', 'prerequisiteRule'], msg: 'This rule would create a circular dependency: EC5202 -> EC3301 -> EC5202.', type: 'value_error' },
+                    ],
+                },
+                422
+            )
+        );
+
+        expect(await savePrerequisiteRule('EC5202', rule)).toEqual({
+            ok: false,
+            issues: [{ path: ['children', 0, 'courseId'], message: "Unknown course 'EC3301': it does not exist in the catalog." }],
+            formError: 'This rule would create a circular dependency: EC5202 -> EC3301 -> EC5202.',
+        });
+    });
+
+    it('signs the user out on a 401', async () => {
+        fetchMock.mockResolvedValue(jsonResponse({ detail: 'Token expired' }, 401));
+
+        expect(await savePrerequisiteRule('EC5202', rule)).toEqual({ ok: false, issues: [], formError: SESSION_ENDED_MESSAGE });
+        expect(selectIsAdminMode(useAuthStore.getState())).toBe(false);
     });
 });

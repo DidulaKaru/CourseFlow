@@ -19,6 +19,7 @@ import {
 import { extractPrerequisiteCourseIds } from '@/core/layout';
 import { usePlannerStore } from '@/core/store';
 import { EditCourseButton } from '@/features/admin/components/EditCourseButton';
+import { EditPrerequisitesButton } from '@/features/admin/components/EditPrerequisitesButton';
 import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import type { CourseType } from '@/types/curriculum';
 
@@ -276,6 +277,8 @@ export function ModuleDetailsDrawer() {
                                 )}
                             </div>
                         )}
+
+                        <EditPrerequisitesButton course={inspectedCourse} />
                     </section>
 
                     {/* Co-requisites Section */}
