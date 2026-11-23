@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import type { FormEvent, KeyboardEvent, ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import { CircleAlert, Loader2, Lock, Plus, Trash2, X } from 'lucide-react';
 import { usePlannerStore } from '@/core/store';
 import { saveCourse } from '@/features/admin/api/courses';
+import { useModalDialog } from '@/features/admin/hooks/useModalDialog';
 import { hasPermission, useAuthStore } from '@/features/admin/store/authStore';
 import { useCatalogEditsStore, useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import {
@@ -129,8 +130,7 @@ function CourseEditorDialog({ course, catalog, programId, onClose }: CourseEdito
     const [formError, setFormError] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
 
-    const dialogRef = useRef<HTMLDivElement>(null);
-    const titleRef = useRef<HTMLInputElement>(null);
+    const { dialogRef, initialFocusRef: titleRef, onKeyDown } = useModalDialog<HTMLInputElement>(onClose);
 
     const catalogIds = useMemo(() => new Set(catalog.map((entry) => entry.id)), [catalog]);
     const corequisiteOptions = useMemo(
@@ -142,14 +142,6 @@ function CourseEditorDialog({ course, catalog, programId, onClose }: CourseEdito
         [catalog]
     );
 
-    useEffect(() => {
-        const opener = document.activeElement;
-        titleRef.current?.focus();
-        return () => {
-            if (opener instanceof HTMLElement) opener.focus();
-        };
-    }, []);
-
     // On a phone the first error is often scrolled out of view; focusing it brings it back.
     useEffect(() => {
         if (Object.keys(errors).length === 0) return;
@@ -157,7 +149,7 @@ function CourseEditorDialog({ course, catalog, programId, onClose }: CourseEdito
         firstInvalid?.focus({ preventScroll: true });
         // Centre it so the message underneath is visible too (not implemented in jsdom).
         firstInvalid?.scrollIntoView?.({ block: 'center' });
-    }, [errors]);
+    }, [errors, dialogRef]);
 
     const update = <K extends CourseFormField>(field: K, value: CourseFormValues[K]) =>
         setValues((current) => ({ ...current, [field]: value }));
@@ -182,29 +174,6 @@ function CourseEditorDialog({ course, catalog, programId, onClose }: CourseEdito
                 ? values.offeredSemesters.filter((existing) => existing !== term)
                 : SEMESTER_TERMS.filter((candidate) => candidate === term || values.offeredSemesters.includes(candidate))
         );
-
-    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Escape') {
-            // The drawer underneath closes on a window-level Escape; this one belongs to the editor.
-            event.stopPropagation();
-            onClose();
-            return;
-        }
-        if (event.key !== 'Tab') return;
-        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
-            'input:not([disabled]), select, textarea, button:not(:disabled)'
-        );
-        if (!focusable || focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-        }
-    };
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -246,7 +215,7 @@ function CourseEditorDialog({ course, catalog, programId, onClose }: CourseEdito
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="course-editor-title"
-                onKeyDown={handleKeyDown}
+                onKeyDown={onKeyDown}
                 className="flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-t-2xl bg-surface text-ink shadow-lg sm:rounded-2xl"
             >
                 <div className="flex items-start justify-between gap-3 border-b border-line p-4 sm:px-6">

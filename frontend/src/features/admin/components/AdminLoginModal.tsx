@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import type { FormEvent, KeyboardEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { CircleAlert, Loader2, X } from 'lucide-react';
+import { useModalDialog } from '@/features/admin/hooks/useModalDialog';
 import { useAuthStore } from '@/features/admin/store/authStore';
 
 interface AdminLoginModalProps {
@@ -18,39 +19,7 @@ export function AdminLoginModal({ onClose }: AdminLoginModalProps) {
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const dialogRef = useRef<HTMLDivElement>(null);
-    const usernameRef = useRef<HTMLInputElement>(null);
-
-    // Focus moves into the dialog on open and returns to whatever opened it on close.
-    useEffect(() => {
-        const opener = document.activeElement;
-        usernameRef.current?.focus();
-        return () => {
-            if (opener instanceof HTMLElement) opener.focus();
-        };
-    }, []);
-
-    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Escape') {
-            onClose();
-            return;
-        }
-        if (event.key !== 'Tab') return;
-
-        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
-            'input, button:not(:disabled)'
-        );
-        if (!focusable || focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-        }
-    };
+    const { dialogRef, initialFocusRef: usernameRef, onKeyDown } = useModalDialog<HTMLInputElement>(onClose);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -81,7 +50,7 @@ export function AdminLoginModal({ onClose }: AdminLoginModalProps) {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="admin-login-title"
-                onKeyDown={handleKeyDown}
+                onKeyDown={onKeyDown}
                 className="w-full max-w-md rounded-t-2xl bg-surface p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-ink shadow-lg sm:rounded-2xl sm:p-6"
             >
                 <div className="flex items-start justify-between gap-3">
