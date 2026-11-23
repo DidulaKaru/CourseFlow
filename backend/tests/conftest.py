@@ -20,6 +20,12 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 
+@pytest.fixture(autouse=True)
+def no_language_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Tests never reach a real Ollama, even on a machine running one (CF-232)."""
+    monkeypatch.setattr(settings, "OLLAMA_BASE_URL", "")
+
+
 @pytest.fixture(scope="session")
 def client() -> Generator[TestClient, None, None]:
     """Test client fixture for invoking FastAPI endpoints."""

@@ -94,6 +94,8 @@ In the **Environment Variables** section, configure:
 | `ADMIN_PASSWORD_HASH` | *(bcrypt hash)* | Generate locally with `python backend/scripts/hash_password.py` and paste the hash as-is. There are no default credentials; leaving this empty disables the account. |
 | `REVIEWER_USERNAME` / `REVIEWER_PASSWORD_HASH` | *(optional)* | Faculty reviewer account (can upload, review and commit extractions, but cannot edit courses). |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `60` (default) | Lifetime of faculty access tokens. |
+| `OLLAMA_BASE_URL` | *(blank on Vercel)* | Local language model for MIS extraction (CF-232). Vercel cannot host Ollama, so leave it blank there: uploads end `FAILED` with a clear message and everything else works. |
+| `OLLAMA_MODEL` | `qwen2.5:7b-instruct` (default) | Model that must be pulled in that Ollama. |
 | `CORS_ORIGINS` | `https://*.pages.dev,http://localhost:5173` | Allowed CORS origins (Cloudflare Pages domains are also allowed via regex). |
 
 ### Step 4: Deploy and Verify
