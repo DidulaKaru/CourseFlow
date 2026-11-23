@@ -42,11 +42,11 @@ Anuththara leads database architecture, schema migrations, natural language proc
 
 | Ticket Key | Task Summary | Story Points | Target Epic | Assigned |
 | :--- | :--- | :--- | :--- | :--- |
-| [ ] **CF-231** | Deterministic PDF Text & Tabular Extraction Pipeline | 5 SP | CF-EPIC-7 | Anuththara |
-| [ ] **CF-232** | Local SLM Integration & Ollama Client Architecture | 5 SP | CF-EPIC-8 | Anuththara |
-| [ ] **CF-233** | Grammar-Guided Structured Extraction with Instructor & Pydantic | 5 SP | CF-EPIC-8 | Anuththara |
-| [ ] **CF-234** | Natural-Language Prerequisite to Recursive AST Synthesizer | 5 SP | CF-EPIC-8 | Anuththara |
-| [ ] **CF-235** | Extraction Job Persistence & Database Ingestion Service | 3 SP | CF-EPIC-9 | Anuththara |
+| [x] **CF-231** | Deterministic PDF Text & Tabular Extraction Pipeline | 5 SP | CF-EPIC-7 | Anuththara |
+| [x] **CF-232** | Local SLM Integration & Ollama Client Architecture | 5 SP | CF-EPIC-8 | Anuththara |
+| [x] **CF-233** | Grammar-Guided Structured Extraction with Instructor & Pydantic | 5 SP | CF-EPIC-8 | Anuththara |
+| [x] **CF-234** | Natural-Language Prerequisite to Recursive AST Synthesizer | 5 SP | CF-EPIC-8 | Anuththara |
+| [x] **CF-235** | Extraction Job Persistence & Database Ingestion Service | 3 SP | CF-EPIC-9 | Anuththara |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -87,6 +87,8 @@ Anuththara leads database architecture, schema migrations, natural language proc
   6. Define a structured `ExtractionError` in `backend/app/services/pdf_parser.py`, raised for corrupted or unparseable documents so they never surface as HTTP 500s. CF-204 turns it into a `FAILED` extraction job with a readable message, and Ishani's fixture suite (CF-223, `backend/tests/test_pdf_fixtures.py`) asserts on it. `backend/tests/test_pdf_parser.py` stays yours (unit tests); CF-223 uses a separate file.
 * **Acceptance Criteria:** Successfully extracts raw syllabus text and tabular contact hours from university PDF handbooks; scanned pages automatically trigger OCR fallback.
 
+* **As delivered (branch `feature/CF-231-235-mis-extraction-pipeline`, PR pending):** `services/pdf_parser.py` (`parse_document`), `services/docx_parser.py` (DOCX is accepted by CF-204, so it is parsed too, with the standard library), `services/ocr_service.py`. `ExtractionError` moved from `extraction_service` to `services/extraction_contract.py` and is importable from there, from `extraction_service` and from `pdf_parser` (one class). OCR uses Tesseract (installed in the backend Docker image), is limited to 20 scanned pages, and is skipped when other pages carry text and Tesseract is missing. Not verified: OCR accuracy on real scans (Tesseract was not available; that test is skipped without it).
+
 ---
 
 ### CF-232: Local SLM Integration & Ollama Client Architecture (5 SP)
@@ -105,6 +107,8 @@ Anuththara leads database architecture, schema migrations, natural language proc
   5. Test seam: expose the client through a factory / FastAPI dependency (`get_llm_client()`) returning a small `Protocol`, so Ishani's CF-222 suite can replace it with a deterministic mock through `app.dependency_overrides`, with no network or GPU.
   6. Settings: add `OLLAMA_BASE_URL` and `OLLAMA_MODEL` (default `qwen2.5:7b-instruct`) to `Settings` in `app/core/config.py` and to `.env.example`. Inside Docker Compose the URL is `http://ollama:11434` (Ishani's CF-221 passes it to the backend service).
 * **Acceptance Criteria:** Service successfully sends prompt payloads to Ollama and receives responses with $< 3\text{s}$ first-token latency on local hardware.
+
+* **As delivered:** `LLMClient` protocol (`check_health`, `chat`) and `OllamaClient` over the native `/api/chat` stream; `get_llm_client()` is the CF-222 override. Prompts live in `services/extraction_prompts.py`. A blank `OLLAMA_BASE_URL` disables extraction; the test suite blanks it in `conftest.py`. Not verified: the `< 3 s` first-token target and answer quality, because no Ollama was available. First-token latency is logged per request.
 
 ---
 
@@ -128,6 +132,8 @@ Anuththara leads database architecture, schema migrations, natural language proc
      - Assign confidence scores ($0.0 - 1.0$) per field to power frontend review badges.
 * **Acceptance Criteria:** Extracted output strictly adheres to Pydantic models; multi-semester courses are automatically detected; confidence scores are generated for each extracted field.
 
+* **As delivered:** `schemas/extraction.py`, `services/structured_output.py` (Ollama grammar + Instructor retry) and `services/extractor.py` (`SyllabusPipeline`, `build_course`). Values found by the parser override the model. `extractedData` uses the `CourseUpdate` field names except `courseType` (send it as `type`) and the reviewer-only `prerequisiteText` and `contactHours.totalSemesterHours` (do not send `courseType` or `prerequisiteText` in the commit body, which is strict); fields the document does not state are null or empty with a score of 0.0. Weekly hours convert at 14 weeks per semester. Only the first module of a handbook is extracted. Do not pass Instructor's `context`: it renders uploaded text as Jinja templates.
+
 ---
 
 ### CF-234: Natural-Language Prerequisite to Recursive AST Synthesizer (5 SP)
@@ -145,6 +151,8 @@ Anuththara leads database architecture, schema migrations, natural language proc
      - Tree simplifier: Flatten single-child `AND`/`OR` gates and eliminate redundant tautologies.
      - Structural limits: output must satisfy the rules the admin API enforces in CF-203 (depth <= 20, only `AND` / `OR` / `COURSE` / `CREDIT_THRESHOLD`, no course referencing itself). Reuse the CF-203 validator `find_rule_issues` (`backend/app/core/ast_evaluator.py`, delivered on branch `feature/cf-203-prerequisite-ast-persistence`; available once that PR merges) instead of re-implementing it.
 * **Acceptance Criteria:** Natural language prerequisite strings are converted into valid, recursive `PrerequisiteRule` trees matching TypeScript contracts.
+
+* **As delivered:** `services/ast_synthesizer.py`; `schemas/curriculum.py` did not need to change. Structurally invalid trees are sent back to the model; a clause that cannot be translated gives no rule with confidence 0.0 and the document stays reviewable. A course missing from the catalog caps the confidence at 0.5 instead of being dropped. `extraction_service.get_extraction_pipeline()` now returns the real pipeline.
 
 ---
 
@@ -173,6 +181,8 @@ Anuththara leads database architecture, schema migrations, natural language proc
      - Wraps operation in a single database transaction (`db.commit()` / `db.rollback()`) and moves the job to `COMMITTED`.
      - Note: 32 course IDs exist in both the CE and EE catalogs and the database has one row per ID, so an upsert on a shared ID changes it for both programs.
 * **Acceptance Criteria:** Database migration runs cleanly; extraction jobs persist in database; approved course data is atomically committed with zero partial-write anomalies.
+
+* **As delivered:** the model and migration `0003_extraction_jobs_table` shipped with CF-204 and already have every column above, so there is no new revision. `services/ingestion_service.py` now owns the commit transaction behind `extraction_service.commit_job`. Not verified: PostgreSQL (tests and migrations run on SQLite; CF-225 adds a PostgreSQL job).
 
 ---
 
