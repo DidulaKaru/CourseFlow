@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { Root } from 'react-dom/client';
+import { MIS_UPLOADS_HASH } from '@/core/hashRoute';
 import { AdminAccessControl } from '@/features/admin/components/AdminAccessControl';
 import { INVALID_CREDENTIALS_MESSAGE, useAuthStore } from '@/features/admin/store/authStore';
 import { jsonResponse, tokenResponse } from './authFixtures';
@@ -26,6 +27,10 @@ describe('AdminAccessControl (CF-211)', () => {
     const byId = <T extends HTMLElement>(id: string) =>
         document.querySelector<T>(`[data-testid="${id}"]`);
     const dialog = () => document.querySelector('[role="dialog"]');
+    const menuItem = (name: string) =>
+        Array.from(document.querySelectorAll<HTMLElement>('[role="menuitem"]')).find(
+            (item) => item.textContent?.trim() === name
+        );
     const alertText = () => document.querySelector('[role="alert"]')?.textContent;
 
     async function submitLogin(username: string, password: string) {
@@ -108,11 +113,22 @@ describe('AdminAccessControl (CF-211)', () => {
 
         act(() => byId('admin-mode-badge')!.click());
         expect(document.querySelector('[role="menu"]')?.textContent).toContain('registrar');
-        act(() => document.querySelector<HTMLButtonElement>('[role="menuitem"]')!.click());
+        act(() => menuItem('Sign out')!.click());
 
         expect(byId('admin-mode-badge')).toBeNull();
         expect(byId('admin-access-button')).not.toBeNull();
         expect(useAuthStore.getState().token).toBeNull();
+    });
+
+    it('links to syllabus uploads from the admin menu (CF-214)', () => {
+        act(() => useAuthStore.setState({ token: 'token-1', expiresAt: Date.now() + 60_000, user: tokenResponse().user }));
+        act(() => byId('admin-mode-badge')!.click());
+
+        const uploads = menuItem('Syllabus uploads');
+        expect(uploads?.getAttribute('href')).toBe(MIS_UPLOADS_HASH);
+
+        act(() => uploads!.click());
+        expect(document.querySelector('[role="menu"]')).toBeNull();
     });
 
     it('returns to Student Mode and closes the menu when the token is rejected elsewhere', () => {

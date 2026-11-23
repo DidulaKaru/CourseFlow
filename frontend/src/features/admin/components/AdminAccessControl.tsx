@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { Lock, LogOut, ShieldCheck } from 'lucide-react';
+import { FileUp, Lock, LogOut, ShieldCheck } from 'lucide-react';
+import { MIS_UPLOADS_HASH } from '@/core/hashRoute';
 import { AdminLoginModal } from '@/features/admin/components/AdminLoginModal';
-import { useAdminSessionLifecycle } from '@/features/admin/hooks/useAdminSessionLifecycle';
-import { selectIsAdminMode, useAuthStore } from '@/features/admin/store/authStore';
+import { hasPermission, selectIsAdminMode, useAuthStore } from '@/features/admin/store/authStore';
 
 const TRIGGER_CLASS =
     'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
 
 /** Top-bar entry to Faculty Admin Mode: a lock while signed out, an "Admin mode" badge with sign-out once signed in. */
 export function AdminAccessControl() {
-    useAdminSessionLifecycle();
     const isAdminMode = useAuthStore(selectIsAdminMode);
     return isAdminMode ? <AdminModeMenu /> : <FacultySignInButton />;
 }
@@ -37,6 +36,7 @@ function FacultySignInButton() {
 function AdminModeMenu() {
     const username = useAuthStore((state) => state.user?.username);
     const logout = useAuthStore((state) => state.logout);
+    const canUpload = useAuthStore(hasPermission('extraction:upload'));
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -79,6 +79,17 @@ function AdminModeMenu() {
                     <p className="truncate px-2 py-1.5 text-sm text-ink-muted">
                         Signed in as <span className="font-medium text-ink">{username}</span>
                     </p>
+                    {canUpload && (
+                        <a
+                            href={MIS_UPLOADS_HASH}
+                            role="menuitem"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex min-h-11 w-full items-center gap-2 rounded-xl px-2 text-sm font-medium hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                        >
+                            <FileUp className="h-4 w-4" aria-hidden="true" />
+                            Syllabus uploads
+                        </a>
+                    )}
                     <button
                         type="button"
                         role="menuitem"
