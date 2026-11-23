@@ -169,7 +169,7 @@ def first_module_text(text: str) -> str:
     first: list[str] = []
     for index, line in enumerate(lines):
         label = _match_label(line)
-        codes = find_course_codes(label[1].upper()) if label and label[0] == "code" else []
+        codes = find_course_codes(label[1]) if label and label[0] == "code" else []
         if codes and not first:
             first = codes
         elif codes and codes != first:
