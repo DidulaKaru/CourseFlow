@@ -1,9 +1,10 @@
 import { memo, useState, useEffect, useMemo } from 'react';
 import { Search, LayoutGrid, Network } from 'lucide-react';
 import { usePlannerStore, calculateGraduationProgress } from '@/core/store';
-import { getProgram, getProgramCourses } from '@/data/mockCourses';
+import { getProgram } from '@/data/mockCourses';
 import { AdminAccessControl } from '@/features/admin/components/AdminAccessControl';
 import { ExportPdfButton } from '@/features/planner/components/ExportPdfButton';
+import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import type { Course, DegreeProgram } from '@/types/curriculum';
 import { DegreeSelector } from './DegreeSelector';
 import { PlanSelector } from './PlanSelector';
@@ -53,7 +54,8 @@ export const TopNav = memo(function TopNav({
 
     // Resolve active program and course dataset
     const currentProgram = program ?? getProgram(activeProgramId);
-    const activeCourses = courses ?? getProgramCourses(activeProgramId);
+    const programCourses = useProgramCourses(activeProgramId);
+    const activeCourses = courses ?? programCourses;
     const targetCredits = totalCreditsRequired ?? currentProgram.totalCreditsRequired ?? 150;
 
     // Calculate real-time graduation compliance reactively on selected electives change

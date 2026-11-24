@@ -18,7 +18,8 @@ import {
 } from '@/core/algorithms/ast_evaluator';
 import { extractPrerequisiteCourseIds } from '@/core/layout';
 import { usePlannerStore } from '@/core/store';
-import { getProgramCourses } from '@/data/mockCourses';
+import { EditCourseButton } from '@/features/admin/components/EditCourseButton';
+import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import type { CourseType } from '@/types/curriculum';
 
 const TYPE_CONFIG: Record<
@@ -45,7 +46,7 @@ const TYPE_CONFIG: Record<
 
 export function ModuleDetailsDrawer() {
     const isDrawerOpen = usePlannerStore((state) => state.isDrawerOpen);
-    const inspectedCourse = usePlannerStore((state) => state.inspectedCourse);
+    const inspectedSnapshot = usePlannerStore((state) => state.inspectedCourse);
     const closeCourseDrawer = usePlannerStore((state) => state.closeCourseDrawer);
     const openCourseDrawer = usePlannerStore((state) => state.openCourseDrawer);
 
@@ -54,7 +55,14 @@ export function ModuleDetailsDrawer() {
     const selectedElectiveIds = usePlannerStore((state) => state.selectedElectiveIds);
     const toggleElective = usePlannerStore((state) => state.toggleElective);
 
-    const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
+    const activeCourses = useProgramCourses(activeProgramId);
+    // The store holds the course as it was when opened; show the catalog's current version so an admin edit appears immediately.
+    const inspectedCourse = useMemo(
+        () =>
+            inspectedSnapshot &&
+            (activeCourses.find((course) => course.id === inspectedSnapshot.id) ?? inspectedSnapshot),
+        [inspectedSnapshot, activeCourses]
+    );
 
     // Dismiss drawer on Escape keypress
     useEffect(() => {
@@ -147,6 +155,8 @@ export function ModuleDetailsDrawer() {
                             Recommended: <span className="text-slate-200">Semester {inspectedCourse.recommendedSemester}</span>
                         </p>
                     </div>
+
+                    <EditCourseButton course={inspectedCourse} placement="drawer" />
 
                     <button
                         type="button"
