@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { usePlannerStore } from '@/core/store';
 import { getProgram } from '@/data/mockCourses';
+import { CourseEditorModal } from '@/features/admin/components/CourseEditorModal';
+import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import { CurriculumCanvas } from '@/features/canvas/CurriculumCanvas';
 import { TopNav } from '@/features/canvas/components/TopNav';
 import { SemesterFeed } from '@/features/canvas/components/SemesterFeed';
@@ -12,6 +14,7 @@ export default function App() {
     const mobileViewMode = usePlannerStore((state) => state.mobileViewMode);
     const setMobileViewMode = usePlannerStore((state) => state.setMobileViewMode);
     const activeProgram = getProgram(activeProgramId);
+    const activeCourses = useProgramCourses(activeProgramId);
 
     // Dynamic Theme Engine: Synchronize Skyrim Department Constellation ('ce' | 'ee')
     useEffect(() => {
@@ -32,7 +35,7 @@ export default function App() {
         <ErrorBoundary fallbackTitle="CourseFlow System Disruption">
             <div className="w-full h-screen overflow-hidden bg-[#030508] text-[#F8FAFC] flex flex-col relative skyrim-canvas-bg font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
                 <TopNav
-                    courses={activeProgram.courses}
+                    courses={activeCourses}
                     program={activeProgram}
                     totalCreditsRequired={activeProgram.totalCreditsRequired}
                 />
@@ -43,12 +46,13 @@ export default function App() {
                         ) : (
                             <CurriculumCanvas
                                 key={activeProgram.id}
-                                courses={activeProgram.courses}
+                                courses={activeCourses}
                                 programName={activeProgram.name}
                             />
                         )}
                     </ErrorBoundary>
                     <ModuleDetailsDrawer />
+                    <CourseEditorModal />
                 </main>
             </div>
         </ErrorBoundary>

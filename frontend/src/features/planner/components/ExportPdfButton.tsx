@@ -3,9 +3,10 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import { Download } from 'lucide-react';
 
 import { usePlannerStore } from '@/core/store';
-import { getProgram, getProgramCourses } from '@/data/mockCourses';
+import { getProgram } from '@/data/mockCourses';
 import { StudyPlanPDF } from '@/features/planner/StudyPlanPDF';
 import { getPdfFileName } from '@/features/planner/utils/pdfFilename';
+import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import type { DegreeProgram } from '@/types/curriculum';
 
 export interface ExportPdfButtonProps {
@@ -40,7 +41,7 @@ export const ExportPdfButton = memo(function ExportPdfButton({
     const activePlan = plans[activeProgramId]?.find((p) => p.id === activePlanId);
 
     const activeProgram = injectedProgram ?? getProgram(activeProgramId);
-    const activeCourses = getProgramCourses(activeProgram.id);
+    const activeCourses = useProgramCourses(activeProgram.id);
 
     const dynamicFileName = useMemo(() => {
         if (customFileName) return customFileName;
