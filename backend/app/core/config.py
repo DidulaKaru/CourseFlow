@@ -45,6 +45,10 @@ class Settings(BaseSettings):
             return v.replace("postgres://", "postgresql://", 1)
         return v or "postgresql://postgres:postgres@localhost:5432/courseflow"
 
+    # Local language model for MIS extraction (CF-232). A blank OLLAMA_BASE_URL disables extraction.
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "qwen2.5:7b-instruct"
+
     # CORS Configuration
     CORS_ORIGINS: list[str] | str = [
         "http://localhost:5173",
