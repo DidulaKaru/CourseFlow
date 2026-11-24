@@ -56,6 +56,12 @@ CE_ANSWER: dict[str, Any] = {
     "contactHoursPerWeek": False,
     "prerequisiteText": "CE2201 and EE2201",
 }
+CE_PREREQUISITE: dict[str, Any] = {
+    "rule": {
+        "type": "AND",
+        "children": [{"type": "COURSE", "courseId": "CE2201"}, {"type": "COURSE", "courseId": "EE2201"}],
+    }
+}
 
 
 class FakeLLM:
@@ -78,6 +84,10 @@ class FakeLLM:
         if isinstance(answer, Exception):
             raise answer
         return LLMCompletion(answer if isinstance(answer, str) else json.dumps(answer))
+
+
+def make_pipeline(llm: FakeLLM) -> SyllabusPipeline:
+    return SyllabusPipeline(llm, lambda: {"CE2201", "EE2201"})
 
 
 def ask(llm: FakeLLM, prompt: str = "extract") -> SyllabusExtraction:
@@ -150,10 +160,10 @@ def test_prompt_examples_answer_the_extraction_schema():
 
 
 def test_pipeline_extracts_a_ce_course_with_high_confidence():
-    llm = FakeLLM(CE_ANSWER)
+    llm = FakeLLM(CE_ANSWER, CE_PREREQUISITE)
     document = make_pdf(PdfPage(lines=CE_LINES, tables=[HOURS_TABLE]))
 
-    result = SyllabusPipeline(llm).extract(document, filename="CE3301.pdf", content_type=PDF_CONTENT_TYPE)
+    result = make_pipeline(llm).extract(document, filename="CE3301.pdf", content_type=PDF_CONTENT_TYPE)
 
     data = result.extracted_data
     assert data["code"] == "CE3301"
@@ -162,13 +172,15 @@ def test_pipeline_extracts_a_ce_course_with_high_confidence():
     assert data["contactHours"] == {"lecture": 28, "lab": 14, "tutorial": 7, "totalSemesterHours": 49}
     assert data["creditDistribution"] == [{"semesterIndex": 5, "creditsAllocated": 3}]
     assert data["prerequisiteText"] == "CE2201 and EE2201"
-    for field in ("code", "title", "totalCredits", "contactHours", "recommendedSemester", "creditDistribution"):
+    assert data["prerequisiteRule"] == CE_PREREQUISITE["rule"]
+    for field in ("code", "title", "totalCredits", "contactHours", "recommendedSemester", "creditDistribution",
+                  "prerequisiteRule"):
         assert result.confidence_scores[field] >= 0.9, field
     assert "CE3301" in llm.prompts[0][-1]["content"]
 
 
 def test_every_extracted_field_has_a_confidence_score():
-    result = SyllabusPipeline(FakeLLM(CE_ANSWER)).extract(
+    result = make_pipeline(FakeLLM(CE_ANSWER, CE_PREREQUISITE)).extract(
         make_pdf(PdfPage(lines=CE_LINES)), filename="x.pdf", content_type=PDF_CONTENT_TYPE
     )
     assert result.confidence_scores.keys() == result.extracted_data.keys()
@@ -177,10 +189,10 @@ def test_every_extracted_field_has_a_confidence_score():
 
 def test_extracted_data_commits_through_the_admin_contract():
     """Renaming courseType and dropping the reviewer hints must leave a valid CourseUpdate body."""
-    data = SyllabusPipeline(FakeLLM(CE_ANSWER)).extract(
+    data = make_pipeline(FakeLLM(CE_ANSWER, CE_PREREQUISITE)).extract(
         make_pdf(PdfPage(lines=CE_LINES, tables=[HOURS_TABLE])), filename="x.pdf", content_type=PDF_CONTENT_TYPE
     ).extracted_data
-    body = {key: value for key, value in data.items() if key not in ("courseType", "prerequisiteText")}
+    body = {key: value for key, value in data.items() if key not in ("courseType", "prerequisiteText", "prerequisiteRule")}
     update = CourseUpdate.model_validate({**body, "type": data["courseType"]})
     assert update.type is CourseType.CORE
     assert update.contact_hours is not None and update.contact_hours.lecture == 28
@@ -190,22 +202,22 @@ def test_pipeline_checks_the_model_before_parsing():
     llm = FakeLLM()
     llm.healthy = False
     with pytest.raises(ExtractionError, match="not available"):
-        SyllabusPipeline(llm).extract(b"%PDF-broken", filename="x.pdf", content_type=PDF_CONTENT_TYPE)
+        make_pipeline(llm).extract(b"%PDF-broken", filename="x.pdf", content_type=PDF_CONTENT_TYPE)
 
 
 def test_pipeline_reports_a_damaged_document_without_asking_the_model():
     llm = FakeLLM()
     with pytest.raises(ExtractionError):
-        SyllabusPipeline(llm).extract(b"%PDF-broken", filename="x.pdf", content_type=PDF_CONTENT_TYPE)
+        make_pipeline(llm).extract(b"%PDF-broken", filename="x.pdf", content_type=PDF_CONTENT_TYPE)
     assert llm.prompts == []
 
 
 def test_a_handbook_only_sends_its_first_module():
-    llm = FakeLLM(CE_ANSWER)
+    llm = FakeLLM(CE_ANSWER, CE_PREREQUISITE)
     second = ["Course Code: CE4401", "Course Title: Robotics", "Semesters 7 and 8", "Kinematics and control. " * 3]
     document = make_pdf(PdfPage(lines=CE_LINES), PdfPage(lines=second))
 
-    data = SyllabusPipeline(llm).extract(document, filename="x.pdf", content_type=PDF_CONTENT_TYPE).extracted_data
+    data = make_pipeline(llm).extract(document, filename="x.pdf", content_type=PDF_CONTENT_TYPE).extracted_data
 
     assert "Robotics" not in llm.prompts[0][-1]["content"]
     assert data["durationSemesters"] == 1

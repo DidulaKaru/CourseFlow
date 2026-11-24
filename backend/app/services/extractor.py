@@ -7,7 +7,7 @@ cross-checks its answer. Each field gets a confidence from 0.0 to 1.0 that drive
 
 import asyncio
 import re
-from collections.abc import Iterable
+from collections.abc import Callable, Collection, Iterable
 
 from app.schemas.curriculum import CourseType
 from app.schemas.extraction import (
@@ -16,6 +16,7 @@ from app.schemas.extraction import (
     ExtractedCreditDistribution,
     SyllabusExtraction,
 )
+from app.services.ast_synthesizer import synthesize_prerequisite
 from app.services.course_codes import (
     find_course_codes,
     is_course_code,
@@ -82,7 +83,7 @@ def _support(values: Iterable[str], text: str) -> float:
 
 
 def _resolve_code(answer: SyllabusExtraction, syllabus: ParsedSyllabus, text: str) -> tuple[str | None, float]:
-    stated = find_course_codes(syllabus.sections.get("code", "").upper())
+    stated = find_course_codes(syllabus.sections.get("code", ""))
     guess = normalize_course_code(answer.code or "")
     if stated:
         return stated[0], 0.98 if guess == stated[0] else 0.85
@@ -196,7 +197,7 @@ def _resolve_contact_hours(
 def _resolve_corequisites(
     answer: SyllabusExtraction, syllabus: ParsedSyllabus, code: str | None, text: str
 ) -> tuple[list[str], float]:
-    stated = [item for item in find_course_codes(syllabus.sections.get("corequisites", "").upper()) if item != code]
+    stated = [item for item in find_course_codes(syllabus.sections.get("corequisites", "")) if item != code]
     if stated:
         return stated, 0.95
     guesses = dict.fromkeys(normalize_course_code(item) for item in answer.corequisites)
@@ -302,8 +303,9 @@ def build_course(
 class SyllabusPipeline:
     """``ExtractionPipeline`` that parses a document and extracts its course with the language model."""
 
-    def __init__(self, llm: LLMClient) -> None:
+    def __init__(self, llm: LLMClient, known_course_ids: Callable[[], Collection[str]]) -> None:
         self._llm = llm
+        self._known_course_ids = known_course_ids
 
     def extract(self, document: bytes, *, filename: str, content_type: str) -> ExtractionResult:
         """Extract course data from a validated upload. Runs in a worker thread (CF-204 background task)."""
@@ -315,6 +317,11 @@ class SyllabusPipeline:
         text = first_module_text(syllabus.text)
         answer = await generate_structured(self._llm, build_extraction_messages(text), SyllabusExtraction)
         course, scores = build_course(answer, syllabus, text)
+        prerequisite = await synthesize_prerequisite(
+            self._llm, course.prerequisite_text, course_id=course.code, known_course_ids=self._known_course_ids()
+        )
+        course = course.model_copy(update={"prerequisite_rule": prerequisite.rule})
         return ExtractionResult(
-            extracted_data=course.model_dump(by_alias=True, mode="json"), confidence_scores=scores
+            extracted_data=course.model_dump(by_alias=True, mode="json"),
+            confidence_scores={**scores, "prerequisiteRule": prerequisite.confidence},
         )

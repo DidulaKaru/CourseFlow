@@ -5,8 +5,10 @@ import re
 from app.schemas.curriculum import COURSE_CODE_PATTERN
 
 _CODE = re.compile(COURSE_CODE_PATTERN)
-# The catalog pattern found inside running text, where codes are often printed as "EE 2201".
-CODE_IN_TEXT = re.compile(r"\b" + COURSE_CODE_PATTERN.strip("^$").replace("[0-9]", r"\s?[0-9]", 1) + r"\b")
+_COMPACT = COURSE_CODE_PATTERN.strip("^$")
+# The catalog pattern found inside running text. Documents often print "EE 2201"; only capitals may be separated
+# from their digits, or "earn 100 credits" would read as a code.
+CODE_IN_TEXT = re.compile(rf"\b(?:{_COMPACT.replace('[0-9]', '[ ]?[0-9]', 1)}|(?i:{_COMPACT}))\b")
 
 
 def normalize_course_code(code: str) -> str:

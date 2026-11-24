@@ -17,6 +17,7 @@ from app.schemas.curriculum import (
     ContactHours,
     CourseType,
     CreditDistribution,
+    PrerequisiteRule,
     SemesterTerm,
 )
 
@@ -68,3 +69,4 @@ class ExtractedCourse(ExtractedCourseMetadata):
 
     contact_hours: ExtractedContactHours | None = None
     credit_distribution: list[ExtractedCreditDistribution] = Field(default_factory=list)
+    prerequisite_rule: PrerequisiteRule | None = Field(default=None, description="Synthesized AST (CF-234)")

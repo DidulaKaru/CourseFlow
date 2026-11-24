@@ -4,19 +4,23 @@ Owns the job lifecycle behind the extraction endpoints: validating uploads, SHA2
 running the extraction pipeline in the background and committing a reviewed course atomically.
 
 The pipeline is a seam: ``get_extraction_pipeline`` is a FastAPI dependency returning anything that
-satisfies ``ExtractionPipeline``. Until the parser and SLM extractor (CF-231 to CF-234) are wired in,
-it returns ``UnavailablePipeline``, so uploads are accepted and their jobs end ``FAILED`` with a clear message.
-Tests replace it through ``app.dependency_overrides``.
+satisfies ``ExtractionPipeline`` (the CF-231 to CF-234 parser and language model extractor). On a server without
+a reachable language model, uploads are accepted and their jobs end ``FAILED`` with a clear message.
+Tests replace the pipeline, or only its language model, through ``app.dependency_overrides``.
 """
 
 import hashlib
 import logging
 from datetime import UTC, datetime, timedelta
+from typing import Annotated
 
+from fastapi import Depends
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 
+from app.core.database import get_session_factory
+from app.models.curriculum import Course as CourseRecord
 from app.models.extraction import ExtractionJob as ExtractionJobRecord
 from app.schemas.extraction_jobs import (
     ExtractionCommitRequest,
@@ -30,8 +34,10 @@ from app.services.extraction_contract import (
     PDF_CONTENT_TYPE,
     ExtractionError,
     ExtractionPipeline,
-    ExtractionResult,
+    ExtractionResult,  # noqa: F401  (re-exported: the import path CF-204 documents)
 )
+from app.services.extractor import SyllabusPipeline
+from app.services.llm_client import LLMClient, get_llm_client
 
 logger = logging.getLogger(__name__)
 
@@ -48,16 +54,17 @@ STALE_JOB_AFTER = timedelta(minutes=15)
 # ==========================================
 
 
-class UnavailablePipeline:
-    """Default until the CF-231 to CF-234 extraction pipeline is integrated."""
-
-    def extract(self, document: bytes, *, filename: str, content_type: str) -> ExtractionResult:
-        raise ExtractionError("Automatic extraction is not available on this server yet.")
-
-
-def get_extraction_pipeline() -> ExtractionPipeline:
+def get_extraction_pipeline(
+    llm: Annotated[LLMClient, Depends(get_llm_client)],
+    session_factory: Annotated[sessionmaker, Depends(get_session_factory)],
+) -> ExtractionPipeline:
     """FastAPI dependency providing the extraction pipeline."""
-    return UnavailablePipeline()
+
+    def catalog_course_ids() -> set[str]:
+        with session_factory() as db:
+            return set(db.scalars(select(CourseRecord.id)))
+
+    return SyllabusPipeline(llm, catalog_course_ids)
 
 
 # ==========================================
