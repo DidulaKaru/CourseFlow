@@ -202,11 +202,11 @@ A story is only marked **Done** in Jira when:
 #### Anuththara (Database & AI Engineer) — 23 SP
 | Ticket Key | Task Summary | SP | Target Epic | Acceptance Criteria Highlights |
 | :--- | :--- | :--- | :--- | :--- |
-| [ ] **CF-231** | Deterministic PDF Text & Tabular Extraction Pipeline | 5 | CF-EPIC-7 | `pdfplumber` parsing contact hour tables and body text with OCR fallback. |
-| [ ] **CF-232** | Local SLM Integration & Ollama Client Architecture | 5 | CF-EPIC-8 | Async Ollama client with optimized system prompts and telemetry logging. |
-| [ ] **CF-233** | Grammar-Guided Structured Extraction with Instructor & Pydantic | 5 | CF-EPIC-8 | Schema-constrained extraction with field-level confidence score estimation. |
-| [ ] **CF-234** | Natural-Language Prerequisite to Recursive AST Synthesizer | 5 | CF-EPIC-8 | Translates natural language prerequisite clauses into canonical boolean AST JSON. |
-| [ ] **CF-235** | Extraction Job Persistence & Database Ingestion Service | 3 | CF-EPIC-9 | SQLAlchemy `ExtractionJob` model, Alembic migration, and atomic database upsert. |
+| [x] **CF-231** | Deterministic PDF Text & Tabular Extraction Pipeline | 5 | CF-EPIC-7 | `pdfplumber` parsing contact hour tables and body text with OCR fallback. |
+| [x] **CF-232** | Local SLM Integration & Ollama Client Architecture | 5 | CF-EPIC-8 | Async Ollama client with optimized system prompts and telemetry logging. |
+| [x] **CF-233** | Grammar-Guided Structured Extraction with Instructor & Pydantic | 5 | CF-EPIC-8 | Schema-constrained extraction with field-level confidence score estimation. |
+| [x] **CF-234** | Natural-Language Prerequisite to Recursive AST Synthesizer | 5 | CF-EPIC-8 | Translates natural language prerequisite clauses into canonical boolean AST JSON. |
+| [x] **CF-235** | Extraction Job Persistence & Database Ingestion Service | 3 | CF-EPIC-9 | SQLAlchemy `ExtractionJob` model, Alembic migration, and atomic database upsert. |
 
 ### Sprint 2 Implementation Plan Documents
 Detailed individual engineering plans are preserved in:
@@ -224,8 +224,9 @@ Detailed individual engineering plans are preserved in:
 - [x] **CF-203:** Admin prerequisite and credit-distribution endpoints implemented (`PUT` / `DELETE /api/v1/courses/{id}/prerequisites`, `PUT /api/v1/courses/{id}/credit-distribution`; `ADMIN` only; depth <= 20, empty `AND` / `OR`, unknown, self and circular `courseId` rejected with 422; `courses.prerequisite_rule` and `prerequisite_rules` kept in sync; reusable validator `find_rule_issues`). 97 passing tests across `test_ast.py` and `test_course_prerequisites.py`. Branch `feature/cf-203-prerequisite-ast-persistence` (stacked on CF-202), PR pending.
 - [x] **CF-204:** MIS extraction endpoints implemented (`POST /api/v1/extraction/upload`, `GET /api/v1/extraction/jobs/{id}`, `POST /api/v1/extraction/jobs/{id}/commit`; `ADMIN` or `FACULTY_REVIEWER`; PDF/DOCX only (MIME type and file signature), 15 MB limit, SHA256 dedup; background processing through a pluggable `ExtractionPipeline`; atomic commit via `course_service.stage_reviewed_course`). Adds the `ExtractionJob` model and migration `0003_extraction_jobs_table` ahead of CF-235. Until CF-231 to CF-234 are wired in, the default pipeline marks jobs `FAILED` ("not available"). 40 tests in `test_extraction.py` and `test_migrations.py`. Branch `feature/cf-204-mis-extraction-api`, PR pending.
 - [ ] **CF-205:** not started.
-- [ ] **CF-211 to CF-216 (Malsha), CF-221 to CF-225 (Ishani), CF-231 to CF-235 (Anuththara):** not started. Their plans were reconciled with the delivered backend contracts (job states, file ownership, migration numbering, contact-hour units, login and course payloads). See `plans/Didula_Sprint2.md` section 6.
-- Backend test suite: 151 tests; frontend Vitest suite: 157 tests.
+- [x] **CF-231 to CF-235:** MIS extraction pipeline implemented: deterministic PDF/DOCX parser with OCR fallback, Ollama client, Instructor-validated extraction with per-field confidence, prerequisite AST synthesizer and atomic `ingestion_service`. `get_extraction_pipeline()` returns the real pipeline; without a reachable Ollama, jobs end `FAILED` ("not available"). 187 tests (one needs Tesseract) across `test_pdf_parser.py`, `test_llm_client.py`, `test_extractor.py`, `test_ast_synthesizer.py` and `test_ingestion_service.py`, with the language model mocked. Not verified against a real Ollama, real scans or PostgreSQL. Branch `feature/CF-231-235-mis-extraction-pipeline`, PR pending. Delivery notes: `plans/Anuththara_Sprint2.md`.
+- [ ] **CF-212 to CF-216 (Malsha), CF-221 to CF-225 (Ishani):** not complete. Their plans were reconciled with the delivered backend contracts (job states, file ownership, migration numbering, contact-hour units, login and course payloads). See `plans/Didula_Sprint2.md` section 6.
+- Backend test suite: 557 tests; frontend Vitest suite: 188 tests.
 
 ### Known Gaps (tracked in `plans/Didula_Sprint2.md` section 6)
 - Student-facing reads (`GET /programs`, the frontend catalog) still come from the bundled JSON files, so admin edits saved to PostgreSQL are not visible to students yet.

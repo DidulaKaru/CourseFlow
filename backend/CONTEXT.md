@@ -30,7 +30,14 @@ backend/
 │   │           ├── programs.py    # GET /api/programs, GET /api/programs/{id}
 │   │           └── plans.py       # POST /api/plans/validate
 │   ├── services/
-│   │   └── course_service.py      # Course create/replace/patch rules + transactions (CF-202)
+│   │   ├── course_service.py      # Course create/replace/patch rules + transactions (CF-202)
+│   │   ├── extraction_service.py  # MIS job lifecycle and pipeline dependency (CF-204)
+│   │   ├── extraction_contract.py # ExtractionError, ExtractionResult, ExtractionPipeline
+│   │   ├── pdf_parser.py          # PDF/DOCX text, sections, contact hours (CF-231; docx_parser.py, ocr_service.py)
+│   │   ├── llm_client.py          # LLMClient protocol + OllamaClient (CF-232; extraction_prompts.py)
+│   │   ├── extractor.py           # SyllabusPipeline + confidence scores (CF-233; structured_output.py)
+│   │   ├── ast_synthesizer.py     # Prerequisite wording -> AST (CF-234; course_codes.py)
+│   │   └── ingestion_service.py   # Atomic commit of a reviewed course (CF-235)
 │   └── models/                    # SQLAlchemy database ORM models
 ├── alembic/versions/              # 0001_initial_curriculum_tables, 0002_course_updated_at (single chain)
 ├── tests/                         # Pytest test suite (151 tests)
@@ -75,6 +82,11 @@ backend/
 - **CF-203 (Prerequisite & Credit-Distribution Persistence):** `PUT /api/v1/courses/{id}/prerequisites` (body is the `PrerequisiteRule` AST), `DELETE /api/v1/courses/{id}/prerequisites` (clears the rule) and `PUT /api/v1/courses/{id}/credit-distribution` (body is an array of `CreditDistribution`); same `ADMIN` router guard and `AdminCourse` envelope.
   - **Validation:** depth <= 20, empty `AND` / `OR`, unknown or self `courseId` and indirect cycles are rejected with 422; `core/ast_evaluator.py::find_rule_issues` is the shared, importable validator. Credit distribution reuses `check_distribution`.
   - **Persistence:** `courses.prerequisite_rule` and the `prerequisite_rules` table are written together and `updated_at` is bumped. `main.py` sets `separate_input_output_schemas=False` to keep single OpenAPI schema names.
+
+- **CF-231 to CF-235 (MIS Extraction Pipeline):** `parse_document` -> `generate_structured` -> `build_course` -> `synthesize_prerequisite`, run by `SyllabusPipeline` in the CF-204 background task.
+  - **Seams:** override `get_extraction_pipeline` (whole pipeline) or `get_llm_client` (language model only) in `app.dependency_overrides`. `conftest.py` blanks `OLLAMA_BASE_URL`, so tests never reach a real Ollama. `tests/document_factory.py` builds PDF and DOCX fixtures.
+  - **Invariants:** expected failures raise `ExtractionError` with a message faculty can read; pdfplumber, pytesseract, instructor and openai are imported lazily because the Vercel function does not install them; uploaded text is untrusted (delimited in prompts, never passed through Instructor's Jinja `context`); prerequisite trees are validated by `find_rule_issues`; catalog rules stay in `course_service`.
+  - **Confidence:** 0.0 to 1.0 per `extractedData` field; a value stated by the document and confirmed by the model scores 0.9 or more, an unsupported one scores below 0.7.
 
 ## 4. Operational Commands
 - Start dev server: `uvicorn app.main:app --reload --port 8000` (run from `backend/`)

@@ -49,7 +49,7 @@ This creates all PostgreSQL tables (`degree_programs`, `courses`, `prerequisite_
 
 ### Step 4: Apply Schema Migrations
 
-Schema changes ship as Alembic revisions (`0001_initial_curriculum_tables`, `0002_course_updated_at`, ...). Run them against the same `DATABASE_URL` from the `backend/` directory:
+Schema changes ship as Alembic revisions (`0001_initial_curriculum_tables`, `0002_course_updated_at`, `0003_extraction_jobs_table`, ...). Run them against the same `DATABASE_URL` from the `backend/` directory:
 
 ```powershell
 cd backend
@@ -109,6 +109,19 @@ In the **Environment Variables** section, configure:
    curl https://your-backend.vercel.app/api/programs
    # Returns list of available engineering degree summaries
    ```
+
+### Step 5: MIS Extraction (needs a non-serverless backend)
+
+Document extraction (CF-231 to CF-235) needs Ollama, the Tesseract binary and Python libraries that the Vercel function does not install (they are in `backend/requirements.txt`, not in the root `requirements.txt`). On Vercel the rest of the API is unaffected and every upload ends `FAILED` with "Automatic extraction is not available on this server". If the Vercel **Root Directory** is `backend`, the full `backend/requirements.txt` is installed, but there is still no Ollama.
+
+Run extraction with Docker Compose, whose backend image includes Tesseract:
+
+```powershell
+docker compose --profile sprint2 up -d
+docker compose exec ollama ollama pull qwen2.5:7b-instruct
+```
+
+The backend container must receive `OLLAMA_BASE_URL=http://ollama:11434` (CF-221). Jobs are stored in `extraction_jobs`, so apply migration `0003_extraction_jobs_table` first (Section 1, Step 4).
 
 ---
 
