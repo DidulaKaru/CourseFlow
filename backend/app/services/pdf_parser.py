@@ -11,11 +11,20 @@ from collections import Counter
 from dataclasses import dataclass
 
 from app.services import ocr_service
+from app.services.course_codes import CODE_IN_TEXT, find_course_codes
 from app.services.docx_parser import read_docx
 from app.services.extraction_contract import DOCX_CONTENT_TYPE, ExtractionError
 from app.services.ocr_service import OcrUnavailableError
 
-__all__ = ["ExtractionError", "ParsedContactHours", "ParsedSyllabus", "parse_document", "parse_docx", "parse_pdf"]
+__all__ = [
+    "ExtractionError",
+    "ParsedContactHours",
+    "ParsedSyllabus",
+    "first_module_text",
+    "parse_document",
+    "parse_docx",
+    "parse_pdf",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +107,6 @@ _UNSEPARATED = re.compile(
     r"|(?P<semester>semesters?)\s+(?P<semester_value>\d\b.{0,20}))$",
     re.IGNORECASE,
 )
-_CODE_IN_LINE = re.compile(r"\b[A-Z]{2,4}\s?\d{3,5}[A-Z]?\b")
 
 
 def _match_label(text: str) -> tuple[str, str] | None:
@@ -153,6 +161,20 @@ def _sections_from_tables(tables: list[Table]) -> dict[str, str]:
                 if value:
                     found[key] = value
     return found
+
+
+def first_module_text(text: str) -> str:
+    """The part of a document that describes its first module: up to a code label naming a different course."""
+    lines = text.splitlines()
+    first: list[str] = []
+    for index, line in enumerate(lines):
+        label = _match_label(line)
+        codes = find_course_codes(label[1].upper()) if label and label[0] == "code" else []
+        if codes and not first:
+            first = codes
+        elif codes and codes != first:
+            return "\n".join(lines[:index])
+    return text
 
 
 # ==========================================
@@ -283,7 +305,7 @@ def clean_pages(pages: list[list[str]]) -> list[str]:
                 _PAGE_NUMBER.match(line)
                 or (
                     occurrences[_header_key(line)] >= repeats_needed
-                    and not _CODE_IN_LINE.search(line)
+                    and not CODE_IN_TEXT.search(line)
                     and _match_label(line) is None
                 )
             ):
