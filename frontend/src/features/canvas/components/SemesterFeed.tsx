@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { AlertTriangle, Check, Plus, ChevronRight } from 'lucide-react';
 import { usePlannerStore, calculateSemesterCredits } from '@/core/store';
-import { getProgramCourses } from '@/data/mockCourses';
 import { evaluatePlannedPrerequisite } from '@/core/algorithms/ast_evaluator';
+import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import type { Course, CourseType } from '@/types/curriculum';
 
 const TYPE_STYLES: Record<CourseType, { badge: string; label: string }> = {
@@ -32,7 +32,7 @@ export function SemesterFeed() {
     const toggleElective = usePlannerStore((state) => state.toggleElective);
     const openCourseDrawer = usePlannerStore((state) => state.openCourseDrawer);
 
-    const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
+    const activeCourses = useProgramCourses(activeProgramId);
 
     // Group courses by recommended semester (1 to 8)
     const semesterBuckets = useMemo(() => {

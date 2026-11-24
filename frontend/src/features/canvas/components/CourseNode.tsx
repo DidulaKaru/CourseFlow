@@ -6,7 +6,8 @@ import { AlertTriangle, Check, Plus } from 'lucide-react';
 import { evaluatePlannedPrerequisite } from '@/core/algorithms/ast_evaluator';
 import type { CourseLayoutNode } from '@/core/layout';
 import { usePlannerStore } from '@/core/store';
-import { getProgramCourses } from '@/data/mockCourses';
+import { EditCourseButton } from '@/features/admin/components/EditCourseButton';
+import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import type { CourseType } from '@/types/curriculum';
 
 export type NodeHighlightStatus = 'normal' | 'active' | 'upstream' | 'downstream' | 'dimmed';
@@ -53,7 +54,7 @@ export const CourseNode = memo(function CourseNode({
     const openCourseDrawer = usePlannerStore((state) => state.openCourseDrawer);
 
     const activeProgramId = usePlannerStore((state) => state.activeProgramId);
-    const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
+    const activeCourses = useProgramCourses(activeProgramId);
 
     // Evaluate prospective prerequisite satisfiability in degree plan context
     const prereqEval = useMemo(() => {
@@ -125,6 +126,8 @@ export const CourseNode = memo(function CourseNode({
                 id="left"
                 className="!w-1.5 !h-1.5 !bg-white/20 !border-0 opacity-40 hover:opacity-100"
             />
+
+            <EditCourseButton course={course} placement="node" />
 
             {/* 1. Header: Course Code, Type Badge, Multi-Sem Indicator, and Credit Pill */}
             <div className="flex items-center justify-between gap-1 mb-0.5">

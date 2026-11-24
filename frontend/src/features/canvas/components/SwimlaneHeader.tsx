@@ -4,7 +4,7 @@ import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 import type { SwimlaneHeaderLayoutNode } from '@/core/layout';
 import { usePlannerStore, calculateSemesterCredits } from '@/core/store';
-import { getProgramCourses } from '@/data/mockCourses';
+import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import type { Course } from '@/types/curriculum';
 
 export interface SwimlaneHeaderProps {
@@ -142,7 +142,7 @@ export const SwimlaneHeaderNode = memo(function SwimlaneHeaderNode({
     const activeProgramId = usePlannerStore((state) => state.activeProgramId);
     const selectedElectiveIds = usePlannerStore((state) => state.selectedElectiveIds);
 
-    const activeCourses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
+    const activeCourses = useProgramCourses(activeProgramId);
     const credits = useMemo(() => {
         return calculateSemesterCredits(semesterIndex, activeCourses, selectedElectiveIds);
     }, [semesterIndex, activeCourses, selectedElectiveIds]);

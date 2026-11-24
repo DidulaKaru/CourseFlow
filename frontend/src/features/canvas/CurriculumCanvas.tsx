@@ -17,7 +17,7 @@ import { Compass } from 'lucide-react';
 
 import { calculateLayout } from '@/core/layout';
 import { usePlannerStore } from '@/core/store';
-import { getProgramCourses } from '@/data/mockCourses';
+import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import type { Course } from '@/types/curriculum';
 import { CourseNode } from './components/CourseNode';
 import type { ExtendedCourseNodeData } from './components/CourseNode';
@@ -58,10 +58,8 @@ function InnerCurriculumCanvas({
     const { setViewport, getViewport, setCenter } = useReactFlow();
 
     const activeProgramId = usePlannerStore((state) => state.activeProgramId);
-    const courses = useMemo(
-        () => propCourses ?? getProgramCourses(activeProgramId),
-        [propCourses, activeProgramId]
-    );
+    const programCourses = useProgramCourses(activeProgramId);
+    const courses = propCourses ?? programCourses;
     const programName =
         propProgramName ??
         (activeProgramId === 'electrical-eng' ? 'Electrical Engineering' : 'Computer Engineering');
