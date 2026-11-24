@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Search, X, ArrowRight, Plus, Check } from 'lucide-react';
 import { usePlannerStore } from '@/core/store';
-import { getProgramCourses } from '@/data/mockCourses';
+import { useProgramCourses } from '@/features/admin/store/catalogEditsStore';
 import type { Course, CourseType } from '@/types/curriculum';
 
 interface CourseSearchModalProps {
@@ -28,7 +28,7 @@ export function CourseSearchModal({ isOpen, onClose, onSelectCourse }: CourseSea
     const [selectedType, setSelectedType] = useState<'ALL' | CourseType>('ALL');
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const courses = useMemo(() => getProgramCourses(activeProgramId), [activeProgramId]);
+    const courses = useProgramCourses(activeProgramId);
 
     const handleClose = useCallback(() => {
         setQuery('');
