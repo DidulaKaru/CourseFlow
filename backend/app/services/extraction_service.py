@@ -1,7 +1,7 @@
 """MIS extraction job orchestration (CF-204).
 
 Owns the job lifecycle behind the extraction endpoints: validating uploads, SHA256 deduplication,
-running the extraction pipeline in the background and committing a reviewed course atomically.
+running the extraction pipeline in the background and handing reviewed courses to ``ingestion_service``.
 
 The pipeline is a seam: ``get_extraction_pipeline`` is a FastAPI dependency returning anything that
 satisfies ``ExtractionPipeline`` (the CF-231 to CF-234 parser and language model extractor). On a server without
@@ -28,7 +28,7 @@ from app.schemas.extraction_jobs import (
     ExtractionJob,
     ExtractionJobStatus,
 )
-from app.services import course_service
+from app.services import course_service, ingestion_service
 from app.services.extraction_contract import (
     DOCX_CONTENT_TYPE,
     PDF_CONTENT_TYPE,
@@ -243,18 +243,5 @@ def commit_job(db: Session, job_id: str, review: ExtractionCommitRequest) -> Ext
             f"Only jobs that are ready for review (EXTRACTED) can be committed; this job is {job.status}."
         )
 
-    try:
-        course = course_service.stage_reviewed_course(db, review, review.prerequisite_rule)
-        job.status = ExtractionJobStatus.COMMITTED.value
-        job.committed_course_id = course.id
-        job.updated_at = func.now()
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise course_service.CourseConflictError("The change conflicts with existing course data.") from None
-    except Exception:
-        db.rollback()
-        raise
-    db.refresh(course)
-    db.refresh(job)
+    course = ingestion_service.ingest_reviewed_course(db, job, review)
     return ExtractionCommitResult(job=to_extraction_job(job), course=course_service.to_admin_course(course))
