@@ -1,0 +1,22 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Length 1269 >>
+stream
+BT /F1 10 Tf 72 740.0 Td (Module Information Sheet) Tj ET
+BT /F1 10 Tf 72 724.0 Td (Course Code: CE3301) Tj ET
+BT /F1 10 Tf 72 708.0 Td (Course Title: Digital Signal Processing) Tj ET
+BT /F1 10 Tf 72 692.0 Td (Course Type: Core) Tj ET
+BT /F1 10 Tf 72 676.0 Td (Credits: 3) Tj ET
+BT /F1 10 Tf 72 660.0 Td (Semester: 5) Tj ET
+BT /F1 10 Tf 72 644.0 Td (Prerequisites: CE2201) Tj ET
+BT /F1 10 Tf 72 628.0 Td (Course Objectives) Tj ET
+BT /F1 10 Tf 72 612.0 Td (Analyse discrete-time signals.) Tj 
