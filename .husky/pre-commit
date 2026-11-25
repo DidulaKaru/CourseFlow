@@ -2,3 +2,4 @@
 npx lint-staged
 npm run typecheck
 python scripts/check_invariants.py
+python scripts/check_secrets.py --staged

@@ -27,6 +27,9 @@ def ingest_reviewed_course(
     """
     try:
         course = course_service.stage_reviewed_course(db, review, review.prerequisite_rule)
+        # The job has no ORM relationship to the course, and the app session does not autoflush. Without this the
+        # job UPDATE can reach PostgreSQL before the course INSERT and break the committed_course_id foreign key.
+        db.flush()
         job.status = ExtractionJobStatus.COMMITTED.value
         job.committed_course_id = course.id
         job.updated_at = func.now()

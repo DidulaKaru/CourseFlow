@@ -36,6 +36,24 @@ def _cell_text(cell: ElementTree.Element) -> str:
     return " ".join(" ".join(paragraphs).split())
 
 
+class _RefuseDoctype(ElementTree.TreeBuilder):
+    """Tree builder that aborts on any DTD. Word never writes one, so a DTD is an entity-expansion attack.
+
+    The parser reports the declaration itself, so this holds for every encoding and Python build. A byte
+    search for ``<!DOCTYPE`` misses UTF-16 documents (CF-225).
+    """
+
+    def doctype(self, name: str, pubid: str | None, system: str | None) -> None:
+        raise ExtractionError(_UNREADABLE)
+
+
+def _parse_without_dtd(xml: bytes) -> ElementTree.Element:
+    # Every DTD is refused by the target, which removes the XML attack surface Bandit warns about.
+    parser = ElementTree.XMLParser(target=_RefuseDoctype())  # nosec B314
+    parser.feed(xml)
+    return parser.close()
+
+
 def _read_body(document: bytes) -> ElementTree.Element:
     try:
         with zipfile.ZipFile(io.BytesIO(document)) as archive, archive.open("word/document.xml") as part:
@@ -45,11 +63,8 @@ def _read_body(document: bytes) -> ElementTree.Element:
         raise ExtractionError(_UNREADABLE) from error
     if len(xml) > _MAX_BODY_BYTES:
         raise ExtractionError("The DOCX is too large to process once unpacked.")
-    # Word never writes a DTD; refusing one rules out entity-expansion attacks.
-    if b"<!DOCTYPE" in xml:
-        raise ExtractionError(_UNREADABLE)
     try:
-        body = ElementTree.fromstring(xml).find(f"{_WORD}body")
+        body = _parse_without_dtd(xml).find(f"{_WORD}body")
     except ElementTree.ParseError as error:
         raise ExtractionError(_UNREADABLE) from error
     if body is None:

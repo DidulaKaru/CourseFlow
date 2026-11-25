@@ -1,0 +1,76 @@
+name: CourseFlow Security Gate
+
+# Static analysis, dependency audits and secret scanning (CF-225). Any finding at the thresholds below fails the
+# job, so a vulnerable dependency or an exposed secret blocks the PR like a failing test would.
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  schedule:
+    # New advisories are published without any code change, so audit the dependencies weekly too.
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Scan tracked files for secrets
+        # The same script the pre-commit hook runs on staged files. Placeholders in .env.example are allowed.
+        run: python scripts/check_secrets.py
+
+  python-security:
+    name: Python Security (Bandit + pip-audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Audit Tools
+        run: pip install "bandit>=1.8,<2" "pip-audit>=2.7,<3"
+
+      - name: Bandit (medium severity and above fails)
+        # backend/scripts is included on purpose: hash_password.py reads a password from the terminal by design.
+        run: bandit -r backend/app backend/scripts -ll
+
+      - name: pip-audit (any known vulnerability fails)
+        run: pip-audit -r backend/requirements.txt
+
+  frontend-audit:
+    name: Frontend Dependency Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: npm audit (high severity and above fails)
+        run: npm audit --audit-level=high

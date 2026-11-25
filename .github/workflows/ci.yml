@@ -84,8 +84,54 @@ jobs:
       - name: Install Dependencies
         run: pip install -r backend/requirements.txt
 
+      - name: Install Tesseract (OCR)
+        # Without it the real-OCR tests skip, so scanned-syllabus recognition would go unchecked (CF-223).
+        run: sudo apt-get update && sudo apt-get install -y tesseract-ocr
+
       - name: Python Linter Check (Ruff)
         run: ruff check backend/
 
       - name: Automated Backend Tests (Pytest + Coverage >= 85%)
         run: pytest backend/tests --cov=backend/app --cov-report=term-missing --cov-fail-under=85
+
+  postgres:
+    name: PostgreSQL Integration
+    # Every other database test uses in-memory SQLite. This job runs the Alembic revisions and the JSONB and
+    # foreign-key behaviour on the engine production uses (CF-225).
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: courseflow
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/courseflow
+      CF_TEST_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Apply Migrations (alembic upgrade head)
+        working-directory: backend
+        run: alembic upgrade head
+
+      - name: Backend Tests Against PostgreSQL
+        run: pytest backend/tests
