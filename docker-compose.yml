@@ -34,6 +34,8 @@ services:
       PROJECT_NAME: CourseFlow API
       VERSION: 1.0.0
       API_V1_STR: /api/v1
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:7b-instruct}
     volumes:
       - ./backend:/app
       - ./frontend/src/data:/frontend/src/data:ro
@@ -67,13 +69,36 @@ services:
     container_name: courseflow_ollama
     restart: unless-stopped
     ports:
-      - "11434:11434"
+      - "${OLLAMA_PORT:-11434}:11434"
     volumes:
-      - ollama_data:/root/.ollama
-    profiles:
-      - full
-      - sprint2
+      # Cache downloaded model weights across container restarts.
+      - ollama_models:/root/.ollama
+    healthcheck:
+      # The official image ships no curl; `ollama list` queries the same /api/tags endpoint.
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    # CPU inference by default. For NVIDIA GPU acceleration add the override file:
+    #   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up
+
+  # One-shot helper: pulls the model on first run, then exits (backend never waits for it).
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: courseflow_ollama_init
+    restart: "no"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:7b-instruct}
+      OLLAMA_MODELS_TO_PULL: ${OLLAMA_MODELS_TO_PULL:-}
+    volumes:
+      - ./backend/scripts/init-ollama.sh:/init-ollama.sh:ro
+    entrypoint: ["/bin/sh", "/init-ollama.sh"]
 
 volumes:
   pgdata:
-  ollama_data:
+  ollama_models:
