@@ -1,0 +1,61 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Length 1269 >>
+stream
+BT /F1 10 Tf 72 740.0 Td (Module Information Sheet) Tj ET
+BT /F1 10 Tf 72 724.0 Td (Course Code: CE3301) Tj ET
+BT /F1 10 Tf 72 708.0 Td (Course Title: Digital Signal Processing) Tj ET
+BT /F1 10 Tf 72 692.0 Td (Course Type: Core) Tj ET
+BT /F1 10 Tf 72 676.0 Td (Credits: 3) Tj ET
+BT /F1 10 Tf 72 660.0 Td (Semester: 5) Tj ET
+BT /F1 10 Tf 72 644.0 Td (Prerequisites: CE2201) Tj ET
+BT /F1 10 Tf 72 628.0 Td (Course Objectives) Tj ET
+BT /F1 10 Tf 72 612.0 Td (Analyse discrete-time signals.) Tj ET
+BT /F1 10 Tf 72 596.0 Td (Design FIR and IIR filters.) Tj ET
+BT /F1 10 Tf 72 580.0 Td (Syllabus:) Tj ET
+BT /F1 10 Tf 72 564.0 Td (Sampling, z-transform, filter design.) Tj ET
+BT /F1 10 Tf 72 548.0 Td (Assessment:) Tj ET
+BT /F1 10 Tf 72 532.0 Td (Final examination 60%) Tj ET
+72 494.0 110 20 re S
+BT /F1 10 Tf 76 500.0 Td (Lectures) Tj ET
+182 494.0 110 20 re S
+BT /F1 10 Tf 186 500.0 Td (Tutorials) Tj ET
+292 494.0 110 20 re S
+BT /F1 10 Tf 296 500.0 Td (Labs/Practical) Tj ET
+402 494.0 110 20 re S
+BT /F1 10 Tf 406 500.0 Td (Total Hours) Tj ET
+72 474.0 110 20 re S
+BT /F1 10 Tf 76 480.0 Td (28) Tj ET
+182 474.0 110 20 re S
+BT /F1 10 Tf 186 480.0 Td (7) Tj ET
+292 474.0 110 20 re S
+BT /F1 10 Tf 296 480.0 Td (14) Tj ET
+402 474.0 110 20 re S
+BT /F1 10 Tf 406 480.0 Td (49) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000212 00000 n 
+0000001533 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1659
+%%EOF

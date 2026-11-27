@@ -3,3 +3,6 @@
 # with "exec /app/entrypoint.sh: no such file or directory" (CF-121).
 *.sh text eol=lf
 .husky/* text eol=lf
+
+# Syllabus fixtures are binary: never normalise line endings inside them (CF-223).
+backend/tests/fixtures/syllabi/*.pdf binary
